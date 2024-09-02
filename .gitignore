@@ -1,0 +1,9 @@
+lib/
+
+*:w
+*.log
+*.swp
+*.backup
+*.o
+*.so
+*.a
