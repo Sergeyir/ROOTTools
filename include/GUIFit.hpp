@@ -85,4 +85,4 @@ class GUIFit
    const Color_t activeColor = kRed+1;   
 };
 
-#endif
+#endif /*GUI_FIT_HPP*/

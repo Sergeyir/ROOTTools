@@ -33,4 +33,4 @@ void PrintCanvas (TCanvas *canv, const std::string outputFileName, bool printPdf
       outputFileName + ".tmp.pdf &").c_str());
 }
 
-#endif
+#endif /*TCANVAS_PRINTER_CPP*/

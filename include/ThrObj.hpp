@@ -201,4 +201,4 @@ class ThrObj
    }
 };
 
-#endif
+#endif /*THR_OBJ_HPP*/

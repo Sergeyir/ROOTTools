@@ -24,4 +24,4 @@
 //outputFileName is written without extention
 void PrintCanvas (TCanvas *canv, const std::string outputFileName, bool printPdf = true);
 
-#endif
+#endif /*TCANVAS_PRINTER_HPP*/

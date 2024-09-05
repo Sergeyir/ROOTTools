@@ -504,4 +504,4 @@ void GUIFit::Draw(bool doDrawHist, bool isFirstDraw)
    gPad->GetFrame()->SetBit(TBox::kCannotMove);
 }
 
-#endif
+#endif /*GUI_FIT_CPP*/
