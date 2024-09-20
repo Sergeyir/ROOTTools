@@ -36,8 +36,8 @@ class GUIFit
    
    GUIFit();
    
-   void AddFitType(std::string outputFileName);
-   void AddHist(TH1F *dataHist, std::string xVal);
+   void AddFitType(const std::string& outputFileName);
+   void AddHist(TH1F *dataHist, const std::string& xVal);
    void AddFit(TF1 *fit, TF1 *bgFit, const int bgFitParStartNumber, const unsigned int histNumber);
    void AddFit(TF1 *fit, TF1 *bgFit, Double_t (*fcn)(Double_t *, Double_t *), 
                const int bgFitParStartNumber, const unsigned int histNumber);

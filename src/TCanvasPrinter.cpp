@@ -21,11 +21,12 @@
 #include "../include/TCanvasPrinter.hpp"
 
 //outputFileName is written without extention
-void PrintCanvas (TCanvas *canv, const std::string outputFileName, bool printPdf)
+void PrintCanvas (TCanvas *canv, const std::string& outputFileName, const bool printPdf)
 {
    canv->SaveAs((outputFileName + ".png").c_str());
    if (printPdf) canv->SaveAs((outputFileName + ".tmp.pdf").c_str());
 
+   // ghostscript to shrink pdf size
    if (printPdf) system(
       ("gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 \
       -dNOPAUSE -dQUIET -dBATCH -dPrinted=false -sOutputFile=" + 

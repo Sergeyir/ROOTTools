@@ -25,7 +25,7 @@ GUIFit::GUIFit()
    currentActivePointGr = new TGraph();
 };
 
-void GUIFit::AddFitType(std::string outputFileName)
+void GUIFit::AddFitType(const std::string& outputFileName)
 {
    system(("cp " + outputFileName + " " + outputFileName + ".backup").c_str());
    CheckOutputFile(outputFileName, std::ios::app);
@@ -33,7 +33,7 @@ void GUIFit::AddFitType(std::string outputFileName)
    outputFiles.push_back(std::ofstream());
 }
 
-void GUIFit::AddHist(TH1F *dataHist, std::string xVal)
+void GUIFit::AddHist(TH1F *dataHist, const std::string& xVal)
 {
    fits.resize(fits.size()+1);
    bgFits.resize(bgFits.size()+1);
