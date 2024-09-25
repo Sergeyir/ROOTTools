@@ -30,119 +30,192 @@
 
 struct
 {
-   std::vector<std::unique_ptr<ROOT::TThreadedObject<TH1F>>> container_th1;
-   std::vector<std::unique_ptr<ROOT::TThreadedObject<TH2F>>> container_th2;
-   std::vector<std::unique_ptr<ROOT::TThreadedObject<TH3F>>> container_th3;
+   std::vector<std::unique_ptr<ROOT::TThreadedObject<TH1F>>> containerTH1F;
+   std::vector<std::unique_ptr<ROOT::TThreadedObject<TH2F>>> containerTH2F;
+   std::vector<std::unique_ptr<ROOT::TThreadedObject<TH3F>>> containerTH3F;
    
-   std::vector<std::string> container_tfile_dir;
-   std::array<std::vector<int>, 3> container_tfile_dir_iter;
+   std::vector<std::unique_ptr<ROOT::TThreadedObject<TH1D>>> containerTH1D;
+   std::vector<std::unique_ptr<ROOT::TThreadedObject<TH2D>>> containerTH2D;
+   std::vector<std::unique_ptr<ROOT::TThreadedObject<TH3D>>> containerTH3D;
+
+   std::vector<std::string> containerTFileDir;
+   std::array<std::vector<int>, 6> containerTFileDirIndex;
+   
+   AddHistogram(std::unique_ptr<ROOT::TThreadedObject<TH1F> hist, 
+                const std::string& directory) 
+   {
+      containerTH1F.push_back(hist)
+      containerTH1FTFileDir.push_back(directory)
+   };
+   
+   AddHistogram(std::unique_ptr<ROOT::TThreadedObject<TH2F> hist, 
+                const std::string& directory) 
+   {
+      containerTH2F.push_back(hist)
+      containerTH2FTFileDir.push_back(directory)
+   };
+   
+   AddHistogram(std::unique_ptr<ROOT::TThreadedObject<TH3F> hist, 
+                const std::string& directory) 
+   {
+      containerTH3F.push_back(hist)
+      containerTH3FTFileDir.push_back(directory)
+   };
+   
+   AddHistogram(std::unique_ptr<ROOT::TThreadedObject<TH1D> hist, 
+                const std::string& directory) 
+   {
+      containerTH1D.push_back(hist)
+      containerTH1DTFileDir.push_back(directory)
+   };
+   
+   AddHistogram(std::unique_ptr<ROOT::TThreadedObject<TH2D> hist, 
+                const std::string& directory) 
+   {
+      containerTH2D.push_back(hist)
+      containerTH2DTFileDir.push_back(directory)
+   };
+   
+   AddHistogram(std::unique_ptr<ROOT::TThreadedObject<TH3D> hist, 
+                const std::string& directory) 
+   {
+      containerTH3D.push_back(hist)
+      containerTH3DTFileDir.push_back(directory)
+   };
    
    void Clear()
    {
-      container_th1.clear();
-      container_th2.clear();
-      container_th3.clear();
+      containerTH1F.clear();
+      containerTH2F.clear();
+      containerTH3F.clear();
+      
+      containerTH1D.clear();
+      containerTH2D.clear();
+      containerTH3D.clear();
+      
+      containerTH1FTFileDir.clear();
+      containerTH2FTFileDir.clear();
+      containerTH3FTFileDir.clear();
+      
+      containerTH1DTFileDir.clear();
+      containerTH2DTFileDir.clear();
+      containerTH3DTFileDir.clear();
    }
 
-   void AddTFileDir(std::string directory, const int thr_obj_type)
+   void AddTFileDir(const std::string& directory, const int thrObjIndex)
    {
-      int dir_iter = -999;
+      int dirIndex = -999;
       if (directory != "")
       {
-         for (long unsigned int i = 0; i < container_tfile_dir.size(); i++)
+         for (long unsigned int i = 0; i < containerTFileDir.size(); i++)
          {
-            if (container_tfile_dir[i] == directory) 
+            if (containerTFileDir[i] == directory) 
             {
-               dir_iter = i;
+               dirIndex = i;
             }
          }
-         if (dir_iter == -999) 
+         if (dirIndex == -999) 
          {
-            dir_iter = container_tfile_dir.size();
-            container_tfile_dir.push_back(directory);
+            dirIndex = containerTFileDir.size();
+            containerTFileDir.push_back(directory);
          }
       }
-      container_tfile_dir_iter[thr_obj_type].push_back(dir_iter);
+      containerTFileDirIndex[thrObjIndex].push_back(dirIndex);
    }
 
    void Write()
    {
-      for (auto& thr_obj : container_th1) 
+      for (auto& thrObj : containerTH1F) 
       {
-         static_cast<std::shared_ptr<TH1>>(thr_obj->Merge())->Clone()->Write();
+         static_cast<std::shared_ptr<TH1F>>(thrObj->Merge())->Clone()->Write();
       }
-      for (auto& thr_obj : container_th2) 
+      for (auto& thrObj : containerTH2F) 
       {
-         static_cast<std::shared_ptr<TH2>>(thr_obj->Merge())->Clone()->Write();
+         static_cast<std::shared_ptr<TH2F>>(thrObj->Merge())->Clone()->Write();
       }
-      for (auto& thr_obj : container_th3) 
+      for (auto& thrObj : containerTH3F) 
       {
-         static_cast<std::shared_ptr<TH3>>(thr_obj->Merge())->Clone()->Write();
+         static_cast<std::shared_ptr<TH3F>>(thrObj->Merge())->Clone()->Write();
       }
+      for (auto& thrObj : containerTH1D) 
+      {
+         static_cast<std::shared_ptr<TH1D>>(thrObj->Merge())->Clone()->Write();
+      }
+      for (auto& thrObj : containerTH2D) 
+      {
+         static_cast<std::shared_ptr<TH2D>>(thrObj->Merge())->Clone()->Write();
+      }
+      for (auto& thrObj : containerTH3D) 
+      {
+         static_cast<std::shared_ptr<TH3D>>(thrObj->Merge())->Clone()->Write();
+      }
+      
       Clear();
    }
 
-   void Write(std::string file_name)
+   void Write(const std::string& outputFileName)
    {
-      TFile outfile(file_name.c_str(), "RECREATE");
-      outfile.cd();
-      if (container_tfile_dir.size() == 0) Write();
+      TFile outputFile(outputFileName.c_str(), "RECREATE");
+      outputFile.cd();
+      if (containerTFileDir.size() == 0) Write();
       else
       {
-         for (std::string dir : container_tfile_dir)
+         for (std::string dir : containerTFileDir)
          {
-            outfile.mkdir(dir.c_str());
+            outputFile.mkdir(dir.c_str());
          }
-         for (long unsigned int i = 0; i < container_th1.size(); i++)
+         for (long unsigned int i = 0; i < containerTH1F.size(); i++)
          {
-            if (container_tfile_dir_iter[0][i] != -999) outfile.cd(
-               container_tfile_dir[container_tfile_dir_iter[0][i]].c_str());
-            else outfile.cd();
-            static_cast<std::shared_ptr<TH1>>(container_th1[i]->Merge())->Clone()->Write();
+            if (containerTFileDirIndex[0][i] != -999) outputFile.cd(
+               containerTFileDir[containerTFileDirIndex[0][i]].c_str());
+            else outputFile.cd();
+            static_cast<std::shared_ptr<TH1F>>(containerTH1F[i]->Merge())->Clone()->Write();
          }
-         for (long unsigned int i = 0; i < container_th2.size(); i++)
+         for (long unsigned int i = 0; i < containerTH2F.size(); i++)
          {
-            if (container_tfile_dir_iter[1][i] != -999) outfile.cd(
-               container_tfile_dir[container_tfile_dir_iter[1][i]].c_str());
-            else outfile.cd();
-            static_cast<std::shared_ptr<TH1>>(container_th2[i]->Merge())->Clone()->Write();
+            if (containerTFileDirIndex[1][i] != -999) outputFile.cd(
+               containerTFileDir[containerTFileDirIndex[1][i]].c_str());
+            else outputFile.cd();
+            static_cast<std::shared_ptr<TH2F>>(containerTH2F[i]->Merge())->Clone()->Write();
          }
-         for (long unsigned int i = 0; i < container_th3.size(); i++)
+         for (long unsigned int i = 0; i < containerTH3F.size(); i++)
          {
-            if (container_tfile_dir_iter[2][i] != -999) outfile.cd(
-               container_tfile_dir[container_tfile_dir_iter[2][i]].c_str());
-            else outfile.cd();
-            static_cast<std::shared_ptr<TH1>>(container_th3[i]->Merge())->Clone()->Write();
+            if (containerTFileDirIndex[2][i] != -999) outputFile.cd(
+               containerTFileDir[containerTFileDirIndex[2][i]].c_str());
+            else outputFile.cd();
+            static_cast<std::shared_ptr<TH3F>>(containerTH3F[i]->Merge())->Clone()->Write();
          }
+         Clear();
       }
    }
+   
 } ThrObjHolder;
 
 template<class T>
 class ThrObj
 {
    private:
-   std::unique_ptr<ROOT::TThreadedObject<T>> thr_obj;
+   std::unique_ptr<ROOT::TThreadedObject<T>> thrObj;
    std::shared_ptr<T> obj_ptr;
    int hist_holder_iter;
 
    public:
    
    //TH1 methods
-   ThrObj(std::string name, std::string title,
+   ThrObj(const std::string& name, const std::string& title,
       const int xnbins, const double xmin, const double xmax,
-      std::string tfile_directory = "")
+      const std::string& tfileDirectory = "")
    {
-      ThrObjHolder.container_th1.push_back(
+      ThrObjHolder.containerTH1F.push_back(
          std::unique_ptr<ROOT::TThreadedObject<T>>(
             new ROOT::TThreadedObject<T>(
             name.c_str(), title.c_str(), 
             xnbins, xmin, xmax)));
 
-      hist_holder_iter = ThrObjHolder.container_th1.size();
-      obj_ptr = ThrObjHolder.container_th1.back()->Get();
+      hist_holder_iter = ThrObjHolder.containerTH1F.size();
+      obj_ptr = ThrObjHolder.containerTH1F.back()->Get();
 
-      ThrObjHolder.AddTFileDir(tfile_directory, 0);
+      ThrObjHolder.AddTFileDir(tfileDirectory, 0);
    }
 
    void Fill(const double xval, const double weight)
@@ -151,32 +224,32 @@ class ThrObj
    }
 
    //TH2 methods
-   ThrObj(std::string name, std::string title,
+   ThrObj(const std::string& name, const std::string& title,
       const int xnbins, const double xmin, const double xmax, 
       const int ynbins, const double ymin, const double ymax,
-      std::string tfile_directory = "")
+      const lstd::string& tfileDirectory = "")
    {
-      ThrObjHolder.container_th2.push_back(
+      ThrObjHolder.containerTH2F.push_back(
          std::unique_ptr<ROOT::TThreadedObject<T>>(
          new ROOT::TThreadedObject<T>(
             name.c_str(), title.c_str(), 
             xnbins, xmin, xmax, 
             ynbins, ymin, ymax)));
       
-      obj_ptr = ThrObjHolder.container_th2.back()->Get();
-      hist_holder_iter = ThrObjHolder.container_th2.size();
+      obj_ptr = ThrObjHolder.containerTH2F.back()->Get();
+      hist_holder_iter = ThrObjHolder.containerTH2F.size();
 
-      ThrObjHolder.AddTFileDir(tfile_directory, 1);
+      ThrObjHolder.AddTFileDir(tfileDirectory, 1);
    }
 
    //TH3 methods
-   ThrObj(std::string name, std::string title,
+   ThrObj(const std::string& name, const std::string& title,
       const int xnbins, const double xmin, const double xmax, 
       const int ynbins, const double ymin, const double ymax,
       const int znbins, const double zmin, const double zmax,
-      std::string tfile_directory = "")
+      const std::string& tfileDirectory = "")
    {
-      ThrObjHolder.container_th3.push_back(
+      ThrObjHolder.containerTH3F.push_back(
          std::unique_ptr<ROOT::TThreadedObject<T>>(
          new ROOT::TThreadedObject<T>(
             name.c_str(), title.c_str(), 
@@ -184,15 +257,15 @@ class ThrObj
             ynbins, ymin, ymax,
             znbins, zmin, zmax)));
       
-      obj_ptr = ThrObjHolder.container_th3.back()->Get();
-      hist_holder_iter = ThrObjHolder.container_th3.size();
+      obj_ptr = ThrObjHolder.containerTH3F.back()->Get();
+      hist_holder_iter = ThrObjHolder.containerTH3F.size();
       
-      ThrObjHolder.AddTFileDir(tfile_directory, 2);
+      ThrObjHolder.AddTFileDir(tfileDirectory, 2);
    }
 
    void Write()
    {
-      static_cast<std::shared_ptr<TH1>>(thr_obj->Merge())->Clone()->Write();
+      static_cast<std::shared_ptr<T>>(thrObj->Merge())->Clone()->Write();
    }
 
    std::shared_ptr<T> Get()
