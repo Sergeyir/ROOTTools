@@ -17,8 +17,14 @@
 #ifndef GUI_FIT_HPP
 #define GUI_FIT_HPP
 
+#include <stdio.h>
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
+#include <iomanip>
 
 #include "TPad.h"
 #include "TFrame.h"
@@ -26,9 +32,6 @@
 #include "TLatex.h"
 #include "TGraph.h"
 #include "TF1.h"
-
-#include "ErrorHandler.hpp"
-#include "IOTools.hpp"
 
 class GUIFit
 {

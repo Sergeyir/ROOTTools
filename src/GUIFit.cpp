@@ -28,7 +28,6 @@ GUIFit::GUIFit()
 void GUIFit::AddFitType(const std::string& outputFileName)
 {
    system(("cp " + outputFileName + " " + outputFileName + ".backup").c_str());
-   CheckOutputFile(outputFileName, std::ios::app);
    outputFilesNames.push_back(outputFileName);
    outputFiles.push_back(std::ofstream());
 }
@@ -117,7 +116,7 @@ void GUIFit::Start()
             case 'j':
                if (hists.size() == 1)
                {
-                  PrintWarning("Cannot change histogram since only one was added");
+                  printf("\033[1m\033[35mWarning:\033[0m Cannot change histogram since only one was added\n");
                }
                else if (currentHistId < hists.size()-1)
                {
@@ -135,7 +134,7 @@ void GUIFit::Start()
             case 'k':
                if (hists.size() == 1)
                {
-                  PrintWarning("Cannot change histogram since only one was added");
+                  printf("\033[1m\033[35mWarning:\033[0m Cannot change histogram since only one was added\n");
                }
                else if (currentHistId > 0)
                {
@@ -176,7 +175,7 @@ void GUIFit::Start()
                         bgFits[i][j]->GetNpar() - 1) << std::endl;
                   }
                }
-               PrintInfo("BG approximation parameters were written");
+               printf("\033[32mInfo:\033[0m BG approximation parameters were written\n");
                break;
 
             case 'f':
@@ -447,7 +446,10 @@ void GUIFit::Draw(bool doDrawHist, bool isFirstDraw)
 {   
    if (isFirstDraw)
    {
-      if (currentHistId < 0) PrintError("No histograms were added");
+      if (currentHistId < 0) 
+      {
+         printf("\033[1m\033[31mError:\033[0m No histograms were added");
+      }
       fitsNames.SetNDC();
       chi2NDF.SetNDC();
 
