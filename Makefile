@@ -23,17 +23,15 @@ endif
 
 # Rules without physical targets (secondary expansion for specific rules).
 .SECONDEXPANSION:
-.PHONY: all clean
+.PHONY: all clean TCanvasPrinter GUIFit
 
 exe_targets: AnalyzeHeatMaps AnalyzeEmbedding AnalyzeSingleTrack
 
-all: lib/TCanvasPrinter.o \
-			 lib/GUIFit.o \
-			 lib/TCanvasPrinter.so \
-			 lib/GUIFit.so \
-			 lib/libTCanvasPrinter.a \
-			 lib/libGUIFit.a
+all: TCanvasPrinter GUIFit
 	@echo "All done"
+
+TCanvasPrinter: lib/TCanvasPrinter.o lib/TCanvasPrinter.so lib/libTCanvasPrinter.a
+GUIFit: lib/GUIFit.o lib/GUIFit.so lib/libGUIFit.a
 
 .SILENT:
 
