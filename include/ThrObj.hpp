@@ -137,27 +137,27 @@ struct
    {
       for (auto& thrObj : containerTH1F) 
       {
-         static_cast<std::shared_ptr<TH1F>>(thrObj->Merge())->Clone()->Write();
+         thrObj->Merge()->Write();
       }
       for (auto& thrObj : containerTH2F) 
       {
-         static_cast<std::shared_ptr<TH2F>>(thrObj->Merge())->Clone()->Write();
+         thrObj->Merge()->Write();
       }
       for (auto& thrObj : containerTH3F) 
       {
-         static_cast<std::shared_ptr<TH3F>>(thrObj->Merge())->Clone()->Write();
+         thrObj->Merge()->Write();
       }
       for (auto& thrObj : containerTH1D) 
       {
-         static_cast<std::shared_ptr<TH1D>>(thrObj->Merge())->Clone()->Write();
+         thrObj->Merge()->Write();
       }
       for (auto& thrObj : containerTH2D) 
       {
-         static_cast<std::shared_ptr<TH2D>>(thrObj->Merge())->Clone()->Write();
+         thrObj->Merge()->Write();
       }
       for (auto& thrObj : containerTH3D) 
       {
-         static_cast<std::shared_ptr<TH3D>>(thrObj->Merge())->Clone()->Write();
+         thrObj->Merge()->Write();
       }
       
       Clear();
@@ -216,7 +216,7 @@ class ThrObj
    {
       objPtr = ThrObjHolder.AddHistogram(
          new ROOT::TThreadedObject<T>(name.c_str(), title.c_str(), 
-            xnbins, xmin, xmax), 
+                                      xnbins, xmin, xmax), 
          directoryTFile);
    }
 
@@ -228,8 +228,8 @@ class ThrObj
    {
       objPtr = ThrObjHolder.AddHistogram(
          new ROOT::TThreadedObject<T>(name.c_str(), title.c_str(), 
-            xnbins, xmin, xmax, 
-            ynbins, ymin, ymax),
+                                      xnbins, xmin, xmax, 
+                                      ynbins, ymin, ymax),
          directoryTFile);
    }
 
@@ -242,9 +242,9 @@ class ThrObj
    {
       objPtr = ThrObjHolder.AddHistogram(
          new ROOT::TThreadedObject<T>(name.c_str(), title.c_str(), 
-            xnbins, xmin, xmax, 
-            ynbins, ymin, ymax,
-            znbins, zmin, zmax),
+                                      xnbins, xmin, xmax, 
+                                      ynbins, ymin, ymax,
+                                      znbins, zmin, zmax),
          directoryTFile);
    }
 
