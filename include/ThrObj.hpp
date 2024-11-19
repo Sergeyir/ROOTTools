@@ -195,6 +195,27 @@ struct
             else outputFile.cd();
             static_cast<std::shared_ptr<TH3F>>(containerTH3F[i]->Merge())->Clone()->Write();
          }
+         for (long unsigned int i = 0; i < containerTH1D.size(); i++)
+         {
+            if (containerTFileDirIndex[3][i] != -999) outputFile.cd(
+               containerTFileDir[containerTFileDirIndex[3][i]].c_str());
+            else outputFile.cd();
+            static_cast<std::shared_ptr<TH1D>>(containerTH1D[i]->Merge())->Clone()->Write();
+         }
+         for (long unsigned int i = 0; i < containerTH2D.size(); i++)
+         {
+            if (containerTFileDirIndex[4][i] != -999) outputFile.cd(
+               containerTFileDir[containerTFileDirIndex[4][i]].c_str());
+            else outputFile.cd();
+            static_cast<std::shared_ptr<TH2D>>(containerTH2D[i]->Merge())->Clone()->Write();
+         }
+         for (long unsigned int i = 0; i < containerTH3D.size(); i++)
+         {
+            if (containerTFileDirIndex[5][i] != -999) outputFile.cd(
+               containerTFileDir[containerTFileDirIndex[5][i]].c_str());
+            else outputFile.cd();
+            static_cast<std::shared_ptr<TH3D>>(containerTH3D[i]->Merge())->Clone()->Write();
+         }
          Clear();
       }
    }
