@@ -30,8 +30,8 @@ exe_targets: AnalyzeHeatMaps AnalyzeEmbedding AnalyzeSingleTrack
 all: TCanvasPrinter GUIFit
 	@echo "All done"
 
-TCanvasPrinter: lib/TCanvasPrinter.o lib/TCanvasPrinter.so lib/libTCanvasPrinter.a
-GUIFit: lib/GUIFit.o lib/GUIFit.so lib/libGUIFit.a
+TCanvasPrinter: lib/TCanvasPrinter.o lib/libTCanvasPrinter.so
+GUIFit: lib/GUIFit.o lib/libGUIFit.so
 
 .SILENT:
 
@@ -48,13 +48,9 @@ lib/GUIFit.o: src/GUIFit.cpp | lib
 	@$(ECHO) Building CXX object $@
 	$(CXX) $< $(CXX_COMMON_LIB) -o $@ $(ROOT_INCLUDE) `$(ROOT_CONFIG) --glibs`
 
-lib/%.so: lib/%.o
+lib/lib%.so: lib/%.o
 	@$(ECHO) Building CXX shared library $@
 	$(CXX) -shared -o $@ $<
-
-lib/lib%.a: lib/%.o
-	@$(ECHO) Building CXX static library $@
-	ar rcs $@ $<
 
 # other
 
