@@ -30,8 +30,8 @@ exe_targets: AnalyzeHeatMaps AnalyzeEmbedding AnalyzeSingleTrack
 all: TCanvasPrinter GUIFit
 	@echo "All done"
 
-TCanvasPrinter: lib/TCanvasPrinter.o lib/libTCanvasPrinter.so
-GUIFit: lib/GUIFit.o lib/libGUIFit.so
+TCanvasPrinter: lib/libTCanvasPrinter.so
+GUIFit: lib/libGUIFit.so
 
 .SILENT:
 
