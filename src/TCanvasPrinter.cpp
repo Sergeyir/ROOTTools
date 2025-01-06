@@ -21,8 +21,8 @@
 #include "../include/TCanvasPrinter.hpp"
 
 //outputFileName is written without extention
-void PrintCanvasPDF (TCanvas *canv, const std::string& outputFileNameNoExt, 
-                     const bool printPng, const bool printPdf)
+void PrintCanvas (TCanvas *canv, const std::string& outputFileNameNoExt, 
+                  const bool printPng, const bool printPdf)
 {
    if (printPng) canv->SaveAs((outputFileNameNoExt + ".png").c_str());
    
