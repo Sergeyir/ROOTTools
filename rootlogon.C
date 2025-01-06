@@ -2,6 +2,6 @@
 {
    gInterpreter->AddIncludePath("include");
    
-   gSystem->Load("lib/GUIFit.so");
-   gSystem->Load("lib/TCanvasPrinter.so");
+   gSystem->Load("lib/libGUIFit.so");
+   gSystem->Load("lib/libTCanvasPrinter.so");
 }
