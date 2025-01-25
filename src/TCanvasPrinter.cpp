@@ -21,7 +21,25 @@
 #include "../include/TCanvasPrinter.hpp"
 
 //outputFileName is written without extention
-void PrintCanvas (TCanvas *canv, const std::string& outputFileNameNoExt, 
+void PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoExt, 
+                  const bool printPng, const bool printPdf)
+{
+   if (printPng) canv->SaveAs((outputFileNameNoExt + ".png").c_str());
+   
+   if (printPdf) 
+   {
+      canv->SaveAs((outputFileNameNoExt + ".tmp.pdf").c_str());
+      // ghostscript to shrink pdf size
+      system(("gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 \
+              -dNOPAUSE -dQUIET -dBATCH -dPrinted=false -sOutputFile=" + 
+              outputFileNameNoExt + ".pdf " + outputFileNameNoExt + ".tmp.pdf && rm " + 
+              outputFileNameNoExt + ".tmp.pdf").c_str());
+   }
+}
+
+// outputFileName is written without extention
+// converts pdf with ghostscript on a separate independent thread for faster processing
+void PrintCanvasMT(TCanvas *canv, const std::string& outputFileNameNoExt, 
                   const bool printPng, const bool printPdf)
 {
    if (printPng) canv->SaveAs((outputFileNameNoExt + ".png").c_str());
