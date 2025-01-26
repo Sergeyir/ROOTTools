@@ -23,15 +23,14 @@ endif
 
 # Rules without physical targets (secondary expansion for specific rules).
 .SECONDEXPANSION:
-.PHONY: all clean TCanvasPrinter GUIFit
+.PHONY: all clean TCanvasPrinter GUIFit FitTools
 
-exe_targets: AnalyzeHeatMaps AnalyzeEmbedding AnalyzeSingleTrack
-
-all: TCanvasPrinter GUIFit
+all: TCanvasPrinter GUIFit FitTools
 	@echo "All done"
 
 TCanvasPrinter: lib/libTCanvasPrinter.so
 GUIFit: lib/libGUIFit.so
+FitTools: lib/libFitTools.so
 
 .SILENT:
 
@@ -45,6 +44,10 @@ lib/TCanvasPrinter.o: src/TCanvasPrinter.cpp | lib
 	$(CXX) $< $(CXX_COMMON_LIB) -o $@ $(ROOT_INCLUDE) `$(ROOT_CONFIG) --glibs`
 
 lib/GUIFit.o: src/GUIFit.cpp | lib
+	@$(ECHO) Building CXX object $@
+	$(CXX) $< $(CXX_COMMON_LIB) -o $@ $(ROOT_INCLUDE) `$(ROOT_CONFIG) --glibs`
+
+lib/FitTools.o: src/FitTools.cpp | lib
 	@$(ECHO) Building CXX object $@
 	$(CXX) $< $(CXX_COMMON_LIB) -o $@ $(ROOT_INCLUDE) `$(ROOT_CONFIG) --glibs`
 

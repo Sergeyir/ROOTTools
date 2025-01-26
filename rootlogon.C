@@ -4,4 +4,5 @@
    
    gSystem->Load("lib/libGUIFit.so");
    gSystem->Load("lib/libTCanvasPrinter.so");
+   gSystem->Load("lib/libFitTools.so");
 }
