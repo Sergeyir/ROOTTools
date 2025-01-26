@@ -33,7 +33,8 @@ unsigned int GetNumberOfParameters(const std::string& fitFunc, const std::string
 
       i++;
    }
-   return numberOfParameters;
+   // since parameters numeration in root starts from 0 increment is needed
+   return numberOfParameters + 1;
 }
 
 #endif /* FIT_TOOLS_CPP */
