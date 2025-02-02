@@ -1,23 +1,17 @@
-// $SOURCE$
-//------------------------------------------------------------------------------------------------
-//                                    CheckTFileForNan realisation
-//------------------------------------------------------------------------------------------------
-// CheckTFileForNan
-//
-// ** Free and open code for anyone to use **
-//
-// Author: Sergei Antsupov
-// Email: antsupov0124@gmail.com
-//
-/**
- * Basic tool for checking root files (TFile) for Nan containing objects
+/** 
+ *  @file   CheckFileForNan.hpp 
+ *  @brief  Contains useful set of functions to work with TFile objects
+ *
+ *  Not yet finished
+ *
+ *  This file is a part of a project ROOTTools (https://github.com/Sergeyir/ROOTTools).
+ *
+ *  @author Sergei Antsupov (antsupov0124@gmail.com)
  **/
-//------------------------------------------------------------------------------------------------
+#include "../include/TFileTools.hpp"
 
-#include "../include/CheckTFileForNan.hpp"
-
-#ifndef CHECK_TFILE_NAN_CPP
-#define CHECK_TFILE_NAN_CPP
+#ifndef TFILE_TOOLS_CPP
+#define TFILE_TOOLS_CPP
 
 CheckFileForNan::CheckFileForNan(const std::string &fileName)
 {
@@ -80,4 +74,4 @@ void PrintNanInfo(const char *objName, const char *dirName)
    std::cout << std::endl;
 }
 
-#endif /* CHECK_TFILE_NAN_CPP */
+#endif /* TFILE_TOOLS_CPP */

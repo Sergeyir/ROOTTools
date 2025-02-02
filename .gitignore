@@ -1,4 +1,6 @@
 lib/
+html/
+latex/
 
 *:w
 *.log
