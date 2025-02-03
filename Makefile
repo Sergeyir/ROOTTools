@@ -28,11 +28,12 @@ endif
 all: ROOTTools
 	@echo "All done"
 
-ROOTTools: TCanvasTools FitTools GUIFit
+ROOTTools: TCanvasTools FitTools GUIFit TFileTools
 TCanvasTools: lib/libTCanvasTools.so
 FitTools: lib/libFitTools.so
 GUIFit: lib/libGUIFit.so
 ThrObj: lib/libThrObj.so
+TFileTools: lib/libTFileTools.so
 
 .SILENT:
 
@@ -54,6 +55,10 @@ lib/ThrObj.o: src/ThrObj.cpp | lib
 	$(CXX) $< $(CXX_COMMON_LIB) -o $@ $(ROOT_INCLUDE) `$(ROOT_CONFIG) --glibs`
 
 lib/FitTools.o: src/FitTools.cpp | lib
+	@$(ECHO) Building CXX object $@
+	$(CXX) $< $(CXX_COMMON_LIB) -o $@ $(ROOT_INCLUDE) `$(ROOT_CONFIG) --glibs`
+
+lib/TFileTools.o: src/TFileTools.cpp | lib
 	@$(ECHO) Building CXX object $@
 	$(CXX) $< $(CXX_COMMON_LIB) -o $@ $(ROOT_INCLUDE) `$(ROOT_CONFIG) --glibs`
 

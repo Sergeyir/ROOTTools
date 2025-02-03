@@ -6,4 +6,5 @@
    gSystem->Load("lib/libGUIFit.so");
    gSystem->Load("lib/libTCanvasPrinter.so");
    gSystem->Load("lib/libThrObj.so");
+   gSystem->Load("lib/libTFileTools.so");
 }

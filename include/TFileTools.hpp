@@ -13,22 +13,26 @@
 #define TFILE_TOOLS_HPP
 
 #include <string>
+#include <iostream>
+#include <fstream>
 
+#include "TROOT.h"
 #include "TKey.h"
-#include "TKeyList.h"
 #include "TFile.h"
 #include "TTree.h"
+#include "TH1.h"
+#include "TH2.h"
+#include "TH3.h"
 
-class CheckFileForNan()
+class CheckFileForNan
 {
    public:
    CheckFileForNan(const std::string &fileName);
-   bool ContainsNan(const char *dirName = "");
    bool ContainsNan(const std::string &dirName = "");
    
    private: 
    TFile *file;
-   void PrintNanInfo();
-}
+   void PrintNanInfo(const std::string& objName, const std::string& dirName);
+};
 
 #endif /* TFILE_TOOLS_HPP */
