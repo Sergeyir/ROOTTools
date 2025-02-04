@@ -1,38 +1,32 @@
-// $SOURCE$
-//------------------------------------------------------------------------------------------------
-//                                    GUIFit realisation
-//------------------------------------------------------------------------------------------------
-// GUIFit - graphical user interface for fits
-//
-// ** Free and open code for anyone to use **
-//
-// Author: Sergei Antsupov
-// Email: antsupov0124@gmail.com
-//
-/**
- * Basic tool for tweaking TF1 approximations of the form: foreground + background
+/** 
+ *  @file   GUIFit.cpp 
+ *  @brief  Contains class that can be used for providing GUI for improving the approximations of form "foreground + background" by tweaking the background
+ *
+ *  Not finished yet
+ *
+ *  This file is a part of a project ROOTTools (https://github.com/Sergeyir/ROOTTools).
+ *
+ *  @author Sergei Antsupov (antsupov0124@gmail.com)
  **/
-//------------------------------------------------------------------------------------------------
-
-#ifndef GUI_FIT_CPP
-#define GUI_FIT_CPP
+#ifndef ROOT_TOOLS_GUI_FIT_CPP
+#define ROOT_TOOLS_GUI_FIT_CPP
 
 #include "../include/GUIFit.hpp"
 
-GUIFit::GUIFit() 
+ROOTTools::GUIFit::GUIFit() 
 {
    bgPointsGr = new TGraph();
    currentActivePointGr = new TGraph();
 };
 
-void GUIFit::AddFitType(const std::string& outputFileName)
+void ROOTTools::GUIFit::AddFitType(const std::string& outputFileName)
 {
    system(("cp " + outputFileName + " " + outputFileName + ".backup").c_str());
    outputFilesNames.push_back(outputFileName);
    outputFiles.push_back(std::ofstream());
 }
 
-void GUIFit::AddHist(TH1F *dataHist, const std::string& xVal)
+void ROOTTools::GUIFit::AddHist(TH1F *dataHist, const std::string& xVal)
 {
    fits.resize(fits.size()+1);
    bgFits.resize(bgFits.size()+1);
@@ -43,7 +37,7 @@ void GUIFit::AddHist(TH1F *dataHist, const std::string& xVal)
    histsXValues.push_back(xVal);
 }
 
-void GUIFit::AddFit(TF1 *fit, TF1 *bgFit, const int bgFitParStartNumber, const unsigned int histNumber)
+void ROOTTools::GUIFit::AddFit(TF1 *fit, TF1 *bgFit, const int bgFitParStartNumber, const unsigned int histNumber)
 {
    fits[histNumber].push_back((TF1 *) fit->Clone());
    bgFits[histNumber].push_back((TF1 *) bgFit->Clone());
@@ -56,7 +50,7 @@ void GUIFit::AddFit(TF1 *fit, TF1 *bgFit, const int bgFitParStartNumber, const u
    }
 }
 
-void GUIFit::AddFit(TF1 *fit, TF1 *bgFit, Double_t (*fcn)(Double_t *, Double_t *), const int bgFitParStartNumber, const unsigned int histNumber)
+void ROOTTools::GUIFit::AddFit(TF1 *fit, TF1 *bgFit, Double_t (*fcn)(Double_t *, Double_t *), const int bgFitParStartNumber, const unsigned int histNumber)
 {
    double xMin, xMax;
    fit->GetRange(xMin, xMax);
@@ -83,18 +77,18 @@ void GUIFit::AddFit(TF1 *fit, TF1 *bgFit, Double_t (*fcn)(Double_t *, Double_t *
 }
 
 //Adding fit for the last hist added
-void GUIFit::AddFit(TF1 *fit, TF1 *bgFit, const int bgFitParStartNumber)
+void ROOTTools::GUIFit::AddFit(TF1 *fit, TF1 *bgFit, const int bgFitParStartNumber)
 {
    AddFit(fit, bgFit, bgFitParStartNumber, hists.size()-1);
 }
 
 //Adding fit for the last hist added
-void GUIFit::AddFit(TF1 *fit, TF1 *bgFit, Double_t (*fcn)(Double_t *, Double_t *), const int bgFitParStartNumber)
+void ROOTTools::GUIFit::AddFit(TF1 *fit, TF1 *bgFit, Double_t (*fcn)(Double_t *, Double_t *), const int bgFitParStartNumber)
 {
    AddFit(fit, bgFit, fcn, bgFitParStartNumber, hists.size()-1);
 }
 
-void GUIFit::Start()
+void ROOTTools::GUIFit::Start()
 {
    const int event = gPad->GetEvent();
    const int px = gPad->GetEventX();
@@ -256,13 +250,13 @@ void GUIFit::Start()
    Draw(false, false);
 };
 
-GUIFit::~GUIFit() 
+ROOTTools::GUIFit::~GUIFit() 
 {
    delete bgPointsGr;
    delete currentActivePointGr;
 };
 
-void GUIFit::SetBgPoints()
+void ROOTTools::GUIFit::SetBgPoints()
 {
    double xMin, xMax;
    fits[currentHistId][currentFitModeId-1]->GetRange(xMin, xMax);
@@ -291,7 +285,7 @@ void GUIFit::SetBgPoints()
       bgFits[currentHistId][currentFitModeId-1]->Eval(xMax));
 }
 
-void GUIFit::SetActiveFit()
+void ROOTTools::GUIFit::SetActiveFit()
 {
    bool isActiveSetCheck = false;
    
@@ -324,7 +318,7 @@ void GUIFit::SetActiveFit()
    }
 }
 
-void GUIFit::PerformFreeFit()
+void ROOTTools::GUIFit::PerformFreeFit()
 {
    if (currentFitModeId == 0 || currentFitModeId > fits[currentHistId].size()) return;
    
@@ -346,7 +340,7 @@ void GUIFit::PerformFreeFit()
    SetBgPoints();
 }
 
-void GUIFit::ResetFit()
+void ROOTTools::GUIFit::ResetFit()
 {
    if (currentFitModeId == 0 || currentFitModeId > fits[currentHistId].size()) return;
    
@@ -390,12 +384,12 @@ void GUIFit::ResetFit()
       fits[currentHistId][currentFitModeId-1], "RQMN");
 }
 
-bool GUIFit::IsActivePoint() 
+bool ROOTTools::GUIFit::IsActivePoint() 
 {
    return isFitPointActive;
 }
 
-void GUIFit::ActivatePoint(const int pointNumber, const double x, const double y) 
+void ROOTTools::GUIFit::ActivatePoint(const int pointNumber, const double x, const double y) 
 {
    isFitPointActive = true; 
    currentActivePointId = pointNumber;
@@ -403,7 +397,7 @@ void GUIFit::ActivatePoint(const int pointNumber, const double x, const double y
    currentActivePointGr->SetPointY(0, y);
 }
 
-void GUIFit::DeactivatePoint() 
+void ROOTTools::GUIFit::DeactivatePoint() 
 {
    isFitPointActive = false; 
    currentActivePointId = -1;
@@ -411,7 +405,7 @@ void GUIFit::DeactivatePoint()
    currentActivePointGr->SetPointY(0, -1.);
 }
 
-void GUIFit::PrintHelp()
+void ROOTTools::GUIFit::PrintHelp()
 {
    std::cout << std::endl;
 
@@ -442,7 +436,7 @@ void GUIFit::PrintHelp()
    std::cout << std::endl;
 }
 
-void GUIFit::Draw(bool doDrawHist, bool isFirstDraw)
+void ROOTTools::GUIFit::Draw(bool doDrawHist, bool isFirstDraw)
 {   
    if (isFirstDraw)
    {
@@ -506,4 +500,4 @@ void GUIFit::Draw(bool doDrawHist, bool isFirstDraw)
    gPad->GetFrame()->SetBit(TBox::kCannotMove);
 }
 
-#endif /*GUI_FIT_CPP*/
+#endif /* ROOT_TOOLS_GUI_FIT_CPP */

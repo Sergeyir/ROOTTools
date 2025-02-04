@@ -2,15 +2,15 @@
  *  @file   CheckFileForNan.hpp 
  *  @brief  Contains useful set of functions to work with TFile objects
  *
- *  Not yet finished
+ *  Not finished yet
  *
  *  This file is a part of a project ROOTTools (https://github.com/Sergeyir/ROOTTools).
  *
  *  @author Sergei Antsupov (antsupov0124@gmail.com)
  **/
 
-#ifndef TFILE_TOOLS_HPP
-#define TFILE_TOOLS_HPP
+#ifndef ROOT_TOOLS_TFILE_TOOLS_HPP
+#define ROOT_TOOLS_TFILE_TOOLS_HPP
 
 #include <string>
 #include <iostream>
@@ -24,15 +24,23 @@
 #include "TH2.h"
 #include "TH3.h"
 
-class CheckFileForNan
+/// @namespace ROOTTools ROOTTools namespace
+namespace ROOTTools
 {
-   public:
-   CheckFileForNan(const std::string &fileName);
-   bool ContainsNan(const std::string &dirName = "");
-   
-   private: 
-   TFile *file;
-   void PrintNanInfo(const std::string& objName, const std::string& dirName);
-};
+   /*! @class CheckFileForNan
+    * @brief class CheckFileForNan can be used to check if the file contains objects with Nan values
+    *
+    * Not finished yet
+    */
+   class CheckFileForNan
+   {
+      public:
+      CheckFileForNan(const std::string &fileName);
+      bool ContainsNan(const std::string &dirName = "");
+      protected: 
+      TFile *file;
+      void PrintNanInfo(const std::string& objName, const std::string& dirName);
+   };
+}
 
-#endif /* TFILE_TOOLS_HPP */
+#endif /* ROOT_TOOLS_TFILE_TOOLS_HPP */

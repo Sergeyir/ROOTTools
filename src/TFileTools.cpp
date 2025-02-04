@@ -2,7 +2,7 @@
  *  @file   CheckFileForNan.hpp 
  *  @brief  Contains useful set of functions to work with TFile objects
  *
- *  Not yet finished
+ *  Not finished yet
  *
  *  This file is a part of a project ROOTTools (https://github.com/Sergeyir/ROOTTools).
  *
@@ -10,17 +10,17 @@
  **/
 #include "../include/TFileTools.hpp"
 
-#ifndef TFILE_TOOLS_CPP
-#define TFILE_TOOLS_CPP
+#ifndef ROOT_TOOLS_TFILE_TOOLS_CPP
+#define ROOT_TOOLS_TFILE_TOOLS_CPP
 
-CheckFileForNan::CheckFileForNan(const std::string &fileName)
+ROOTTools::CheckFileForNan::CheckFileForNan(const std::string &fileName)
 {
    if (!std::ifstream(fileName).is_open()) std::cout << "Error: File " << fileName <<
                                                      " does not exist" << std::endl;
    file = TFile::Open(fileName.c_str());
 }
 
-bool CheckFileForNan::ContainsNan(const std::string& dirName)
+bool ROOTTools::CheckFileForNan::ContainsNan(const std::string& dirName)
 {
    bool containsNan = false;
 
@@ -81,11 +81,11 @@ bool CheckFileForNan::ContainsNan(const std::string& dirName)
    return containsNan;
 }
 
-void PrintNanInfo(const std::string& objName, const std::string& dirName)
+void ROOTTools::PrintNanInfo(const std::string& objName, const std::string& dirName)
 {
    std::cout << "Info: object " << objName << " contains NaN";
    if (dirName != "") std::cout << " in directory " << dirName;
    std::cout << std::endl;
 }
 
-#endif /* TFILE_TOOLS_CPP */
+#endif /* ROOT_TOOLS_TFILE_TOOLS_CPP */

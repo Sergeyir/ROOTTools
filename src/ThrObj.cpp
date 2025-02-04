@@ -72,6 +72,30 @@ std::shared_ptr<TH3D> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObjec
    return containerTH3D.back()->Get();
 };
 
+std::shared_ptr<TH1L> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH1L> *hist, 
+                                                            const std::string& directory) 
+{
+   containerTH1L.push_back(std::unique_ptr<ROOT::TThreadedObject<TH1L>>(hist));
+   AddTFileDirectory(directory, 6);
+   return containerTH1L.back()->Get();
+};
+
+std::shared_ptr<TH2L> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH2L> *hist, 
+                                                            const std::string& directory) 
+{
+   containerTH2L.push_back(std::unique_ptr<ROOT::TThreadedObject<TH2L>>(hist));
+   AddTFileDirectory(directory, 7);
+   return containerTH2L.back()->Get();
+};
+
+std::shared_ptr<TH3L> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH3L> *hist, 
+                                                            const std::string& directory) 
+{
+   containerTH3L.push_back(std::unique_ptr<ROOT::TThreadedObject<TH3L>>(hist));
+   AddTFileDirectory(directory, 8);
+   return containerTH3L.back()->Get();
+};
+
 void ROOTTools::ThrObjHolder::Clear()
 {
    containerTH1F.clear();
@@ -81,6 +105,10 @@ void ROOTTools::ThrObjHolder::Clear()
    containerTH1D.clear();
    containerTH2D.clear();
    containerTH3D.clear();
+
+   containerTH1L.clear();
+   containerTH2L.clear();
+   containerTH3L.clear();
    
    containerTFileDir.clear();
    for (auto& vec : containerTFileDir)
@@ -112,124 +140,121 @@ void ROOTTools::ThrObjHolder::AddTFileDirectory(const std::string& directory, co
 
 void ROOTTools::ThrObjHolder::Write()
 {
-   for (auto& thrObj : containerTH1F) 
+   if (containerTFileDir.size() == 0) Write();
+   else
    {
-      thrObj->Merge()->Write();
+      for (std::string dir : containerTFileDir)
+      {
+         gDirectory->mkdir(dir.c_str());
+      }
+      for (long unsigned int i = 0; i < containerTH1F.size(); i++)
+      {
+         if (containerTFileDirIndex[0][i] != -999) gDirectory->cd(
+            containerTFileDir[containerTFileDirIndex[0][i]].c_str());
+         else gDirectory->cd();
+         static_cast<std::shared_ptr<TH1F>>(containerTH1F[i]->Merge())->Clone()->Write();
+      }
+      for (long unsigned int i = 0; i < containerTH2F.size(); i++)
+      {
+         if (containerTFileDirIndex[1][i] != -999) gDirectory->cd(
+            containerTFileDir[containerTFileDirIndex[1][i]].c_str());
+         else gDirectory->cd();
+         static_cast<std::shared_ptr<TH2F>>(containerTH2F[i]->Merge())->Clone()->Write();
+      }
+      for (long unsigned int i = 0; i < containerTH3F.size(); i++)
+      {
+         if (containerTFileDirIndex[2][i] != -999) gDirectory->cd(
+            containerTFileDir[containerTFileDirIndex[2][i]].c_str());
+         else gDirectory->cd();
+         static_cast<std::shared_ptr<TH3F>>(containerTH3F[i]->Merge())->Clone()->Write();
+      }
+      for (long unsigned int i = 0; i < containerTH1D.size(); i++)
+      {
+         if (containerTFileDirIndex[3][i] != -999) gDirectory->cd(
+            containerTFileDir[containerTFileDirIndex[3][i]].c_str());
+         else gDirectory->cd();
+         static_cast<std::shared_ptr<TH1D>>(containerTH1D[i]->Merge())->Clone()->Write();
+      }
+      for (long unsigned int i = 0; i < containerTH2D.size(); i++)
+      {
+         if (containerTFileDirIndex[4][i] != -999) gDirectory->cd(
+            containerTFileDir[containerTFileDirIndex[4][i]].c_str());
+         else gDirectory->cd();
+         static_cast<std::shared_ptr<TH2D>>(containerTH2D[i]->Merge())->Clone()->Write();
+      }
+      for (long unsigned int i = 0; i < containerTH3D.size(); i++)
+      {
+         if (containerTFileDirIndex[5][i] != -999) gDirectory->cd(
+            containerTFileDir[containerTFileDirIndex[5][i]].c_str());
+         else gDirectory->cd();
+         static_cast<std::shared_ptr<TH3D>>(containerTH3D[i]->Merge())->Clone()->Write();
+      }
+      for (long unsigned int i = 0; i < containerTH1L.size(); i++)
+      {
+         if (containerTFileDirIndex[6][i] != -999) gDirectory->cd(
+            containerTFileDir[containerTFileDirIndex[6][i]].c_str());
+         else gDirectory->cd();
+         static_cast<std::shared_ptr<TH1L>>(containerTH1L[i]->Merge())->Clone()->Write();
+      }
+      for (long unsigned int i = 0; i < containerTH2L.size(); i++)
+      {
+         if (containerTFileDirIndex[7][i] != -999) gDirectory->cd(
+            containerTFileDir[containerTFileDirIndex[7][i]].c_str());
+         else gDirectory->cd();
+         static_cast<std::shared_ptr<TH2L>>(containerTH2L[i]->Merge())->Clone()->Write();
+      }
+      for (long unsigned int i = 0; i < containerTH3L.size(); i++)
+      {
+         if (containerTFileDirIndex[8][i] != -999) gDirectory->cd(
+            containerTFileDir[containerTFileDirIndex[8][i]].c_str());
+         else gDirectory->cd();
+         static_cast<std::shared_ptr<TH3L>>(containerTH3L[i]->Merge())->Clone()->Write();
+      }
+      Clear();
    }
-   for (auto& thrObj : containerTH2F) 
-   {
-      thrObj->Merge()->Write();
-   }
-   for (auto& thrObj : containerTH3F) 
-   {
-      thrObj->Merge()->Write();
-   }
-   for (auto& thrObj : containerTH1D) 
-   {
-      thrObj->Merge()->Write();
-   }
-   for (auto& thrObj : containerTH2D) 
-   {
-      thrObj->Merge()->Write();
-   }
-   for (auto& thrObj : containerTH3D) 
-   {
-      thrObj->Merge()->Write();
-   }
-   
-   Clear();
 }
 
 void ROOTTools::ThrObjHolder::Write(const std::string& outputFileName)
 {
    TFile outputFile(outputFileName.c_str(), "RECREATE");
    outputFile.cd();
-   if (containerTFileDir.size() == 0) Write();
-   else
-   {
-      for (std::string dir : containerTFileDir)
-      {
-         outputFile.mkdir(dir.c_str());
-      }
-      for (long unsigned int i = 0; i < containerTH1F.size(); i++)
-      {
-         if (containerTFileDirIndex[0][i] != -999) outputFile.cd(
-            containerTFileDir[containerTFileDirIndex[0][i]].c_str());
-         else outputFile.cd();
-         static_cast<std::shared_ptr<TH1F>>(containerTH1F[i]->Merge())->Clone()->Write();
-      }
-      for (long unsigned int i = 0; i < containerTH2F.size(); i++)
-      {
-         if (containerTFileDirIndex[1][i] != -999) outputFile.cd(
-            containerTFileDir[containerTFileDirIndex[1][i]].c_str());
-         else outputFile.cd();
-         static_cast<std::shared_ptr<TH2F>>(containerTH2F[i]->Merge())->Clone()->Write();
-      }
-      for (long unsigned int i = 0; i < containerTH3F.size(); i++)
-      {
-         if (containerTFileDirIndex[2][i] != -999) outputFile.cd(
-            containerTFileDir[containerTFileDirIndex[2][i]].c_str());
-         else outputFile.cd();
-         static_cast<std::shared_ptr<TH3F>>(containerTH3F[i]->Merge())->Clone()->Write();
-      }
-      for (long unsigned int i = 0; i < containerTH1D.size(); i++)
-      {
-         if (containerTFileDirIndex[3][i] != -999) outputFile.cd(
-            containerTFileDir[containerTFileDirIndex[3][i]].c_str());
-         else outputFile.cd();
-         static_cast<std::shared_ptr<TH1D>>(containerTH1D[i]->Merge())->Clone()->Write();
-      }
-      for (long unsigned int i = 0; i < containerTH2D.size(); i++)
-      {
-         if (containerTFileDirIndex[4][i] != -999) outputFile.cd(
-            containerTFileDir[containerTFileDirIndex[4][i]].c_str());
-         else outputFile.cd();
-         static_cast<std::shared_ptr<TH2D>>(containerTH2D[i]->Merge())->Clone()->Write();
-      }
-      for (long unsigned int i = 0; i < containerTH3D.size(); i++)
-      {
-         if (containerTFileDirIndex[5][i] != -999) outputFile.cd(
-            containerTFileDir[containerTFileDirIndex[5][i]].c_str());
-         else outputFile.cd();
-         static_cast<std::shared_ptr<TH3D>>(containerTH3D[i]->Merge())->Clone()->Write();
-      }
-      Clear();
-   }
+   Write();
+   outputFile.Close();
 }
  
 template<typename T>
 ROOTTools::ThrObj<T>::ThrObj(const std::string& name, const std::string& title,
-                             const int xnbins, const double xmin, const double xmax,
+                             const int xNBins, const double xLow, const double xUp,
                              const std::string& fileDirectory)
 {
    objPtr = ThrObjHolder::AddHistogram(new ROOT::TThreadedObject<T>(name.c_str(), title.c_str(), 
-                                                                    xnbins, xmin, xmax), 
+                                                                    xNBins, xLow, xUp), 
                                        fileDirectory);
 }
 
 template<typename T>
 ROOTTools::ThrObj<T>::ThrObj(const std::string& name, const std::string& title,
-                             const int xnbins, const double xmin, const double xmax, 
-                             const int ynbins, const double ymin, const double ymax,
+                             const int xNBins, const double xLow, const double xUp, 
+                             const int yNBins, const double yLow, const double yUp,
                              const std::string& fileDirectory)
 {
    objPtr = ThrObjHolder::AddHistogram(new ROOT::TThreadedObject<T>(name.c_str(), title.c_str(), 
-                                                                    xnbins, xmin, xmax, 
-                                                                    ynbins, ymin, ymax),
+                                                                    xNBins, xLow, xUp, 
+                                                                    yNBins, yLow, yUp),
                                        fileDirectory);
 }
 
 template<typename T>
 ROOTTools::ThrObj<T>::ThrObj(const std::string& name, const std::string& title,
-                             const int xnbins, const double xmin, const double xmax, 
-                             const int ynbins, const double ymin, const double ymax,
-                             const int znbins, const double zmin, const double zmax,
+                             const int xNBins, const double xLow, const double xUp, 
+                             const int yNBins, const double yLow, const double yUp,
+                             const int zNBins, const double zLow, const double zUp,
                              const std::string& fileDirectory)
 {
    objPtr = ThrObjHolder::AddHistogram(new ROOT::TThreadedObject<T>(name.c_str(), title.c_str(), 
-                                                                    xnbins, xmin, xmax, 
-                                                                    ynbins, ymin, ymax,
-                                                                    znbins, zmin, zmax),
+                                                                    xNBins, xLow, xUp, 
+                                                                    yNBins, yLow, yUp,
+                                                                    zNBins, zLow, zUp),
                                        fileDirectory);
 }
 
@@ -264,6 +289,18 @@ template ROOTTools::ThrObj<TH3D>::ThrObj(const std::string&, const std::string&,
                                          const int, const double, const double,
                                          const int, const double, const double,
                                          const std::string&);
+template ROOTTools::ThrObj<TH1L>::ThrObj(const std::string&, const std::string&, 
+                                         const int, const double, const double,
+                                         const std::string&);
+template ROOTTools::ThrObj<TH2L>::ThrObj(const std::string&, const std::string&, 
+                                         const int, const double, const double,
+                                         const int, const double, const double,
+                                         const std::string&);
+template ROOTTools::ThrObj<TH3L>::ThrObj(const std::string&, const std::string&, 
+                                         const int, const double, const double,
+                                         const int, const double, const double,
+                                         const int, const double, const double,
+                                         const std::string&);
 
 // explicit instantiations of ROOTTools::ThrObj::Get() for different types of histograms
 template std::shared_ptr<TH1F> ROOTTools::ThrObj<TH1F>::Get();
@@ -272,5 +309,8 @@ template std::shared_ptr<TH3F> ROOTTools::ThrObj<TH3F>::Get();
 template std::shared_ptr<TH1D> ROOTTools::ThrObj<TH1D>::Get();
 template std::shared_ptr<TH2D> ROOTTools::ThrObj<TH2D>::Get();
 template std::shared_ptr<TH3D> ROOTTools::ThrObj<TH3D>::Get();
+template std::shared_ptr<TH1L> ROOTTools::ThrObj<TH1L>::Get();
+template std::shared_ptr<TH2L> ROOTTools::ThrObj<TH2L>::Get();
+template std::shared_ptr<TH3L> ROOTTools::ThrObj<TH3L>::Get();
 
 #endif /* ROOT_TOOLS_THR_OBJ_CPP */

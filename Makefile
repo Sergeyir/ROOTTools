@@ -28,7 +28,7 @@ endif
 all: ROOTTools
 	@echo "All done"
 
-ROOTTools: TCanvasTools FitTools GUIFit TFileTools
+ROOTTools: TCanvasTools FitTools ThrObj
 TCanvasTools: lib/libTCanvasTools.so
 FitTools: lib/libFitTools.so
 GUIFit: lib/libGUIFit.so
