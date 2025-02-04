@@ -1,12 +1,12 @@
 # Overview
 
-This is a simple set of useful classes and functions to use in any cpp application that uses [ROOT]{https://root.cern/} applications on linux.
+This is a simple set of useful classes and functions to use in any cpp application that uses [ROOT](https://root.cern/) applications on linux.
 
 # Requirements
 
 - GNU GCC++17 or newer.
 - ghostscript - can be installed with any package manager.
-- [ROOT]{https://root.cern/} V.6.00 or newer compiled with c++17 or newer.
+- [ROOT](https://root.cern/) V.6.00 or newer compiled with c++17 or newer.
 
 To check version of c++ that was used for compilation of ROOT run (you may need to head in bin directory in ROOT install directory if ROOT was not intalled with package manager)
 
@@ -14,7 +14,7 @@ To check version of c++ that was used for compilation of ROOT run (you may need 
 root-config --cflags
 ```
 
-If [ROOT6]{https://root.cern/} was not installed with a package manager on your system you also need to set $ROOT_INCLUDE and $ROOT_CONFIG in your profile (.bashrc, .zshrc or other) or configure the paths in Makefile.am.
+If [ROOT6](https://root.cern/) was not installed with a package manager on your system you also need to set $ROOT_INCLUDE and $ROOT_CONFIG in your profile (.bashrc, .zshrc or other) or configure the paths in Makefile.am.
 
 # Installing
 
