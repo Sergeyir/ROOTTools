@@ -11,7 +11,7 @@
 #ifndef ROOT_TOOLS_TF1_TOOLS_CPP
 #define ROOT_TOOLS_TF1_TOOLS_CPP
 
-#include "ROOTTools/TF1Tools.hpp"
+#include "TF1Tools.hpp"
 
 unsigned int ROOTTools::GetNumberOfParameters(const std::string& formula, const std::string& parName)
 {

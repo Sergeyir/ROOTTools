@@ -11,7 +11,7 @@
 #ifndef ROOT_TOOLS_GUI_FIT_CPP
 #define ROOT_TOOLS_GUI_FIT_CPP
 
-#include "ROOTTools/GUIFit.hpp"
+#include "GUIFit.hpp"
 
 ROOTTools::GUIFit::GUIFit() 
 {

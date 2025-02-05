@@ -22,7 +22,7 @@
 
 #include "ROOT/TThreadedObject.hxx"
 
-#include "ROOTTools/ThrObj.hpp"
+#include "ThrObj.hpp"
 
 std::shared_ptr<TH1F> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH1F> *hist, 
                                                             const std::string& directory) 

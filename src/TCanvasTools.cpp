@@ -11,7 +11,7 @@
 #ifndef ROOT_TOOLS_TCANVAS_TOOLS_CPP
 #define ROOT_TOOLS_TCANVAS_TOOLS_CPP
 
-#include "ROOTTools/TCanvasTools.hpp"
+#include "TCanvasTools.hpp"
 
 void ROOTTools::PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoExt, 
                             const bool printPng, const bool compressPdf, 
