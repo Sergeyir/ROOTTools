@@ -2,7 +2,7 @@
  *  @file   CheckFileForNan.hpp 
  *  @brief  Contains useful set of functions to work with TFile objects
  *
- *  Not finished yet
+ *  Not finished yet; to be added to ROOTTools.hpp after completion
  *
  *  This file is a part of a project ROOTTools (https://github.com/Sergeyir/ROOTTools).
  *

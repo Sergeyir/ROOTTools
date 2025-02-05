@@ -1,22 +1,46 @@
 /** 
- *  @file   TCanvasTools.hpp 
- *  @brief  Contains useful set of functions that simplify work with TCanvas
+ *  @file   ROOTObjTools.hpp 
+ *  @brief  Contains useful set of functions that simplify work with various ROOT classes such as TCanvas, TF1, TFile, etc.
  *
- *  In order to use these functions libTCanvasTools.so must be loaded
+ *  In order to use these functions libROOTObjTools.so must be loaded
  *
  *  This file is a part of a project ROOTTools (https://github.com/Sergeyir/ROOTTools).
  *
  *  @author Sergei Antsupov (antsupov0124@gmail.com)
  **/
-#ifndef ROOT_TOOLS_TCANVAS_TOOLS_HPP
-#define ROOT_TOOLS_TCANVAS_TOOLS_HPP
+#ifndef ROOT_OBJ_TOOLS_HPP
+#define ROOT_OBJ_TOOLS_HPP
 
 #include <string>
+
+#include "TF1.h"
 #include "TCanvas.h"
 
 /// @namespace ROOTTools ROOTTools namespace
 namespace ROOTTools
 {
+   /*! @brief Return the biggest parameter index + 1 in formula of labmda function that was used in TF1 constructor
+    * @param[in] formula formula that was used to define fit function in TF1. The formula must be a labmda expression (see examples below).
+    * @param[in] parName parameter name in formula
+    *
+    * Example:
+      @code
+      printf("%u\n", ROOTTools::GetNumberOfParameters("[](double *x, double *p) {return p[0] + p[1]*x[0] + p[2]*x[0]*x[0];}"));
+      printf("%u\n", ROOTTools::GetNumberOfParameters("[](double *x, double *p) {return p[0] + p[3]*x[0]*x[0];}"));
+      printf("%u\n", ROOTTools::GetNumberOfParameters("[](double *x, double *p) {return p[0] + p[1]*pow(x, p[2]);}"));
+      printf("%u\n", ROOTTools::GetNumberOfParameters("[](double *x, double *par) {return par[0]*x + par[1]*x[0]*x[0];}", "par"));
+      @endcode
+      Result:
+      \verbatim
+      3
+      4
+      2
+      3
+      \endverbatim
+    */
+   unsigned int GetNumberOfParameters(const std::string& formula, 
+                                      const std::string& parName = "p");
+
    /*! @brief Saves TCanvas in .pdf format and additionaly in .png format if specified.
     * @param[in] canv TCanvas object that will be written
     * @param[in] outputFileNameNoExt name of the output file without extention (such as ".pdf" or ".png"). Extentions of the files will be added automaticaly
@@ -29,4 +53,4 @@ namespace ROOTTools
                     const bool parallelCompression = true);
 }
 
-#endif /* ROOT_TOOLS_TCANVAS_TOOLS_HPP */
+#endif /* ROOT_OBJ_TOOLS_HPP */
