@@ -1,6 +1,6 @@
 /** 
  *  @file   ThrObj.hpp 
- *  @brief  Contains useful set of containers to simplify and/or speed up the process of writing multithreaded applications with ROOT
+ *  @brief  Contains useful set of containers to simplify and/or speed up the process of writing multithreaded applications with ROOT TThreadedObject<T> objects
  *
  *  In order to use these containers libThrObj.so must be loaded
  *

@@ -1,6 +1,6 @@
 /** 
- *  @file   ROOTObjTools.cpp 
- *  @brief  Contains useful set of functions that simplify work with various ROOT classes such as TCanvas, TF1, TFile, etc.
+ *  @file   TF1Tools.cpp 
+ *  @brief  Contains useful set of functions that simplify work with ROOT's TF1 objects
  *
  *  In order to use these functions libROOTObjTools.so must be loaded
  *
@@ -8,10 +8,10 @@
  *
  *  @author Sergei Antsupov (antsupov0124@gmail.com)
  **/
-#ifndef ROOT_OBJ_TOOLS_CPP
-#define ROOT_OBJ_TOOLS_CPP
+#ifndef ROOT_TOOLS_TF1_TOOLS_CPP
+#define ROOT_TOOLS_TF1_TOOLS_CPP
 
-#include "../include/ROOTObjTools.hpp"
+#include "ROOTTools/TF1Tools.hpp"
 
 unsigned int ROOTTools::GetNumberOfParameters(const std::string& formula, const std::string& parName)
 {
@@ -47,34 +47,4 @@ unsigned int ROOTTools::GetNumberOfParameters(const std::string& formula, const 
    return numberOfParameters + 1;
 }
 
-void ROOTTools::PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoExt, 
-                            const bool printPng, const bool compressPdf, 
-                            const bool parallelCompression)
-{
-   if (printPng) canv->SaveAs((outputFileNameNoExt + ".png").c_str());
-   
-   if (compressPdf) 
-   {
-      // temporary .pdf file; will be removed later
-      canv->SaveAs((outputFileNameNoExt + ".tmp.pdf").c_str());
-      
-      // ghostscript command to reduce pdf size and remove temporary .pdf file
-      std::string compressionCommand = 
-         "ghostscript -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 \
-          -dNOPAUSE -dQUIET -dBATCH -dPrinted=false \
-          -sOutputFile=" + outputFileNameNoExt + ".pdf " + 
-         outputFileNameNoExt + ".tmp.pdf && rm " + 
-         outputFileNameNoExt + ".tmp.pdf";
-      
-      // option to detach the command call from the current process
-      if (parallelCompression) compressionCommand += " &";
-      
-      system(compressionCommand.c_str());
-   }
-   else
-   {
-      canv->SaveAs((outputFileNameNoExt + ".pdf").c_str());
-   }
-}
-
-#endif /* ROOT_OBJ_TOOLS_CPP */
+#endif /* ROOT_TOOLS_TF1_TOOLS_CPP */

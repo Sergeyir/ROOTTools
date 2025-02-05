@@ -1,6 +1,6 @@
 /** 
  *  @file   ThrObj.cpp 
- *  @brief  Contains useful set of containers to simplify and/or speed up the process of writing multithreaded applications with ROOT
+ *  @brief  Contains useful set of containers to simplify and/or speed up the process of writing multithreaded applications with ROOT TThreadedObject<T> objects
  *
  *  In order to use these containers libThrObj.so must be loaded
  *
@@ -22,7 +22,7 @@
 
 #include "ROOT/TThreadedObject.hxx"
 
-#include "../include/ThrObj.hpp"
+#include "ROOTTools/ThrObj.hpp"
 
 std::shared_ptr<TH1F> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH1F> *hist, 
                                                             const std::string& directory) 

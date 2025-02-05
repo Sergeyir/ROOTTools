@@ -28,8 +28,9 @@ endif
 all: ROOTTools
 	@echo "All done"
 
-ROOTTools: ROOTObjTools ThrObj
-ROOTObjTools: lib/libROOTObjTools.so
+ROOTTools: TF1Tools TCanvasTools ThrObj
+TCanvasTools: lib/libTF1Tools.so
+TF1Tools: lib/libTCanvasTools.so
 GUIFit: lib/libGUIFit.so
 ThrObj: lib/libThrObj.so
 TFileTools: lib/libTFileTools.so
@@ -41,21 +42,9 @@ TFileTools: lib/libTFileTools.so
 lib:
 	mkdir -p $@
 
-lib/ROOTObjTools.o: src/ROOTObjTools.cpp | lib
+lib/%.o: src/%.cpp | lib
 	@$(ECHO) Building CXX object $@
-	$(CXX) $< $(CXX_COMMON_LIB) -o $@ $(ROOT_INCLUDE) `$(ROOT_CONFIG) --glibs`
-
-lib/GUIFit.o: src/GUIFit.cpp | lib
-	@$(ECHO) Building CXX object $@
-	$(CXX) $< $(CXX_COMMON_LIB) -o $@ $(ROOT_INCLUDE) `$(ROOT_CONFIG) --glibs`
-
-lib/ThrObj.o: src/ThrObj.cpp | lib
-	@$(ECHO) Building CXX object $@
-	$(CXX) $< $(CXX_COMMON_LIB) -o $@ $(ROOT_INCLUDE) `$(ROOT_CONFIG) --glibs`
-
-lib/TFileTools.o: src/TFileTools.cpp | lib
-	@$(ECHO) Building CXX object $@
-	$(CXX) $< $(CXX_COMMON_LIB) -o $@ $(ROOT_INCLUDE) `$(ROOT_CONFIG) --glibs`
+	$(CXX) $< $(CXX_COMMON_LIB) -o $@ $(ROOT_TOOLS_INCLUDE) $(ROOT_INCLUDE) `$(ROOT_CONFIG) --glibs`
 
 lib/lib%.so: lib/%.o
 	@$(ECHO) Building CXX shared library $@

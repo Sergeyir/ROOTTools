@@ -8,7 +8,7 @@
  *
  *  @author Sergei Antsupov (antsupov0124@gmail.com)
  **/
-#include "../include/TFileTools.hpp"
+#include "ROOTTools/TFileTools.hpp"
 
 #ifndef ROOT_TOOLS_TFILE_TOOLS_CPP
 #define ROOT_TOOLS_TFILE_TOOLS_CPP
