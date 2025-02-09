@@ -38,7 +38,7 @@ namespace ROOTTools
 
       // other functions and variables below are not intended for the user 
       // and are called/accessed automaticaly
-      
+
       /// Not intended for user. Adds TH1F histogram to the corresponding container; this function is called in ThrObj constructor
       std::shared_ptr<TH1F> AddHistogram(ROOT::TThreadedObject<TH1F> *hist, 
                                          const std::string& directory);

@@ -38,9 +38,9 @@ namespace ROOTTools
    class GUIFit
    {
       public:
-      
+
       GUIFit();
-      
+
       void AddFitType(const std::string& outputFileName);
       void AddHist(TH1F *dataHist, const std::string& xVal);
       void AddFit(TF1 *fit, TF1 *bgFit, const int bgFitParStartNumber, const unsigned int histNumber);
@@ -52,7 +52,7 @@ namespace ROOTTools
       void Start();
 
       ~GUIFit();
-      
+
       private:
 
       void SetBgPoints();
@@ -64,30 +64,30 @@ namespace ROOTTools
       void DeactivatePoint(); 
       void PrintHelp();
       void Draw(bool doDrawHist = true, bool isFirstDraw = true);
-      
+
       std::vector<TH1F *> hists;
       std::vector<std::string> histsXValues;
 
       std::vector<std::string> outputFilesNames;
       std::vector<std::ofstream> outputFiles;
-      
+
       std::vector<std::vector<TF1 *>> fits, bgFits;
       std::vector<std::vector<int>> bgFitParNumbersStart;
 
       TLatex fitsNames = TLatex(0.2, 0.2, "");
       TLatex chi2NDF = TLatex(0.8, 0.9, "");
-      
+
       //graph that contains points for background tweaking
       TGraph *bgPointsGr;
-      
+
       long unsigned int currentHistId = -1;
       unsigned long currentFitModeId = 0;
-      
+
       bool isFitPointActive = false;
       int currentActivePointId = -1;
       TGraph *currentActivePointGr;
 
-      const Color_t activeColor = kRed + 1;   
+      const Color_t activeColor = kRed + 1;
    };
 }
 

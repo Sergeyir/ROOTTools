@@ -18,12 +18,12 @@ void ROOTTools::PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoEx
                             const bool parallelCompression)
 {
    if (printPng) canv->SaveAs((outputFileNameNoExt + ".png").c_str());
-   
+
    if (compressPdf) 
    {
       // temporary .pdf file; will be removed later
       canv->SaveAs((outputFileNameNoExt + ".tmp.pdf").c_str());
-      
+
       // ghostscript command to reduce pdf size and remove temporary .pdf file
       std::string compressionCommand = 
          "ghostscript -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 \
@@ -31,10 +31,10 @@ void ROOTTools::PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoEx
           -sOutputFile=" + outputFileNameNoExt + ".pdf " + 
          outputFileNameNoExt + ".tmp.pdf && rm " + 
          outputFileNameNoExt + ".tmp.pdf";
-      
+
       // option to detach the command call from the current process
       if (parallelCompression) compressionCommand += " &";
-      
+
       system(compressionCommand.c_str());
    }
    else

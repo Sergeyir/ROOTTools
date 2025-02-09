@@ -26,17 +26,17 @@ bool ROOTTools::CheckFileForNan::ContainsNan(const std::string& dirName)
 
    TIter keyList(file->GetListOfKeys());
    TKey *key;
-   
+
    if (dirName != "") file->cd(dirName.c_str());
    else file->cd();
-   
+
 
    //for (int i = 0; i < currentDirList->GetEntries(); i++)
    while ((key = (TKey*)keyList())) 
    {
       //TClass *obj = gROOT->GetClass(key->GetClassName());
       TClass *obj = gROOT->GetClass(key->GetClassName());
-      
+
       std::cout << ((TH3 *) key->ReadObj())->Integral() << std::endl;
       if (obj->IsFolder()) continue;
       /*
@@ -77,7 +77,7 @@ bool ROOTTools::CheckFileForNan::ContainsNan(const std::string& dirName)
          }
       }
    }
-   
+
    return containsNan;
 }
 

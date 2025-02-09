@@ -31,7 +31,7 @@ std::shared_ptr<TH1F> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObjec
    AddTFileDirectory(directory, 0);
    return containerTH1F.back()->Get();
 };
-      
+
 std::shared_ptr<TH2F> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH2F> *hist, 
                                                             const std::string& directory)
 {
@@ -101,7 +101,7 @@ void ROOTTools::ThrObjHolder::Clear()
    containerTH1F.clear();
    containerTH2F.clear();
    containerTH3F.clear();
-   
+
    containerTH1D.clear();
    containerTH2D.clear();
    containerTH3D.clear();
@@ -109,7 +109,7 @@ void ROOTTools::ThrObjHolder::Clear()
    containerTH1L.clear();
    containerTH2L.clear();
    containerTH3L.clear();
-   
+
    containerTFileDir.clear();
    for (auto& vec : containerTFileDir)
    {
