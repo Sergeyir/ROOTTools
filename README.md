@@ -1,6 +1,6 @@
 # Overview
 
-This is a simple set of useful classes and functions to use in any cpp application that uses [ROOT](https://root.cern/) applications on linux.
+Set of useful functions and classes that can be used in any cpp application to simplify the work with <a href="https://root.cern/">ROOT6</a> various classes such as TF1, TCanvas, TFile, TThreadedObject, etc or to extend their usage. This repository is still in progress and some of it's features are yet to be finished/added. But everything described in the documentation is finished and works flawlessly.
 
 # Requirements
 
