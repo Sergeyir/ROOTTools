@@ -1,20 +1,20 @@
 # Overview
 
-Set of useful functions and classes that can be used in any cpp application to simplify the work with <a href="https://root.cern/">ROOT6</a> various classes such as TF1, TCanvas, TFile, TThreadedObject, etc or to extend their usage. This repository is still in progress and some of it's features are yet to be finished/added. But everything described in the documentation is finished and works flawlessly.
+Set of useful functions and classes that can be used in any C++ application to simplify the work with <a href="https://root.cern/">ROOT6</a>'s various classes, such as TF1, TCanvas, TFile, TThreadedObject, etc., or to extend their usage. This repository is still in progress, and some of its features are yet to be finished/added. But everything described in the [documentation](https://sergeyir.github.io/documentation/ROOTTools/) is finished and works flawlessly.
 
 # Requirements
 
 - GNU GCC++17 or newer.
 - ghostscript - can be installed with any package manager.
-- [ROOT](https://root.cern/) V.6.00 or newer compiled with c++17 or newer.
+- [ROOT](https://root.cern/) V.6.00 or newer compiled with C++17 or newer.
 
-To check version of c++ that was used for compilation of ROOT run (you may need to head in bin directory in ROOT install directory if ROOT was not intalled with package manager)
+To check the version of C++ that was used for the compilation of the ROOT run (you may need to head into the bin directory in the ROOT install directory if ROOT was not installed with the package manager)
 
 ```sh 
 root-config --cflags
 ```
 
-If [ROOT6](https://root.cern/) was not installed with a package manager on your system you also need to set $ROOT_INCLUDE and $ROOT_CONFIG in your profile (.bashrc, .zshrc or other) or configure the paths in Makefile.am.
+If [ROOT6](https://root.cern/) was not installed with a package manager on your system, you also need to set $ROOT_INCLUDE and $ROOT_CONFIG in your profile (.bashrc, .zshrc, or other) or configure the paths in Makefile.am.
 
 # Installing
 
@@ -32,9 +32,9 @@ make
 
 # Documentation
 
-You can view the detailed documentation https://sergeyir.github.io/ROOTTools/ (see Namespaces / Namespaces List / ROOTTools). Since this repository is not designed to be used on it's own and is intended to be used as a set of libraries every class, method, and variable are all in ROOTTools namespace scope.
+You can view the detailed documentation at https://sergeyir.github.io/documentation/ROOTTools/. (see Namespaces / Namespaces List / ROOTTools). Since this repository is not designed to be used on its own and is intended to be used as a set of libraries, every class, method, and variable is all in the ROOTTools namespace scope.
 
-If the link is unaccesible you can generate the documentation yourself with doxygen. To do this run while in root of the repository
+If the link is inaccessible, you can generate the documentation yourself with Doxygen. To do this run while in the root of the repository
 
 ```sh
 doxygen
@@ -48,4 +48,4 @@ xdg-open html/index.html
 
 # Usage
 
-In order to use functions and classes from this project while compiling link libraries libTCanvasTools.so, libFitTools.so, libGUIFit.so, libThrObj.so, libTFileTools.so (see $ROOT_TOOLS_LIB in Makefile and Makefile.inc for more detail) and don't forget to include the needed header files (see list of files in documentation https://sergeyir.github.io/ROOTTools/files.html).
+In order to use functions and classes from this project while compiling link libraries libTCanvasTools.so, libFitTools.so, libGUIFit.so, libThrObj.so, libTFileTools.so (see $ROOT_TOOLS_LIB in Makefile and Makefile.inc for more detail), and don't forget to include the needed header files (see the list of files in documentation https://sergeyir.github.io/documentation/ROOTTools/files.html).
