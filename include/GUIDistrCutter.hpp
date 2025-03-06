@@ -11,10 +11,18 @@
 #ifndef ROOT_TOOLS_GUI_DISTR_CUTTER_HPP
 #define ROOT_TOOLS_GUI_DISTR_CUTTER_HPP
 
+#include <iostream>
+#include <string>
+#include <vector>
+#include <array>
+#include <fstream>
+
 #include "TH2.h"
+#include "TLine.h"
+#include "Buttons.h"
 
 /*! @namespace GUIDistrCutter2D GUIDistrCutter2D namespace
- * @brief Stores various useful data and functions for functionality of GUI cutter. The only useful funtions for user are AddHistogram and WriteCutAreas. Other functions and variables are employed automaticaly when needed.
+ * @brief Stores various useful data and functions for functionality of GUI cutter. The only useful funtions for user are AddHistogram, ReadCutAreas, WriteCutAreas, and Exec. Other functions and variables are employed automaticaly when needed.
  *
  * Not finished yet
  */
@@ -23,9 +31,15 @@ namespace GUIDistrCutter2D
    /*! @brief Add histogram
     *
     * @param[in] hist histogram to be added. All added histograms must have the same number of bins and ranges of X and Y axis.
-    * @param[in] name name of a histogram to be displayed
     */
-   void AddHistogram(T *hist, const std::string& name);
+   void AddHistogram(TH2D *hist);
+   /*! @brief Reads cut areas from the file. 
+    *
+    * The cuts from the file will be applied to all added histograms. If no histograms were added prior error will be written and exit(1) will be called.
+    *
+    * @param[in] inputFileName name of the file to read the info from
+    */
+   void ReadCutAreas(const std::string& inputFileName);
    /*! @brief Write cut areas in the output file
     *
     * Writes in output file for every bin 0 or 1, i.e. whether the bin was or was not cut. Additionaly, in the beginning of the file number of x bins, x range, number of y bins, y range are written.
@@ -33,23 +47,37 @@ namespace GUIDistrCutter2D
     * @param[in] outputFileName name of the output file in which the data will be written. If the file with the same name exists, the old file will be renamed to (outputFileName + ".tmp") and the data will be written in file (outputFileName).
     */
    void WriteCutAreas(const std::string& outputFileName);
-   /// Draws cut lines. This function is called automaticaly when needed.
-   void DrawCutLines(double xMax, double yMax);
+   /// @brief Executable to pass to TPad::AddExec(name, command) to start GUI session
+   void Exec();
    /// Sets style to the provided TLine. This function is called automaticaly when needed.
-   void SetLineStyle(const TLine& line, const Color_t color=kRed);
+   void SetLine(TLine& line, const double x1, const double y1, 
+                const double x2, const double y2, const Color_t color=kRed);
    /// Draws histogram with cuts applied. This function is called automaticaly when needed.
    void Draw(const bool isRangeFixed);
    /// Applies cuts to the passed distribution. This function is called automaticaly when needed.
-   void ApplyCuts(const TH2D& hist);
-
+   void ApplyCuts(TH2D* hist);
+   /// Applies actions to kMouseMotion event. This function is called automaticaly when needed.
+   void MouseMotionAction(const double x, const double y);
+   /// Applies actions to kButton1Down event. This function is called automaticaly when needed.
+   void Button1DownAction(const double x, const double y)
+   /// Applies actions to kKeyPress event. This function is called automaticaly when needed.
+   void KeyPressAction(const int button)
+   /// Needed for angular cut mode. This function is called automaticaly when needed.
+   double Pol1(const double x, const double par0, const double par1);
    /// stores added distributions
    std::vector<T> hists;
    /// stores added distributions with cuts applied
    std::vector<T> histsWithCuts;
-   /// stores information about the currently displayed histogram
+   /// stores information about the index of the currently displayed histogram
    unsigned short currentHist = 0;
+   /// stores information about cut areas that were read from the input file
+   std::vector<std::vector<bool>> inputFileCutAreas;
    /// stores information about the current cut mode
    short currentCutMode = -1;
+   /// stores x values of the single pixel cut mode
+   std::vector<double> singleXCut;
+   /// stores y values of the single pixel cut mode
+   std::vector<double> singleYCut;
    /// stores minimum x values of the rectangular cut mode
 	std::vector<double> rectXMin;
    /// stores maximum x values of the rectangular cut mode
@@ -79,9 +107,9 @@ namespace GUIDistrCutter2D
    /// stores x2 values of the 1st line of angled line cuts
 	std::vector<double> angledLine1X2;
    /// stores y1 values of the 1st line of angled line cuts
-   std::vector<double>angledLine1Y1;
+   std::vector<double> angledLine1Y1;
    /// stores y2 values of the 1st line of angled line cuts
-   std::vector<double>angledLine1Y2;
+   std::vector<double> angledLine1Y2;
    /// stores x1 values of the 2nd line of angled line cuts
 	std::vector<double> angledLine2X1;
    /// stores x2 values of the 2nd line of angled line cuts
@@ -101,8 +129,5 @@ namespace GUIDistrCutter2D
    /// stores information that shows whether the first point was chosen for the given cut mode
 	std::array<bool, 5> isMin = {true, true, true, true, true};
 };
-
-/// @brief Executable to pass to TPad::AddExec(name, command) to start GUI session for 2D distributions
-void GUIDistrCutter2DExec();
 
 #endif /* ROOT_TOOLS_GUI_DISTR_CUTTER_HPP */
