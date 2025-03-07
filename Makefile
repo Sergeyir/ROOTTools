@@ -28,12 +28,13 @@ endif
 all: ROOTTools
 	@echo "All done"
 
-ROOTTools: TF1Tools TCanvasTools ThrObj
+ROOTTools: TF1Tools TCanvasTools ThrObj GUIDistrCutter2D
 TCanvasTools: lib/libTF1Tools.so
 TF1Tools: lib/libTCanvasTools.so
 GUIFit: lib/libGUIFit.so
 ThrObj: lib/libThrObj.so
 TFileTools: lib/libTFileTools.so
+
 GUIDistrCutter2D: lib/libGUIDistrCutter2D.so
 
 .SILENT:
