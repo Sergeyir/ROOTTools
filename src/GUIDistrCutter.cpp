@@ -130,8 +130,17 @@ void GUIDistrCutter2D::ReadCutAreas(const std::string& inputFileName)
    }
 }
 
-void GUIDistrCutter2D::WriteCutAreas(const std::string outputFileName)
+void GUIDistrCutter2D::SetOutputFile(const std::string outputFileName)
 {
+   std::ifstream inputFile(outputFileName);
+   if (outputFileName.is_open())
+   {
+      std::cout << "\033[1m\033[35mWarning:\033[0m Specified output file \"" << inputFileName << "\" already exists" << std::endl;
+      std::cout << "Old file \"" << inputFileName << " will be renamed to \"" << inputFileName << ".tmp\"" << std::endl;
+      system(("mv " + inputFileName + " " + inputFileName + ".tmp").c_str());
+   }
+
+   outputFile.open(outputFileName);
 }
 
 void GUIDistrCutter2D::SetLine(TLine &line, const double x1, const double y1, 
@@ -262,228 +271,225 @@ void GUIDistrCutter2D::Button1DownAction(const double x, const double y)
    switch (currentCutMode)
    {
       case 0:
+      {
          if (isMin[0])
          {
             rectXMin.push_back(x);
             rectYMin.push_back(y);
 
             isMin[0] = false;
-
-            CppTools::PrintInfo("Setting the first point");	
+            std::cout << "Setting the first point" << std::endl;	
          }
          else
          {
             if (x >= rectXMin.back()) 
             {
-               rectXMax.push_back(Par.realHist->GetXaxis()->GetBinUpEdge(
-                  Par.realHist->GetXaxis()->FindBin(x)));
-               rectXMin.back() = Par.realHist->GetXaxis()->GetBinLowEdge(
-                  Par.realHist->GetXaxis()->FindBin(rectXMin.back()));
+               rectXMax.push_back(hists.front()->GetXaxis()->
+                                  GetBinUpEdge(hists.front()->GetXaxis()->FindBin(x)));
+               rectXMin.back() = hists.front()->GetXaxis()->
+                  GetBinLowEdge(hists.front()->GetXaxis()->FindBin(rectXMin.back()));
             }
             else 
             {
-               rectXMax.push_back(Par.realHist->GetXaxis()->GetBinUpEdge(
-                  Par.realHist->GetXaxis()->FindBin(rectXMin.back())));
-               rectXMin.back() = Par.realHist->GetXaxis()->GetBinLowEdge(
-                  Par.realHist->GetXaxis()->FindBin(x));
+               rectXMax.push_back(hists.front()->GetXaxis()->
+                                  GetBinUpEdge(hists.front()->GetXaxis()->FindBin(rectXMin.back())));
+               rectXMin.back() = hists.front()->GetXaxis()->
+                  GetBinLowEdge(hists.front()->GetXaxis()->FindBin(x));
             }
 
             if (y >= rectYMin.back()) 
             {
-               rectYMax.push_back(Par.realHist->GetYaxis()->GetBinUpEdge(
-                  Par.realHist->GetYaxis()->FindBin(y)));
-               rectYMin.back() = Par.realHist->GetYaxis()->GetBinLowEdge(
-                  Par.realHist->GetYaxis()->FindBin(rectYMin.back()));
+               rectYMax.push_back(hists.front()->GetYaxis()->
+                                  GetBinUpEdge(hists.front()->GetYaxis()->FindBin(y)));
+               rectYMin.back() = hists.front()->GetYaxis()->
+                  GetBinLowEdge(hists.front()->GetYaxis()->FindBin(rectYMin.back()));
             }
             else 
             {
-               rectYMax.push_back(Par.realHist->GetYaxis()->GetBinUpEdge(
-                  Par.realHist->GetYaxis()->FindBin(rectYMin.back())));
-               rectYMin.back() = Par.realHist->GetYaxis()->GetBinLowEdge(
-                  Par.realHist->GetYaxis()->FindBin(y));
+               rectYMax.push_back(hists.front()->GetYaxis()->
+                                  GetBinUpEdge(hists.front()->GetYaxis()->FindBin(rectYMin.back())));
+               rectYMin.back() = hists.front()->GetYaxis()->
+                  GetBinLowEdge(hists.front()->GetYaxis()->FindBin(y));
             }
 
             isMin[0] = true;
-            CppTools::PrintInfo("Setting the second point");
-            if (isMin[0]) DrawDM(true);
+            std::cout << "Setting the second point" << std::endl;
+            Draw(true);
          }
          break;
-
+      }
       case 1:
+      {
          if (isMin[1])
          {
             lineXMin.push_back(x);
 
             isMin[1] = false;
-
-            CppTools::PrintInfo("Setting the first line");	
+            std::cout << "Setting the first line" << std::endl;	
          }
          else
          {
             if (x >= lineXMin.back()) 
             {
-               lineXMax.push_back(Par.realHist->GetXaxis()->GetBinUpEdge(
-                  Par.realHist->GetXaxis()->FindBin(x)));
-               lineXMin.back() = Par.realHist->GetXaxis()->GetBinLowEdge(
-                  Par.realHist->GetXaxis()->FindBin(lineXMin.back()));
+               lineXMax.push_back(hists.front()->GetXaxis()->
+                                  GetBinUpEdge(hists.front()->GetXaxis()->FindBin(x)));
+               lineXMin.back() = hists.front()->GetXaxis()->
+                  GetBinLowEdge(hists.front()->GetXaxis()->FindBin(lineXMin.back()));
             }
             else 
             {
-               lineXMax.push_back(Par.realHist->GetXaxis()->GetBinUpEdge(
-                  Par.realHist->GetXaxis()->FindBin(lineXMin.back())));
-               lineXMin.back() = Par.realHist->GetXaxis()->GetBinLowEdge(
-                  Par.realHist->GetXaxis()->FindBin(x));
+               lineXMax.push_back(hists.front()->GetXaxis()->
+                                  GetBinUpEdge(hists.front()->GetXaxis()->FindBin(lineXMin.back())));
+               lineXMin.back() = hists.front()->GetXaxis()->
+                  GetBinLowEdge(Par.realHist->GetXaxis()->FindBin(x));
             }
 
             isMin[1] = true;
-            CppTools::PrintInfo("Setting the second point");
-            if (isMin[1]) DrawDM(true);
+            std::cout << "Setting the second point" << std::endl;
+            Draw(true);
          }
          break;
-
+      }
       case 2:
+      {
          if (isMin[2])
          {
             lineYMin.push_back(y);
 
             isMin[2] = false;
-
-            CppTools::PrintInfo("Setting the first line");	
+            std::cout << "Setting the first line" << std::endl;	
          }
          else
          {
             if (y >= lineYMin.back()) 
             {
-               lineYMax.push_back(Par.realHist->GetYaxis()->GetBinUpEdge(
-                  Par.realHist->GetYaxis()->FindBin(y)));
-               lineYMin.back() = Par.realHist->GetYaxis()->GetBinLowEdge(
-                  Par.realHist->GetYaxis()->FindBin(lineYMin.back()));
+               lineYMax.push_back(hists.front()->GetYaxis()->
+                                  GetBinUpEdge(hists.front()->GetYaxis()->FindBin(y)));
+               lineYMin.back() = hists.front()->GetYaxis()->
+                  GetBinLowEdge(hists.front()->GetYaxis()->FindBin(lineYMin.back()));
             }
             else 
             {
-               lineYMax.push_back(Par.realHist->GetYaxis()->GetBinUpEdge(
-                  Par.realHist->GetYaxis()->FindBin(lineYMin.back())));
-               lineYMin.back() = Par.realHist->GetYaxis()->GetBinLowEdge(
-                  Par.realHist->GetYaxis()->FindBin(y));
+               lineYMax.push_back(hists.front()->GetYaxis()->
+                                  GetBinUpEdge(hists.front()->GetYaxis()->FindBin(lineYMin.back())));
+               lineYMin.back() = hists.front()->GetYaxis()->
+                  GetBinLowEdge(hists.front()->GetYaxis()->FindBin(y));
             }
 
             isMin[2] = true;
-            CppTools::PrintInfo("Setting the second point");
-            if (isMin[2]) DrawDM(true);
+            std::cout << "Setting the second point" << std::endl;
+            Draw(true);
          }
          break;
-
+      }
       case 3:
+      {
          if (isMin[3])
          {
             invRectXMin.push_back(x);
             invRectYMin.push_back(y);
 
             isMin[3] = false;
-
-            CppTools::PrintInfo("Setting the first point");	
+            std::cout << "Setting the first point" << std::endl;	
          }
          else
          {
             if (x >= invRectXMin.back()) 
             {
-               invRectXMax.push_back(Par.realHist->GetXaxis()->GetBinLowEdge(
-                  Par.realHist->GetXaxis()->FindBin(x)));
-               invRectXMin.back() = Par.realHist->GetXaxis()->GetBinUpEdge(
-                  Par.realHist->GetXaxis()->FindBin(invRectXMin.back()));
+               invRectXMax.push_back(hists.front()->GetXaxis()->
+                                     GetBinLowEdge(hists.front()->GetXaxis()->FindBin(x)));
+               invRectXMin.back() = hists.front()->GetXaxis()->
+                  GetBinUpEdge(hists.front()->GetXaxis()->FindBin(invRectXMin.back()));
             }
             else 
             {
-               invRectXMax.push_back(Par.realHist->GetXaxis()->GetBinLowEdge(
-                  Par.realHist->GetXaxis()->FindBin(invRectXMin.back())));
-               invRectXMin.back() = Par.realHist->GetXaxis()->GetBinUpEdge(
-                  Par.realHist->GetXaxis()->FindBin(x));
+               invRectXMax.push_back(hists.front()->GetXaxis()->GetBinLowEdge(hists.front()->
+                                     GetXaxis()->FindBin(invRectXMin.back())));
+               invRectXMin.back() = hists.front()->GetXaxis()->
+                  GetBinUpEdge(hists.front()->GetXaxis()->FindBin(x));
             }
 
             if (y >= invRectYMin.back()) 
             {
-               invRectYMax.push_back(Par.realHist->GetYaxis()->GetBinLowEdge(
-                  Par.realHist->GetYaxis()->FindBin(y)));
-               invRectYMin.back() = Par.realHist->GetYaxis()->GetBinUpEdge(
-                  Par.realHist->GetYaxis()->FindBin(invRectYMin.back()));
+               invRectYMax.push_back(hists.front()->GetYaxis()->
+                                     GetBinLowEdge(hists.front()->GetYaxis()->FindBin(y)));
+               invRectYMin.back() = hists.front()->GetYaxis()->
+                  GetBinUpEdge(hists.front()->GetYaxis()->FindBin(invRectYMin.back()));
             }
             else 
             {
-               invRectYMax.push_back(Par.realHist->GetYaxis()->GetBinLowEdge(
-                  Par.realHist->GetYaxis()->FindBin(invRectYMin.back())));
-               invRectYMin.back() = Par.realHist->GetYaxis()->GetBinUpEdge(
-                  Par.realHist->GetYaxis()->FindBin(y));
+               invRectYMax.push_back(hists.front()->GetYaxis()->GetBinLowEdge(hists.front()->
+                                     GetYaxis()->FindBin(invRectYMin.back())));
+               invRectYMin.back() = hists.front()->GetYaxis()->
+                  GetBinUpEdge(hists.front()->GetYaxis()->FindBin(y));
             }
 
             isMin[3] = true;
-            CppTools::PrintInfo("Setting the second point");
-            if (isMin[3]) DrawDM(true);
+            std::cout << "Setting the second point" << std::endl;
+            Draw(true);
          }
          break;
+      }
       case 4:
+      {
          if (isMin[4])
          {
             if (angledLine1X1.size() == angledLine2X2.size())
             {
-               angledLine1X1.push_back(Par.realHist->GetXaxis()->
-                  GetBinLowEdge(Par.realHist->GetXaxis()->FindBin(x)));
-               angledLine1Y1.push_back(Par.realHist->GetYaxis()->
-                  GetBinLowEdge(Par.realHist->GetYaxis()->FindBin(y)));
+               angledLine1X1.push_back(hists.front()->GetXaxis()->
+                                       GetBinLowEdge(hists.front()->GetXaxis()->FindBin(x)));
+               angledLine1Y1.push_back(hists.front()->GetYaxis()->
+                                       GetBinLowEdge(hists.front()->GetYaxis()->FindBin(y)));
 
                isMin[4] = false;
-               CppTools::PrintInfo("Setting the first point of the first line");	
+               std::cout << "Setting the first point of the first line" << std::endl;
             }
             else
             {
-               angledLine2X1.push_back(Par.realHist->GetXaxis()->
-                  GetBinLowEdge(Par.realHist->GetXaxis()->FindBin(x)));
-               angledLine2Y1.push_back(Par.realHist->GetYaxis()->
-                  GetBinLowEdge(Par.realHist->GetYaxis()->FindBin(y)));
+               angledLine2X1.push_back(hists.front()->GetXaxis()->
+                                       GetBinLowEdge(hists.front()->GetXaxis()->FindBin(x)));
+               angledLine2Y1.push_back(hists.front()->GetYaxis()->
+                                       GetBinLowEdge(hists.front()->GetYaxis()->FindBin(y)));
 
                isMin[4] = false;
-               CppTools::PrintInfo("Setting the second point of the first line");	
+               std::cout << "Setting the second point of the first line" << std::endl;	
             }
          }
          else
          {
             if (angledLine1X2.size() == angledLine2X2.size())
             {
-               angledLine1X2.push_back(Par.realHist->GetXaxis()->GetBinLowEdge(
-                  Par.realHist->GetXaxis()->FindBin(x)));
-               angledLine1Y2.push_back(Par.realHist->GetYaxis()->GetBinLowEdge(
-                  Par.realHist->GetYaxis()->FindBin(y)));
+               angledLine1X2.push_back(hists.front()->GetXaxis()->GetBinLowEdge(
+                                       hists.front()->GetXaxis()->FindBin(x)));
+               angledLine1Y2.push_back(hists.front()->GetYaxis()->GetBinLowEdge(
+                                       hists.front()->GetYaxis()->FindBin(y)));
 
-               tanAlpha1.push_back((angledLine1Y1.back() - 
-                                            angledLine1Y2.back())/
-                                           (angledLine1X1.back() - 
-                                            angledLine1X2.back()));
-               shiftY1.push_back(angledLine1Y2.back() - 
-                                         angledLine1X2.back()*tanAlpha1.back());
+               tanAlpha1.push_back((angledLine1Y1.back() - angledLine1Y2.back())/
+                                   (angledLine1X1.back() - angledLine1X2.back()));
+               shiftY1.push_back(angledLine1Y2.back() - angledLine1X2.back()*tanAlpha1.back());
 
                isMin[4] = true;
-               CppTools::PrintInfo("Setting the second point of the first line");
-               if (isMin[4]) DrawDM(true);
+               std::cout << "Setting the second point of the first line" << std::endl;
+               Draw(true);
             }
             else
             {
-               angledLine2X2.push_back(Par.realHist->GetXaxis()->GetBinLowEdge(
-                  Par.realHist->GetXaxis()->FindBin(x)));
-               angledLine2Y2.push_back(Par.realHist->GetYaxis()->GetBinLowEdge(
-                  Par.realHist->GetYaxis()->FindBin(y)));
+               angledLine2X2.push_back(hists.back()->GetXaxis()->
+                                       GetBinLowEdge(hists.back()->GetXaxis()->FindBin(x)));
+               angledLine2Y2.push_back(hists.back()->GetYaxis()->
+                                       GetBinLowEdge(hists.back()->GetYaxis()->FindBin(y)));
 
-               tanAlpha2.push_back((angledLine2Y1.back() - 
-                                            angledLine2Y2.back())/
-                                           (angledLine2X1.back() - 
-                                            angledLine2X2.back()));
-               shiftY2.push_back(angledLine2Y2.back() - 
-                                         angledLine2X2.back()*tanAlpha2.back());
+               tanAlpha2.push_back((angledLine2Y1.back() - angledLine2Y2.back())/
+                                   (angledLine2X1.back() - angledLine2X2.back()));
+               shiftY2.push_back(angledLine2Y2.back() - angledLine2X2.back()*tanAlpha2.back());
  
                isMin[4] = true;
-               CppTools::PrintInfo("Setting the second point of the second line");
-               if (isMin[4]) DrawDM(true);
+               std::cout << "Setting the second point of the second line" << std::endl;
+               Draw(true);
             }
          }
          break;
+      }
    }
 }
 
@@ -495,6 +501,7 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
          switch (currentCutMode)
          {
             case 0:
+            {
                if (rectXMin.size() != 0)
                {
                   if (isMin[0])
@@ -504,21 +511,22 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                      rectXMax.pop_back();
                      rectYMax.pop_back();
 
-                     CppTools::PrintInfo("Deleting last minimum and maximum points");
+                     std::cout << "Deleting last minimum and maximum points" << std::endl;
                   }
                   else
                   {
                      rectXMin.pop_back();
                      rectYMin.pop_back();
 
-                     CppTools::PrintInfo("Deleting last minimum point");
+                     std::cout << "Deleting last minimum point" << std::endl;
                   }
-                  if (isMin[0]) DrawDM(true);
+                  if (isMin[0]) Draw(true);
                   isMin[0] = true;
                   gPad->Update();
                }
-               else CppTools::PrintInfo("Cannot delete last point since the current number of points is 0");
+               else std::cout << "Cannot delete last point since the current number of points is 0" << std::endl;
                break;
+            }
 
             case 1:
                if (lineXMin.size() != 0)
@@ -528,18 +536,18 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                      lineXMin.pop_back();
                      lineXMax.pop_back();
 
-                     CppTools::PrintInfo("Deleting last pair of lines");
+                     std::cout << "Deleting last pair of lines" << std::endl;
                   }
                   else
                   {
                      lineXMin.pop_back();
-                     CppTools::PrintInfo("Deleting last line");
+                     std::cout << "Deleting last line" << std::endl;
                   }
-                  if (isMin[1]) DrawDM(true);
+                  if (isMin[1]) Draw(true);
                   isMin[1] = true;
                   gPad->Update();
                }
-               else CppTools::PrintInfo("Cannot delete last line/lines since the current number of lines is 0");
+               else std::cout << "Cannot delete last line/lines since the current number of lines is 0" << std::endl;
                break;
             case 2:
                if (lineYMin.size() != 0)
@@ -549,18 +557,18 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                      lineYMin.pop_back();
                      lineYMax.pop_back();
 
-                     CppTools::PrintInfo("Deleting last pair of lines");
+                     std::cout << "Deleting last pair of lines" << std::endl;
                   }
                   else
                   {
                      lineYMin.pop_back();
-                     CppTools::PrintInfo("Deleting last line");
+                     std::cout << "Deleting last line" << std::endl;
                   }
-                  if (isMin[2]) DrawDM(true);
+                  if (isMin[2]) Draw(true);
                   isMin[2] = true;
                   gPad->Update();
                }
-               else CppTools::PrintInfo("Cannot delete last line/lines since the current number of lines is 0");
+               else std::cout << "Cannot delete last line since the current number of lines is 0" << std::endl;
                break;
             case 3:
                if (invRectXMin.size() != 0)
@@ -572,20 +580,20 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                      invRectXMax.pop_back();
                      invRectYMax.pop_back();
 
-                     CppTools::PrintInfo("Deleting last minimum and maximum points");
+                     std::cout << "Deleting last minimum and maximum points" << std::endl;
                   }
                   else
                   {
                      invRectXMin.pop_back();
                      invRectYMin.pop_back();
 
-                     CppTools::PrintInfo("Deleting last minimum point");
+                     std::cout << "Deleting last minimum point" << std::endl;
                   }
-                  if (isMin[3]) DrawDM(true);
+                  if (isMin[3]) Draw(true);
                   isMin[3] = true;
                   gPad->Update();
                }
-               else CppTools::PrintInfo("Cannot delete last point since the current number of points is 0");
+               else std::cout << "Cannot delete last point since the current number of points is 0" << std::endl;
                break;
             case 4:
                if (angledLine1X1.size() != 0)
@@ -601,16 +609,16 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                         tanAlpha1.pop_back();
                         shiftY1.pop_back();
 
-                        CppTools::PrintInfo("Deleting last minimum and maximum points");
+                        std::cout << "Deleting last minimum and maximum points" << std::endl;
                      }
                      else
                      {
                         angledLine1X1.pop_back();
                         angledLine1Y1.pop_back();
 
-                        CppTools::PrintInfo("Deleting last minimum point");
+                        std::cout << "Deleting last minimum point" << std::endl;
                      }
-                     if (isMin[4]) DrawDM(true);
+                     if (isMin[4]) Draw(true);
                      isMin[4] = true;
                      gPad->Update();
                   }
@@ -625,28 +633,28 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                         tanAlpha2.pop_back();
                         shiftY2.pop_back();
 
-                        CppTools::PrintInfo("Deleting last minimum and maximum points");
+                        std::cout << "Deleting last minimum and maximum points" << std::endl;
                      }
                      else
                      {
                         angledLine2X1.pop_back();
                         angledLine2Y1.pop_back();
 
-                        CppTools::PrintInfo("Deleting last minimum point");
+                        std::cout << "Deleting last minimum point" << std::endl;
                      }
                   }
-                  if (isMin[4]) DrawDM(true);
+                  if (isMin[4]) Draw(true);
                   isMin[4] = true;
                   gPad->Update();
                }
-               else CppTools::PrintInfo("Cannot delete last point since the current number of points is 0");
+               else std::cout << "Cannot delete last point since the current number of points is 0" << std::endl;
                break;
          }
          break;
 
       case 'r':
-         DrawDM();
-         CppTools::PrintInfo("Resetting the range of the selected area");
+         Draw();
+         std::cout << "Resetting the range of the selected area" << std::endl;
          break;
 
       case 'p':
@@ -793,45 +801,50 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
          if (Par.useSimHist)
          {
             Par.isCurrentSim = !Par.isCurrentSim;
-            if (Par.isCurrentSim) CppTools::PrintInfo("Showing sim histogram");
-            else CppTools::PrintInfo("Showing real data histogram");
+            if (Par.isCurrentSim) std::cout << "Showing sim histogram" << std::endl;
+            else std::cout << "Showing real data histogram" << std::endl;
          }
          else
          {
-            CppTools::PrintInfo("Cannot show sim histogram since the option for it was not specified");
+            std::cout << "Cannot show sim histogram since the option for it was not specified" << std::endl;
          }
-         DrawDM();
+         Draw();
          break;
       }
 
       case '0':
-      CppTools::Print("Deactivating cutting mode");
+         std::cout << "Deactivating cutting mode" << std::endl;
          currentCutMode = -1;
          break;
 
       case '1':
-         CppTools::Print("Activating rectangular cutting mode");
+         std::cout << "Activating rectangular cutting mode" << std::endl;
          currentCutMode = 0;
          break;
 
       case '2':
-         CppTools::Print("Activating linear cutting mode along x axis");
+         std::cout << "Activating linear cutting mode along x axis" << std::endl;
          currentCutMode = 1;
          break;
 
       case '3':
-         CppTools::Print("Activating linear cutting mode along y axis");
+         std::cout << "Activating linear cutting mode along y axis" << std::endl;
          currentCutMode = 2;
          break;
 
       case '4':
-         CppTools::Print("Activating inverse rectangular cutting mode");
+         std::cout << "Activating inverse rectangular cutting mode" << std::endl;
          currentCutMode = 3;
          break;
 
       case '5':
-         CppTools::Print("Activating angled linear cutting mode");
+         std::cout << "Activating angled linear cutting mode" << std::endl;
          currentCutMode = 4;
+         break;
+      
+      case '6':
+         std::cout << "Activating single bin cutting mode" << std::endl;
+         currentCutMode = 5;
          break;
    }
 }

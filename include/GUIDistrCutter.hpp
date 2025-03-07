@@ -40,13 +40,13 @@ namespace GUIDistrCutter2D
     * @param[in] inputFileName name of the file to read the info from
     */
    void ReadCutAreas(const std::string& inputFileName);
-   /*! @brief Write cut areas in the output file
+   /*! @brief Set the file in which cut areas will be written
     *
-    * Writes in output file for every bin 0 or 1, i.e. whether the bin was or was not cut. Additionaly, in the beginning of the file number of x bins, x range, number of y bins, y range are written.
+    * Data will be written for output file for every bin 0 or 1, i.e. whether the bin was or was not cut. Additionaly, in the beginning of the file number of x bins, x range, number of y bins, y range are written.
     *
     * @param[in] outputFileName name of the output file in which the data will be written. If the file with the same name exists, the old file will be renamed to (outputFileName + ".tmp") and the data will be written in file (outputFileName).
     */
-   void WriteCutAreas(const std::string& outputFileName);
+   void SetOutputFile(const std::string& outputFileName);
    /// @brief Executable to pass to TPad::AddExec(name, command) to start GUI session
    void Exec();
    /// Sets style to the provided TLine. This function is called automaticaly when needed.
@@ -128,6 +128,8 @@ namespace GUIDistrCutter2D
    std::vector<double> shiftY2;
    /// stores information that shows whether the first point was chosen for the given cut mode
 	std::array<bool, 5> isMin = {true, true, true, true, true};
+   /// file in which cut areas will be written
+   std::ofstream outputFile;
 };
 
 #endif /* ROOT_TOOLS_GUI_DISTR_CUTTER_HPP */
