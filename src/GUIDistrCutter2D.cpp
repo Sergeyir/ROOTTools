@@ -1,6 +1,6 @@
 /** 
- *  @file   GUIDistrCutter.cpp 
- *  @brief  Contains structs and functions that can be used for providing GUI for removal of "bad"/"dead" areas from 1D and 2D distributions
+ *  @file   GUIDistrCutter2D.cpp 
+ *  @brief  Contains structs and functions that can be used for providing GUI for removal of "bad"/"dead" areas from 2D distributions
  *
  *  Not finished yet
  *
@@ -8,10 +8,10 @@
  *
  *  @author Sergei Antsupov (antsupov0124@gmail.com)
  **/
-#ifndef ROOT_TOOLS_GUI_DISTR_CUTTER_CPP
-#define ROOT_TOOLS_GUI_DISTR_CUTTER_CPP
+#ifndef ROOT_TOOLS_GUI_DISTR_CUTTER_2D_CPP
+#define ROOT_TOOLS_GUI_DISTR_CUTTER_2D_CPP
 
-#include "../include/GUIDistrCutter.h"
+#include "GUIDistrCutter2D.hpp"
 
 void GUIDistrCutter2D::AddHistogram(TH2D *hist)
 {
@@ -49,11 +49,16 @@ void GUIDistrCutter2D::AddHistogram(TH2D *hist)
          exit(1);
       }
    }
-   hists.push_back(static_cast<TH1D *>(hist.Clone()));
-   histsWithCuts.push_back(static_cast<TH1D *>(hist.Clone()));
+
+   hists.push_back(static_cast<TH2D *>(hist->Clone()));
+   histsWithCuts.resize(hists.size());
+
+   histsOrigIntegral.push_back(hist->Integral(1, hist->GetXaxis()->GetNbins(), 
+                                              1, hist->GetYaxis()->GetNbins()));
+   isHistogramAdded = true;
 }
 
-void GUIDistrCutter2D::ReadCutAreas(const std::string& inputFileName)
+void GUIDistrCutter2D::ReadCutAreas(const std::string& fileName)
 {
    if (hists.size() == 0)
    {
@@ -62,19 +67,19 @@ void GUIDistrCutter2D::ReadCutAreas(const std::string& inputFileName)
    }
    if (inputFileCutAreas.size() != 0)
    {
-      std::cout << "\033[1m\033[35mWarning:\033[0m Input file was already read; replacing current cuts from the previously read input file to the cuts written in file \"" << inputFileName << "\"" << std::endl;
+      std::cout << "\033[1m\033[35mWarning:\033[0m Input file was already read; replacing current cuts from the previously read input file to the cuts written in file \"" << fileName << "\"" << std::endl;
    }
 
    inputFileCutAreas.clear();
-   std::ifstream inputFile(inputFileName);
+   std::ifstream inputFile(fileName);
    if (!inputFile.is_open())
    {
-      std::cout << "\033[1m\033[31mError\033[0m while trying to read cuts from file: File \"" inputFileName << "\" does not exist" << std::endl;
+      std::cout << "\033[1m\033[31mError\033[0m while trying to read cuts from file: File \"" << fileName << "\" does not exist" << std::endl;
       exit(1);
    }
 
-   const int addedHistXNBins = hists.front().GetXaxis()->GetNBins();
-   const int addedHistYNBins = hists.front().GetYaxis()->GetNBins();
+   const int addedHistXNBins = hists.front()->GetXaxis()->GetNbins();
+   const int addedHistYNBins = hists.front()->GetYaxis()->GetNbins();
 
    int inputXNBins, inputYNBins;
    double inputXAxisMin, inputXAxisMax, inputYAxisMin, inputYAxisMax;
@@ -82,30 +87,30 @@ void GUIDistrCutter2D::ReadCutAreas(const std::string& inputFileName)
    if (!(inputFile >> inputXNBins >> inputXAxisMin >> inputXAxisMax >> 
                       inputYNBins >> inputYAxisMin >> inputYAxisMax));
    {
-      std::cout << "\033[1m\033[31mError\033[0m while trying to read axis information from file \"" inputFileName << "\": Unexpected end of file" << std::endl;
+      std::cout << "\033[1m\033[31mError\033[0m while trying to read axis information from file \"" << fileName << "\": Unexpected end of file" << std::endl;
       exit(1);
    }
 
    if (inputXNBins != addedHistXNBins)
    {
-      std::cout << "\033[1m\033[31mError:\033[0m Number of bins of X axis in file \"" << inputFileName << "\" is inconsistent with added histograms" << std::endl;
+      std::cout << "\033[1m\033[31mError:\033[0m Number of bins of X axis in file \"" << fileName << "\" is inconsistent with added histograms" << std::endl;
       exit(1);
    }
-   if (inpuYNBins != addedHistYNBins)
+   if (inputYNBins != addedHistYNBins)
    {
-      std::cout << "\033[1m\033[31mError:\033[0m Number of bins of Y axis in file \"" << inputFileName << "\" is inconsistent with added histogram(s)" << std::endl;
+      std::cout << "\033[1m\033[31mError:\033[0m Number of bins of Y axis in file \"" << fileName << "\" is inconsistent with added histogram(s)" << std::endl;
       exit(1);
    }
    if (fabs(hists.front()->GetXaxis()->GetBinLowEdge(1) - inputXAxisMin) > 1e-15 ||
        fabs(hists.front()->GetXaxis()->GetBinUpEdge(addedHistXNBins) - inputXAxisMax) > 1e-15)
    {
-      std::cout << "\033[1m\033[31mError:\033[0m X axis range in file \"" << inputFileName << "\" is inconsistent with added histogram(s)" << std::endl;
+      std::cout << "\033[1m\033[31mError:\033[0m X axis range in file \"" << fileName << "\" is inconsistent with added histogram(s)" << std::endl;
       exit(1);
    }
    if (fabs(hists.front()->GetYaxis()->GetBinLowEdge(1) - inputYAxisMin) > 1e-15 ||
        fabs(hists.front()->GetYaxis()->GetBinUpEdge(addedHistYNBins) - inputYAxisMax) > 1e-15)
    {
-      std::cout << "\033[1m\033[31mError:\033[0m Y axis range in file \"" << inputFileName << "\" is inconsistent with added histogram(s)" << std::endl;
+      std::cout << "\033[1m\033[31mError:\033[0m Y axis range in file \"" << fileName << "\" is inconsistent with added histogram(s)" << std::endl;
       exit(1);
    }
 
@@ -117,7 +122,7 @@ void GUIDistrCutter2D::ReadCutAreas(const std::string& inputFileName)
    {
       if (!(inputFile >> tmp))
       {
-      std::cout << "\033[1m\033[31mError\033[0m while trying to read cuts from file \"" << inputFileName << "\": Unexpected end of file" << std::endl;
+      std::cout << "\033[1m\033[31mError\033[0m while trying to read cuts from file \"" << fileName << "\": Unexpected end of file" << std::endl;
          exit(1);
       }
       inputFileCutAreas[i].push_back(tmp);
@@ -125,26 +130,27 @@ void GUIDistrCutter2D::ReadCutAreas(const std::string& inputFileName)
 
    if (inputFile >> tmp)
    {
-      std::cout << "\033[1m\033[31mError\033[0m while trying to read cuts from file \"" << inputFileName << "\": leftover data detected" << std::endl;
+      std::cout << "\033[1m\033[31mError\033[0m while trying to read cuts from file \"" << fileName << "\": leftover data detected" << std::endl;
       exit(1);
    }
 }
 
-void GUIDistrCutter2D::SetOutputFile(const std::string outputFileName)
+void GUIDistrCutter2D::SetOutputFile(const std::string& fileName)
 {
-   std::ifstream inputFile(outputFileName);
-   if (outputFileName.is_open())
+   std::ifstream inputFile(fileName);
+   if (inputFile.is_open())
    {
-      std::cout << "\033[1m\033[35mWarning:\033[0m Specified output file \"" << inputFileName << "\" already exists" << std::endl;
-      std::cout << "Old file \"" << inputFileName << " will be renamed to \"" << inputFileName << ".tmp\"" << std::endl;
-      system(("mv " + inputFileName + " " + inputFileName + ".tmp").c_str());
+      std::cout << "\033[1m\033[35mWarning:\033[0m Specified output file \"" << fileName << "\" already exists" << std::endl;
+      std::cout << "Old file \"" << fileName << " will be renamed to \"" << fileName << ".tmp\"" << std::endl;
+      system(("mv " + fileName + " " + fileName + ".tmp").c_str());
    }
 
-   outputFile.open(outputFileName);
+   outputFileName = fileName;
+   isOutputFileSet = true;
 }
 
 void GUIDistrCutter2D::SetLine(TLine &line, const double x1, const double y1, 
-                               const double x2, const double y2, const color_t)
+                               const double x2, const double y2, const Color_t color)
 {
    line.SetX1(x1);
    line.SetY1(y1);
@@ -153,6 +159,48 @@ void GUIDistrCutter2D::SetLine(TLine &line, const double x1, const double y1,
 	line.SetLineColor(color);
 	line.SetLineStyle(2);
 	line.SetLineWidth(2);
+}
+
+void GUIDistrCutter2D::Draw(const bool isRangeFixed)
+{
+   histsWithCuts[currentHist] = static_cast<TH2D *>(hists[currentHist]->Clone());
+
+	for (int i = 0; i < hists.front()->GetYaxis()->GetNbins(); i++)
+	{
+		for (int j = 0; j < hists.front()->GetXaxis()->GetNbins(); j++)
+		{
+         if (IsBinCut(j, i))
+         {
+            histsWithCuts[currentHist]->SetBinContent(j, i, 0.);
+         }
+		}
+	}
+
+	if (isRangeFixed)
+	{
+		const int xMin = hists.front()->GetXaxis()->FindBin(gPad->GetUxmin());
+		const int xMax = hists.front()->GetXaxis()->FindBin(gPad->GetUxmax())-1;
+		const int yMin = hists.front()->GetYaxis()->FindBin(gPad->GetUymin())+1;
+		const int yMax = hists.front()->GetYaxis()->FindBin(gPad->GetUymax())-1;
+		
+      for (unsigned long i = 0; i < hists.size(); i++)
+      {
+         histsWithCuts[i]->GetXaxis()->SetRange(xMin, xMax);
+         histsWithCuts[i]->GetYaxis()->SetRange(yMin, yMax);
+      }
+	}
+	
+   histsWithCuts[currentHist]->Draw("COLZ");
+
+	gPad->Modified();
+	gPad->Update();
+   gPad->GetFrame()->SetBit(TBox::kCannotMove);
+
+   std::cout << "Current histogram: Data lost " << 
+                (1. - histsWithCuts[currentHist]->
+                 Integral(1, hists.front()->GetXaxis()->GetNbins(), 1, 
+                          hists.front()->GetYaxis()->GetNbins())/
+                 histsOrigIntegral[currentHist])*100. << "%" << std::endl;
 }
 
 void GUIDistrCutter2D::MouseMotionAction(const double x, const double y)
@@ -252,7 +300,7 @@ void GUIDistrCutter2D::MouseMotionAction(const double x, const double y)
             SetLine(line1, lineXMin, Pol1(lineXMin, y - x*tanAlpha, tanAlpha), 
                     lineXMax, Pol1(lineXMax, y - x*tanAlpha, tanAlpha));
 
-            SetLine(lineXMin, Pol1(lineXMin, shiftY1.back(), tanAlpha1.back()), 
+            SetLine(line2, lineXMin, Pol1(lineXMin, shiftY1.back(), tanAlpha1.back()), 
                     lineXMax, Pol1(lineXMax, shiftY1.back(), tanAlpha1.back()), kGray);
 
             line1.Draw(); line2.Draw();
@@ -341,7 +389,7 @@ void GUIDistrCutter2D::Button1DownAction(const double x, const double y)
                lineXMax.push_back(hists.front()->GetXaxis()->
                                   GetBinUpEdge(hists.front()->GetXaxis()->FindBin(lineXMin.back())));
                lineXMin.back() = hists.front()->GetXaxis()->
-                  GetBinLowEdge(Par.realHist->GetXaxis()->FindBin(x));
+                  GetBinLowEdge(hists.front()->GetXaxis()->FindBin(x));
             }
 
             isMin[1] = true;
@@ -490,6 +538,13 @@ void GUIDistrCutter2D::Button1DownAction(const double x, const double y)
          }
          break;
       }
+      case 5:
+      {
+         singleBinXCut.push_back(x);
+         singleBinYCut.push_back(y);
+         std::cout << "Setting point to cut" << std::endl;
+         Draw(true);
+      }
    }
 }
 
@@ -497,7 +552,8 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
 {
    switch(button)
    {
-      case 'u':
+      case 'u': // undo
+      {
          switch (currentCutMode)
          {
             case 0:
@@ -520,15 +576,14 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
 
                      std::cout << "Deleting last minimum point" << std::endl;
                   }
-                  if (isMin[0]) Draw(true);
+                  Draw(isMin[0]);
                   isMin[0] = true;
-                  gPad->Update();
                }
                else std::cout << "Cannot delete last point since the current number of points is 0" << std::endl;
                break;
             }
-
             case 1:
+            {
                if (lineXMin.size() != 0)
                {
                   if (isMin[1])
@@ -543,13 +598,14 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                      lineXMin.pop_back();
                      std::cout << "Deleting last line" << std::endl;
                   }
-                  if (isMin[1]) Draw(true);
+                  Draw(isMin[1]);
                   isMin[1] = true;
-                  gPad->Update();
                }
                else std::cout << "Cannot delete last line/lines since the current number of lines is 0" << std::endl;
                break;
+            }
             case 2:
+            {
                if (lineYMin.size() != 0)
                {
                   if (isMin[2])
@@ -564,13 +620,14 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                      lineYMin.pop_back();
                      std::cout << "Deleting last line" << std::endl;
                   }
-                  if (isMin[2]) Draw(true);
+                  Draw(isMin[2]);
                   isMin[2] = true;
-                  gPad->Update();
                }
                else std::cout << "Cannot delete last line since the current number of lines is 0" << std::endl;
                break;
+            }
             case 3:
+            {
                if (invRectXMin.size() != 0)
                {
                   if (isMin[3])
@@ -589,13 +646,14 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
 
                      std::cout << "Deleting last minimum point" << std::endl;
                   }
-                  if (isMin[3]) Draw(true);
+                  Draw(isMin[3]);
                   isMin[3] = true;
-                  gPad->Update();
                }
                else std::cout << "Cannot delete last point since the current number of points is 0" << std::endl;
                break;
+            }
             case 4:
+            {
                if (angledLine1X1.size() != 0)
                {
                   if (angledLine1X2.size() > angledLine2X1.size())
@@ -618,9 +676,8 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
 
                         std::cout << "Deleting last minimum point" << std::endl;
                      }
-                     if (isMin[4]) Draw(true);
+                     Draw(isMin[4]);
                      isMin[4] = true;
-                     gPad->Update();
                   }
                   else
                   {
@@ -643,219 +700,193 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                         std::cout << "Deleting last minimum point" << std::endl;
                      }
                   }
-                  if (isMin[4]) Draw(true);
+                  Draw(isMin[4]);
                   isMin[4] = true;
-                  gPad->Update();
                }
                else std::cout << "Cannot delete last point since the current number of points is 0" << std::endl;
                break;
-         }
-         break;
-
-      case 'r':
-         Draw();
-         std::cout << "Resetting the range of the selected area" << std::endl;
-         break;
-
-      case 'p':
-      {
-         // Printing inverse box cut first
-         for (int i = 0; i < invRectXMax.size(); i++)
-         {
-            std::cout << Par.tab <<
-               "if (" + Par.xValName + " < " << invRectXMin[i] <<
-               " || " + Par.yValName + " < " << invRectYMin[i] <<
-               " ||" << std::endl << Par.tab << "    " + Par.xValName + " > " << 
-               invRectXMax[i] << " || " + Par.yValName + 
-               " > " << invRectYMax[i] << ") return true;" << std::endl;
-         }
-
-         // Determining bin ranges along X and Y axis
-         int minXBin = 1;
-         int minYBin = 1;
-         int maxXBin = Par.realHistDM->GetXaxis()->GetNbins();
-         int maxYBin = Par.realHistDM->GetYaxis()->GetNbins();
-
-         if (invRectXMax.size() != 0)
-         {
-            for (unsigned long i = 0; i < invRectXMax.size(); i++)
-            {
-               minXBin = CppTools::Maximum(Par.realHist->GetXaxis()->FindBin(invRectXMin[i]), 
-                                 minXBin);
-               minYBin = CppTools::Maximum(Par.realHist->GetYaxis()->FindBin(invRectYMin[i]), 
-                                 minYBin);
-               maxXBin = CppTools::Minimum(Par.realHist->GetXaxis()->FindBin(invRectXMax[i]), 
-                                 maxXBin);
-               maxYBin = CppTools::Minimum(Par.realHist->GetYaxis()->FindBin(invRectYMax[i]), 
-                                 maxYBin);
             }
-            minXBin++;
-            minYBin++;
-            maxXBin--;
-            maxYBin--;
-         }
-         else
-         {
-            for (int i = 1; i <= Par.realHistDM->GetXaxis()->GetNbins(); i++)
+            case 5:
             {
-               bool isSelected = false;
-               for (int j = 1; j <= Par.realHistDM->GetYaxis()->GetNbins(); j++)
+               if (singleBinXCut.size() != 0)
                {
-                  if (Par.realHist->GetBinContent(i, j) > 1e-7)
-                  {
-                     minXBin = i;
-                     isSelected = true;
-                     break;
-                  }
+                  singleBinXCut.pop_back();
+                  singleBinYCut.pop_back();
                }
-               if (isSelected) break;
-            }
-            for (int i = 1; i <= Par.realHistDM->GetYaxis()->GetNbins(); i++)
-            {
-               bool isSelected = false;
-               for (int j = 1; j <= Par.realHistDM->GetXaxis()->GetNbins(); j++)
+               else
                {
-                  if (Par.realHist->GetBinContent(j, i) > 1e-7)
-                  {
-                     minYBin = i;
-                     isSelected = true;
-                     break;
-                  }
+                  std::cout << "Cannot delete last point since the current number of points is 0" << std::endl;
                }
-               if (isSelected) break;
-            }
-            for (int i = Par.realHistDM->GetXaxis()->GetNbins(); i >= minXBin; i--)
-            {
-               bool isSelected = false;
-               for (int j = maxYBin; j >= minYBin; j--)
-               {
-                  if (Par.realHist->GetBinContent(i, j) > 1e-7)
-                  {
-                     maxXBin = i;
-                     isSelected = true;
-                     break;
-                  }
-               }
-               if (isSelected) break;
-            }
-            for (int i = Par.realHistDM->GetYaxis()->GetNbins(); i >= minYBin; i--)
-            {
-               bool isSelected = false;
-               for (int j = maxXBin; j >= minXBin; j--)
-               {
-                  if (Par.realHist->GetBinContent(j, i) > 1e-7)
-                  {
-                     maxYBin = i;
-                     isSelected = true;
-                     break;
-                  }
-               }
-               if (isSelected) break;
             }
          }
-
-         // Printing all other cuts
-         std::cout << "switch(" << Par.yValName << "Bin)" << std::endl;
-         std::cout << "{" << std::endl;
-
-         for (int i = minYBin; i <= maxYBin; i++)
-         {
-            unsigned int numberOfEmptyBins = 0;
-            unsigned int numberOfCuts = 0;
-
-            for (int j = minXBin; j <= maxXBin; j++)
-            {
-               if (Par.realHistDM->GetBinContent(j, i) < 1e-7) numberOfCuts++;
-               if (Par.realHist->GetBinContent(j, i) < 1e-7) numberOfEmptyBins++;
-            }
-
-            //if (numberOfEmptyBins == numberOfCuts) continue;
-
-            if (numberOfCuts != maxXBin - minXBin + 1)
-            {
-               std::cout << Par.tab << "case " << i << ": switch(" << Par.xValName << "Bin) {";
-
-               for (int j = minXBin; j <= maxXBin; j++)
-               {
-                  if (Par.realHistDM->GetBinContent(j, i) < 1e-7)
-                  {
-                     std::cout << "case " << j << ": ";
-                  }
-               }
-
-               std::cout << "return true; break;} ";
-            }
-            else 
-            {
-               std::cout << Par.tab << "case " << i << ": return true; ";
-            }
-            std::cout << "break;" << std::endl;
-         }
-
-         std::cout << "}" << std::endl;
          break;
       }
-
-      case 's':
+      case 'r': // reset range
       {
-         if (Par.useSimHist)
+         Draw();
+         std::cout << "Resetting the range of the pad" << std::endl;
+         break;
+      }
+      case 'p': // print cuts in output file
+      {
+         outputFile.open(outputFileName);
+
+         for (int i = 1; i <= hists.front()->GetYaxis()->GetNbins(); i++)
          {
-            Par.isCurrentSim = !Par.isCurrentSim;
-            if (Par.isCurrentSim) std::cout << "Showing sim histogram" << std::endl;
-            else std::cout << "Showing real data histogram" << std::endl;
+            for (int j = 1; j <= hists.front()->GetXaxis()->GetNbins(); j++)
+            {
+               outputFile << IsBinCut(j, i);
+               if (j < hists.front()->GetXaxis()->GetNbins()) outputFile << " ";
+            }
+            if (i < hists.front()->GetYaxis()->GetNbins()) outputFile << std::endl;
          }
-         else
-         {
-            std::cout << "Cannot show sim histogram since the option for it was not specified" << std::endl;
-         }
+         break;
+      }
+      case 's': // switch to the next histogram
+      {
+         if (currentHist < hists.size()) currentHist++;
+         else currentHist = 0;
+
+         std::cout << "Switching to histogram \"" << 
+                      hists[currentHist]->GetName() << "\"" << std::endl;
          Draw();
          break;
       }
-
       case '0':
+      {
          std::cout << "Deactivating cutting mode" << std::endl;
          currentCutMode = -1;
          break;
-
+      }
       case '1':
+      {
          std::cout << "Activating rectangular cutting mode" << std::endl;
          currentCutMode = 0;
          break;
-
+      }
       case '2':
+      {
          std::cout << "Activating linear cutting mode along x axis" << std::endl;
          currentCutMode = 1;
          break;
-
+      }
       case '3':
+      {
          std::cout << "Activating linear cutting mode along y axis" << std::endl;
          currentCutMode = 2;
          break;
-
+      }
       case '4':
+      {
          std::cout << "Activating inverse rectangular cutting mode" << std::endl;
          currentCutMode = 3;
          break;
-
+      }
       case '5':
+      {
          std::cout << "Activating angled linear cutting mode" << std::endl;
          currentCutMode = 4;
          break;
-      
+      }
       case '6':
+      {
          std::cout << "Activating single bin cutting mode" << std::endl;
          currentCutMode = 5;
          break;
+      }
    }
 }
 
-double Pol1(const double x, const double par0, const double par1)
+bool GUIDistrCutter2D::IsBinCut(const int binX, const int binY)
+{
+   if (inputFileCutAreas.size() != 0)
+   {
+      if (inputFileCutAreas[binX - 1][binY - 1]) return true;
+   }
+
+   const double x = hists.front()->GetXaxis()->GetBinCenter(binY);
+   const double y = hists.front()->GetXaxis()->GetBinCenter(binX);
+
+   for (unsigned long i = 0; i < invRectXMax.size(); i++)
+   {
+      if (x > rectXMax[i] || x < rectXMin[i] || y > rectYMax[i] || y < rectYMin[i])
+      {
+         return true;
+      }
+   }
+   for (unsigned long i = 0; i < rectXMax.size(); i++)
+   {
+      if (x > rectXMin[i] && x < rectXMax[i] && y > rectYMin[i] && y < rectYMax[i])
+      {
+         return true;
+      }
+   }
+   for (unsigned long i = 0; i < lineXMax.size(); i++)
+   {
+      if (x > lineXMin[i] && x < lineXMax[i])
+      {
+         return true;
+      }
+   }
+   for (unsigned long i = 0; i < lineYMax.size(); i++)
+   {
+      if (y > lineYMin[i] && y < lineYMax[i])
+      {
+         return true;
+      }
+   }
+   for (unsigned long i = 0; i < shiftY2.size(); i++)
+   { 
+      const double y1Cut = Pol1(shiftY1[i], tanAlpha1[i], x);
+      const double y2Cut = Pol1(shiftY2[i], tanAlpha2[i], x);
+      
+      if (y1Cut < y2Cut)
+      {
+         if (y > y1Cut && y < y2Cut)
+         {
+            return true;
+         }
+      }
+      else if (y > y2Cut && y < y1Cut) 
+      {
+         return true;
+      }
+   }
+
+   const double binXMin = hists.front()->GetXaxis()->GetBinLowEdge(binY);
+   const double binYMin = hists.front()->GetXaxis()->GetBinLowEdge(binX);
+   const double binXMax = hists.front()->GetXaxis()->GetBinUpEdge(binY);
+   const double binYMax = hists.front()->GetXaxis()->GetBinUpEdge(binX);
+
+   for (unsigned long i = 0; i < singleBinXCut.size(); i++)
+   {
+      if (binXMax > singleBinXCut[i] || binXMin < singleBinXCut[i] ||
+          binYMax > singleBinYCut[i] || binYMin < singleBinYCut[i])
+      {
+         return true;
+      }
+   }
+   return false;
+}
+
+double GUIDistrCutter2D::Pol1(const double x, const double par0, const double par1)
 {
    return par0 + x*par1;
 }
 
 void GUIDistrCutter2D::Exec()
 {
+   if (!isHistogramAdded)
+   {
+      std::cout << "\033[1m\033[31mError:\033[0m No histograms were added; use GUIDistrCutter2D::AddHistogram function to add histograms" << std::endl;
+      exit(1);
+   }
+   if (!isOutputFileSet)
+   {
+      std::cout << "\033[1m\033[31mError:\033[0m Output file was not set; use GUIDistrCutter2D::SetOutputFile function to set it" << std::endl;
+      exit(1);
+   }
+
 	const int event = gPad->GetEvent();
 	const int px = gPad->GetEventX();
 	const int py = gPad->GetEventY();
@@ -877,4 +908,4 @@ void GUIDistrCutter2D::Exec()
    }
 }
 
-#endif /* ROOT_TOOLS_GUI_DISTR_CUTTER_CPP */
+#endif /* ROOT_TOOLS_GUI_DISTR_CUTTER_2D_CPP */

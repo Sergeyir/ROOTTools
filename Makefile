@@ -34,6 +34,7 @@ TF1Tools: lib/libTCanvasTools.so
 GUIFit: lib/libGUIFit.so
 ThrObj: lib/libThrObj.so
 TFileTools: lib/libTFileTools.so
+GUIDistrCutter2D: lib/libGUIDistrCutter2D.so
 
 .SILENT:
 

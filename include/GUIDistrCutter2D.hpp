@@ -1,6 +1,6 @@
 /** 
- *  @file   GUIDistrCutter.hpp 
- *  @brief  Contains structs and functions that can be used for providing GUI for removal of "bad"/"dead" areas from 1D and 2D distributions
+ *  @file   GUIDistrCutter2D.hpp 
+ *  @brief  Contains structs and functions that can be used for providing GUI for removal of "bad"/"dead" areas from 2D distributions
  *
  *  Not finished yet
  *
@@ -8,8 +8,8 @@
  *
  *  @author Sergei Antsupov (antsupov0124@gmail.com)
  **/
-#ifndef ROOT_TOOLS_GUI_DISTR_CUTTER_HPP
-#define ROOT_TOOLS_GUI_DISTR_CUTTER_HPP
+#ifndef ROOT_TOOLS_GUI_DISTR_CUTTER_2D_HPP
+#define ROOT_TOOLS_GUI_DISTR_CUTTER_2D_HPP
 
 #include <iostream>
 #include <string>
@@ -17,12 +17,15 @@
 #include <array>
 #include <fstream>
 
+#include "TBox.h"
+#include "TFrame.h"
+#include "TPad.h"
 #include "TH2.h"
 #include "TLine.h"
 #include "Buttons.h"
 
 /*! @namespace GUIDistrCutter2D GUIDistrCutter2D namespace
- * @brief Stores various useful data and functions for functionality of GUI cutter. The only useful funtions for user are AddHistogram, ReadCutAreas, WriteCutAreas, and Exec. Other functions and variables are employed automaticaly when needed.
+ * @brief Stores various useful data and functions for functionality of GUI cutter. The only useful funtions for user are AddHistogram, ReadCutAreas, SetOutputFile, and Exec. Other functions and variables are employed automaticaly when needed.
  *
  * Not finished yet
  */
@@ -37,47 +40,47 @@ namespace GUIDistrCutter2D
     *
     * The cuts from the file will be applied to all added histograms. If no histograms were added prior error will be written and exit(1) will be called.
     *
-    * @param[in] inputFileName name of the file to read the info from
+    * @param[in] fileName name of the file to read the info from
     */
-   void ReadCutAreas(const std::string& inputFileName);
+   void ReadCutAreas(const std::string& fileName);
    /*! @brief Set the file in which cut areas will be written
     *
     * Data will be written for output file for every bin 0 or 1, i.e. whether the bin was or was not cut. Additionaly, in the beginning of the file number of x bins, x range, number of y bins, y range are written.
     *
-    * @param[in] outputFileName name of the output file in which the data will be written. If the file with the same name exists, the old file will be renamed to (outputFileName + ".tmp") and the data will be written in file (outputFileName).
+    * @param[in] fileName name of the output file in which the data will be written. If the file with the same name exists, the old file will be renamed to (fileName + ".tmp") and the data will be written in file (fileName).
     */
-   void SetOutputFile(const std::string& outputFileName);
+   void SetOutputFile(const std::string& fileName);
    /// @brief Executable to pass to TPad::AddExec(name, command) to start GUI session
    void Exec();
    /// Sets style to the provided TLine. This function is called automaticaly when needed.
    void SetLine(TLine& line, const double x1, const double y1, 
                 const double x2, const double y2, const Color_t color=kRed);
    /// Draws histogram with cuts applied. This function is called automaticaly when needed.
-   void Draw(const bool isRangeFixed);
+   void Draw(const bool isRangeFixed = false);
    /// Applies cuts to the passed distribution. This function is called automaticaly when needed.
    void ApplyCuts(TH2D* hist);
    /// Applies actions to kMouseMotion event. This function is called automaticaly when needed.
    void MouseMotionAction(const double x, const double y);
    /// Applies actions to kButton1Down event. This function is called automaticaly when needed.
-   void Button1DownAction(const double x, const double y)
+   void Button1DownAction(const double x, const double y);
    /// Applies actions to kKeyPress event. This function is called automaticaly when needed.
-   void KeyPressAction(const int button)
+   void KeyPressAction(const int button);
+   /// Checks whether the bin is cut or not
+   bool IsBinCut(const int binX, const int binY);
    /// Needed for angular cut mode. This function is called automaticaly when needed.
    double Pol1(const double x, const double par0, const double par1);
    /// stores added distributions
-   std::vector<T> hists;
-   /// stores added distributions with cuts applied
-   std::vector<T> histsWithCuts;
+   std::vector<TH2D *> hists;
+   /// stores added distributions to which cuts will be applied
+   std::vector<TH2D *> histsWithCuts;
+   /// stores integrals of added uncut hists
+   std::vector<unsigned long> histsOrigIntegral;
    /// stores information about the index of the currently displayed histogram
    unsigned short currentHist = 0;
    /// stores information about cut areas that were read from the input file
    std::vector<std::vector<bool>> inputFileCutAreas;
    /// stores information about the current cut mode
    short currentCutMode = -1;
-   /// stores x values of the single pixel cut mode
-   std::vector<double> singleXCut;
-   /// stores y values of the single pixel cut mode
-   std::vector<double> singleYCut;
    /// stores minimum x values of the rectangular cut mode
 	std::vector<double> rectXMin;
    /// stores maximum x values of the rectangular cut mode
@@ -126,10 +129,20 @@ namespace GUIDistrCutter2D
    std::vector<double> shiftY1;
    /// stores y shifts of the 2nd line of angled line cuts
    std::vector<double> shiftY2;
+   /// stores x values of the single pixel cut mode
+   std::vector<double> singleBinXCut;
+   /// stores y values of the single pixel cut mode
+   std::vector<double> singleBinYCut;
    /// stores information that shows whether the first point was chosen for the given cut mode
 	std::array<bool, 5> isMin = {true, true, true, true, true};
+   /// name of the file
+   std::string outputFileName;
    /// file in which cut areas will be written
    std::ofstream outputFile;
+   /// shows whether the output file was set
+   bool isOutputFileSet = false;
+   /// shows whether at least one histogram was added
+   bool isHistogramAdded = false;
 };
 
-#endif /* ROOT_TOOLS_GUI_DISTR_CUTTER_HPP */
+#endif /* ROOT_TOOLS_GUI_DISTR_CUTTER_2D_HPP */
