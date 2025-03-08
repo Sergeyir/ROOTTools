@@ -16,7 +16,7 @@ find_package(ROOT QUIET)
 
 if(${ROOT_FOUND})
    message(STATUS "ROOT package found")
-elseif(EXISTS "${ROOT_PATH}/bin/root-config")
+elseif(EXISTS "${ROOT_PATH}/bin/root")
    message(STATUS "ROOT path found")
    set(ROOT_INCLUDE_DIRS "${ROOT_PATH}/include")
    set(ROOT_root_CMD "${ROOT_PATH}/bin/root")
