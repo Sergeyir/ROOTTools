@@ -1,6 +1,6 @@
 # Overview
 
-Set of useful functions and classes that can be used in any C++ application to simplify the work with <a href="https://root.cern/">ROOT6</a>'s various classes, such as TF1, TCanvas, TFile, TThreadedObject, etc., or to extend their usage. This repository is still in progress, and some of its features are yet to be finished/added. But everything described in the [documentation](https://sergeyir.github.io/documentation/ROOTTools/) is finished and works flawlessly.
+Set of useful functions and classes that can be used in any C++ application to simplify the work with <a href="https://root.cern/">ROOT6</a>'s various classes, such as TF1, TCanvas, TFile, TThreadedObject, etc., or to extend their usage. This repository is still in progress, and some of its features are yet to be finished/added. But everything described in the [documentation](https://sergeyir.github.io/documentation/ROOTTools/) is finished and it works fine.
 
 # Requirements
 
@@ -14,7 +14,7 @@ To check the version of C++ that was used for the compilation of the ROOT run (y
 root-config --cflags
 ```
 
-If [ROOT6](https://root.cern/) was not installed with a package manager on your system, you also need to set $ROOT_INCLUDE and $ROOT_CONFIG in your profile (.bashrc, .zshrc, or other) or configure the paths in Makefile.am.
+If [ROOT6](https://root.cern/) was not installed with a package manager on your system, you also need to set path to the directory in which root was installed ($ROOT_PATH) in your profile (.bashrc, .zshrc, or other) or configure the paths in CMakeLists.txt or etc/Makefile.am.
 
 # Installing
 
@@ -24,10 +24,22 @@ Run in your working directory to copy the repository
 git clone https://github.com/Sergeyir/ROOTTools --depth=1
 ```
 
-Run in the downloaded directory to compile the libraries (you can use option -jN to compile on multiple threads)
+First run in the downloaded directory to generate Makefile
+
+```sh
+cmake .
+```
+
+Then run to compile the libraries (you can use option -jN to compile on multiple threads)
 
 ```sh 
 make
+```
+
+Or you can use Makefile from etc directory
+
+```sh
+cp etc/Makefile* . && make
 ```
 
 # Documentation
@@ -48,4 +60,4 @@ xdg-open html/index.html
 
 # Usage
 
-In order to use functions and classes from this project while compiling link libraries libTCanvasTools.so, libFitTools.so, libGUIFit.so, libThrObj.so, libTFileTools.so (see $ROOT_TOOLS_LIB in Makefile and Makefile.inc for more detail), and don't forget to include the needed header files (see the list of files in documentation https://sergeyir.github.io/documentation/ROOTTools/files.html).
+In order to use functions and classes from this project while compiling link libraries libTCanvasTools.so, libFitTools.so, libGUIFit.so, libThrObj.so, libTFileTools.so (see $ROOT_TOOLS_LIB in Makefile and Makefile.inc for more detail or see CMakeLists.txt), and don't forget to include the needed header files (see the list of files in documentation https://sergeyir.github.io/documentation/ROOTTools/files.html).
