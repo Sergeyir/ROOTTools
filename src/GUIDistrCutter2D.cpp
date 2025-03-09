@@ -308,7 +308,7 @@ void GUIDistrCutter2D::MouseMotionAction(const double x, const double y)
                SetLine(line1, gPad->PadtoX(lineXMin), 
                        gPad->PadtoY(Pol1(lineXMin, shiftY1.back(), tanAlpha1.back())), 
                        gPad->PadtoX(lineXMax), 
-                       gPad->PadtoY(Pol1(lineXMax, shiftY1.back(), tanAlpha1.back()), kGray));
+                       gPad->PadtoY(Pol1(lineXMax, shiftY1.back(), tanAlpha1.back())), kGray);
             }
 
             line1.Draw();
@@ -325,7 +325,7 @@ void GUIDistrCutter2D::MouseMotionAction(const double x, const double y)
             SetLine(line2, gPad->PadtoX(lineXMin), 
                     gPad->PadtoY(Pol1(lineXMin, shiftY1.back(), tanAlpha1.back())), 
                     gPad->PadtoX(lineXMax), 
-                    gPad->PadtoY(Pol1(lineXMax, shiftY1.back(), tanAlpha1.back()), kGray));
+                    gPad->PadtoY(Pol1(lineXMax, shiftY1.back(), tanAlpha1.back())), kGray);
 
             line1.Draw(); line2.Draw();
          }
