@@ -136,10 +136,8 @@ namespace GUIDistrCutter2D
    std::vector<double> singleBinYCut;
    /// stores information that shows whether the first point was chosen for the given cut mode
 	std::array<bool, 5> isMin = {true, true, true, true, true};
-   /// name of the file
+   /// name of the file in which cuts will be written
    std::string outputFileName;
-   /// file in which cut areas will be written
-   std::ofstream outputFile;
    /// shows whether the output file was set
    bool isOutputFileSet = false;
    /// shows whether at least one histogram was added

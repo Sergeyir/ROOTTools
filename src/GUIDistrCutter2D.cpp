@@ -606,8 +606,8 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
 
                      std::cout << "Deleting last minimum point" << std::endl;
                   }
-                  Draw(isMin[0]);
                   isMin[0] = true;
+                  Draw(true);
                }
                else std::cout << "Cannot delete last point since the current number of points is 0" << std::endl;
                break;
@@ -628,7 +628,7 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                      lineXMin.pop_back();
                      std::cout << "Deleting last line" << std::endl;
                   }
-                  Draw(isMin[1]);
+                  Draw(true);
                   isMin[1] = true;
                }
                else std::cout << "Cannot delete last line/lines since the current number of lines is 0" << std::endl;
@@ -650,7 +650,7 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                      lineYMin.pop_back();
                      std::cout << "Deleting last line" << std::endl;
                   }
-                  Draw(isMin[2]);
+                  Draw(true);
                   isMin[2] = true;
                }
                else std::cout << "Cannot delete last line since the current number of lines is 0" << std::endl;
@@ -676,7 +676,7 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
 
                      std::cout << "Deleting last minimum point" << std::endl;
                   }
-                  Draw(isMin[3]);
+                  Draw(true);
                   isMin[3] = true;
                }
                else std::cout << "Cannot delete last point since the current number of points is 0" << std::endl;
@@ -706,7 +706,7 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
 
                         std::cout << "Deleting last minimum point" << std::endl;
                      }
-                     Draw(isMin[4]);
+                     Draw(true);
                      isMin[4] = true;
                   }
                   else
@@ -730,7 +730,7 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                         std::cout << "Deleting last minimum point" << std::endl;
                      }
                   }
-                  Draw(isMin[4]);
+                  Draw(true);
                   isMin[4] = true;
                }
                else std::cout << "Cannot delete last point since the current number of points is 0" << std::endl;
@@ -747,7 +747,7 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                {
                   std::cout << "Cannot delete last point since the current number of points is 0" << std::endl;
                }
-               Draw(false);
+               Draw(true);
             }
          }
          break;
@@ -760,7 +760,7 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
       }
       case 'p': // print cuts in output file
       {
-         outputFile.open(outputFileName);
+         std::ofstream outputFile(outputFileName);
 
          const int xNBins = hists.front()->GetXaxis()->GetNbins();
          const int yNBins = hists.front()->GetYaxis()->GetNbins();
@@ -781,6 +781,7 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
             if (i < yNBins) outputFile << std::endl;
          }
          std::cout << "Cuts were written in file " << outputFileName << std::endl;
+         outputFile.close();
          break;
       }
       case 's': // switch to the next histogram
@@ -790,7 +791,7 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
 
          std::cout << "Switching to histogram \"" << 
                       hists[currentHist]->GetName() << "\"" << std::endl;
-         Draw();
+         Draw(true);
          break;
       }
       case '0':
