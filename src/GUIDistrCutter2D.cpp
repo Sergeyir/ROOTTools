@@ -747,6 +747,7 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                {
                   std::cout << "Cannot delete last point since the current number of points is 0" << std::endl;
                }
+               Draw(false);
             }
          }
          break;
