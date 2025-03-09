@@ -47,9 +47,10 @@ namespace GUIDistrCutter2D
     *
     * Data will be written for output file for every bin 0 or 1, i.e. whether the bin was or was not cut. Additionaly, in the beginning of the file number of x bins, x range, number of y bins, y range are written.
     *
-    * @param[in] fileName name of the output file in which the data will be written. If the file with the same name exists, the old file will be renamed to (fileName + ".tmp") and the data will be written in file (fileName).
+    * @param[in] fileName name of the output file in which the data will be written.
+    * @param[in] rewrite if true the file will be rewritten without warning. Else if the file with the same name exists, the old file will be renamed to (fileName + ".backup") and the data will be written into file (fileName).
     */
-   void SetOutputFile(const std::string& fileName);
+   void SetOutputFile(const std::string& fileName, const bool rewrite = false);
    /// @brief Executable to pass to TPad::AddExec(name, command) to start GUI session
    void Exec();
    /// Sets style to the provided TLine. This function is called automaticaly when needed.
@@ -143,6 +144,8 @@ namespace GUIDistrCutter2D
    bool isOutputFileSet = false;
    /// shows whether at least one histogram was added
    bool isHistogramAdded = false;
+   /// checks if the histogram was drawn the first time
+   bool isFirstDraw = true;
 };
 
 #endif /* ROOT_TOOLS_GUI_DISTR_CUTTER_2D_HPP */

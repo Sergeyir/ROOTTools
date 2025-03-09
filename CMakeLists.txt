@@ -2,15 +2,15 @@ cmake_minimum_required(VERSION 3.0...3.31.6 FATAL_ERROR)
 
 project(ROOTTools)
 
-option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
-
-set(CMAKE_CXX_FLAGS "-Wall -Werror -Wpedantic -pipe -O2")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_FLAGS "-Wall -Werror -Wpedantic -pipe -O2")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
+option(BUILD_SHARED_LIBS "Buildshared libraries" ON)
 
 find_package(ROOT QUIET)
 
