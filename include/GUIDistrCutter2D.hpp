@@ -2,8 +2,6 @@
  *  @file   GUIDistrCutter2D.hpp 
  *  @brief  Contains structs and functions that can be used for providing GUI for removal of "bad"/"dead" areas from 2D distributions
  *
- *  Not finished yet
- *
  *  This file is a part of a project ROOTTools (https://github.com/Sergeyir/ROOTTools).
  *
  *  @author Sergei Antsupov (antsupov0124@gmail.com)
@@ -26,8 +24,6 @@
 
 /*! @namespace GUIDistrCutter2D GUIDistrCutter2D namespace
  * @brief Stores various useful data and functions for functionality of GUI cutter. The only useful funtions for user are AddHistogram, ReadCutAreas, SetOutputFile, and Exec. Other functions and variables are employed automaticaly when needed.
- *
- * Not finished yet
  */
 namespace GUIDistrCutter2D
 {
@@ -54,8 +50,8 @@ namespace GUIDistrCutter2D
    /// @brief Executable to pass to TPad::AddExec(name, command) to start GUI session
    void Exec();
    /// Sets style to the provided TLine. This function is called automaticaly when needed.
-   void SetLine(TLine& line, const double x1, const double y1, 
-                const double x2, const double y2, const Color_t color=kRed);
+   inline void SetLine(TLine& line, const double x1, const double y1, 
+                       const double x2, const double y2, const Color_t color=kRed);
    /// Draws histogram with cuts applied. This function is called automaticaly when needed.
    void Draw(const bool isRangeFixed = false);
    /// Applies cuts to the passed distribution. This function is called automaticaly when needed.
@@ -69,7 +65,7 @@ namespace GUIDistrCutter2D
    /// Checks whether the bin is cut or not
    bool IsBinCut(const int binX, const int binY);
    /// Needed for angular cut mode. This function is called automaticaly when needed.
-   double Pol1(const double x, const double par0, const double par1);
+   inline double Pol1(const double x, const double par0, const double par1);
    /// stores added distributions
    std::vector<TH2D *> hists;
    /// stores added distributions to which cuts will be applied
