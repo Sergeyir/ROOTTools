@@ -27,7 +27,7 @@
 #include "TGraph.h"
 #include "TF1.h"
 
-/// @namespace ROOTTools ROOTTools namespace
+/// @namespace ROOTTools
 namespace ROOTTools
 {
    /*! @class GUIFit

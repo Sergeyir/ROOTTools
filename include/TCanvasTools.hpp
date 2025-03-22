@@ -15,7 +15,7 @@
 
 #include "TCanvas.h"
 
-/// @namespace ROOTTools ROOTTools namespace
+/// @namespace ROOTTools
 namespace ROOTTools
 {
    /*! @brief Saves TCanvas in .pdf format and additionaly in .png format if specified.

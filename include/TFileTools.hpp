@@ -24,7 +24,7 @@
 #include "TH2.h"
 #include "TH3.h"
 
-/// @namespace ROOTTools ROOTTools namespace
+/// @namespace ROOTTools
 namespace ROOTTools
 {
    /*! @class CheckFileForNan

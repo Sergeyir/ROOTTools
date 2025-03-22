@@ -22,7 +22,7 @@
 
 #include "ROOT/TThreadedObject.hxx"
 
-/// @namespace ROOTTools ROOTTools namespace
+/// @namespace ROOTTools
 namespace ROOTTools
 {
    /// @namespace ThrObjHolder container that stores histograms of ThrObj class

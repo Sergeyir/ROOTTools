@@ -15,7 +15,7 @@
 
 #include "TF1.h"
 
-/// @namespace ROOTTools ROOTTools namespace
+/// @namespace ROOTTools
 namespace ROOTTools
 {
    /*! @brief Return the biggest parameter index + 1 in formula of labmda function that was used in TF1 constructor

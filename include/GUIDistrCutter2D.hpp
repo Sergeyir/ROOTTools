@@ -22,7 +22,7 @@
 #include "TLine.h"
 #include "Buttons.h"
 
-/*! @namespace GUIDistrCutter2D GUIDistrCutter2D namespace
+/*! @namespace GUIDistrCutter2D 
  * @brief Stores various useful data and functions for functionality of GUI cutter. The only useful funtions for user are AddHistogram, ReadCutAreas, SetOutputFile, and Exec. Other functions and variables are employed automaticaly when needed.
  */
 namespace GUIDistrCutter2D
