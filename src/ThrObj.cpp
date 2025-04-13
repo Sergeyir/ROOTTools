@@ -111,7 +111,7 @@ void ROOTTools::ThrObjHolder::Clear()
    containerTH3L.clear();
 
    containerTFileDir.clear();
-   for (auto& vec : containerTFileDir)
+   for (auto& vec : containerTFileDirIndex)
    {
       vec.clear();
    }
@@ -140,78 +140,74 @@ void ROOTTools::ThrObjHolder::AddTFileDirectory(const std::string& directory, co
 
 void ROOTTools::ThrObjHolder::Write()
 {
-   if (containerTFileDir.size() == 0) Write();
-   else
+   for (std::string dir : containerTFileDir)
    {
-      for (std::string dir : containerTFileDir)
-      {
-         gDirectory->mkdir(dir.c_str());
-      }
-      for (long unsigned int i = 0; i < containerTH1F.size(); i++)
-      {
-         if (containerTFileDirIndex[0][i] != -999) gDirectory->cd(
-            containerTFileDir[containerTFileDirIndex[0][i]].c_str());
-         else gDirectory->cd();
-         static_cast<std::shared_ptr<TH1F>>(containerTH1F[i]->Merge())->Clone()->Write();
-      }
-      for (long unsigned int i = 0; i < containerTH2F.size(); i++)
-      {
-         if (containerTFileDirIndex[1][i] != -999) gDirectory->cd(
-            containerTFileDir[containerTFileDirIndex[1][i]].c_str());
-         else gDirectory->cd();
-         static_cast<std::shared_ptr<TH2F>>(containerTH2F[i]->Merge())->Clone()->Write();
-      }
-      for (long unsigned int i = 0; i < containerTH3F.size(); i++)
-      {
-         if (containerTFileDirIndex[2][i] != -999) gDirectory->cd(
-            containerTFileDir[containerTFileDirIndex[2][i]].c_str());
-         else gDirectory->cd();
-         static_cast<std::shared_ptr<TH3F>>(containerTH3F[i]->Merge())->Clone()->Write();
-      }
-      for (long unsigned int i = 0; i < containerTH1D.size(); i++)
-      {
-         if (containerTFileDirIndex[3][i] != -999) gDirectory->cd(
-            containerTFileDir[containerTFileDirIndex[3][i]].c_str());
-         else gDirectory->cd();
-         static_cast<std::shared_ptr<TH1D>>(containerTH1D[i]->Merge())->Clone()->Write();
-      }
-      for (long unsigned int i = 0; i < containerTH2D.size(); i++)
-      {
-         if (containerTFileDirIndex[4][i] != -999) gDirectory->cd(
-            containerTFileDir[containerTFileDirIndex[4][i]].c_str());
-         else gDirectory->cd();
-         static_cast<std::shared_ptr<TH2D>>(containerTH2D[i]->Merge())->Clone()->Write();
-      }
-      for (long unsigned int i = 0; i < containerTH3D.size(); i++)
-      {
-         if (containerTFileDirIndex[5][i] != -999) gDirectory->cd(
-            containerTFileDir[containerTFileDirIndex[5][i]].c_str());
-         else gDirectory->cd();
-         static_cast<std::shared_ptr<TH3D>>(containerTH3D[i]->Merge())->Clone()->Write();
-      }
-      for (long unsigned int i = 0; i < containerTH1L.size(); i++)
-      {
-         if (containerTFileDirIndex[6][i] != -999) gDirectory->cd(
-            containerTFileDir[containerTFileDirIndex[6][i]].c_str());
-         else gDirectory->cd();
-         static_cast<std::shared_ptr<TH1L>>(containerTH1L[i]->Merge())->Clone()->Write();
-      }
-      for (long unsigned int i = 0; i < containerTH2L.size(); i++)
-      {
-         if (containerTFileDirIndex[7][i] != -999) gDirectory->cd(
-            containerTFileDir[containerTFileDirIndex[7][i]].c_str());
-         else gDirectory->cd();
-         static_cast<std::shared_ptr<TH2L>>(containerTH2L[i]->Merge())->Clone()->Write();
-      }
-      for (long unsigned int i = 0; i < containerTH3L.size(); i++)
-      {
-         if (containerTFileDirIndex[8][i] != -999) gDirectory->cd(
-            containerTFileDir[containerTFileDirIndex[8][i]].c_str());
-         else gDirectory->cd();
-         static_cast<std::shared_ptr<TH3L>>(containerTH3L[i]->Merge())->Clone()->Write();
-      }
-      Clear();
+      gDirectory->mkdir(dir.c_str());
    }
+   for (long unsigned int i = 0; i < containerTH1F.size(); i++)
+   {
+      if (containerTFileDirIndex[0][i] != -999) gDirectory->cd(
+         containerTFileDir[containerTFileDirIndex[0][i]].c_str());
+      else gDirectory->cd();
+      static_cast<std::shared_ptr<TH1F>>(containerTH1F[i]->Merge())->Clone()->Write();
+   }
+   for (long unsigned int i = 0; i < containerTH2F.size(); i++)
+   {
+      if (containerTFileDirIndex[1][i] != -999) gDirectory->cd(
+         containerTFileDir[containerTFileDirIndex[1][i]].c_str());
+      else gDirectory->cd();
+      static_cast<std::shared_ptr<TH2F>>(containerTH2F[i]->Merge())->Clone()->Write();
+   }
+   for (long unsigned int i = 0; i < containerTH3F.size(); i++)
+   {
+      if (containerTFileDirIndex[2][i] != -999) gDirectory->cd(
+         containerTFileDir[containerTFileDirIndex[2][i]].c_str());
+      else gDirectory->cd();
+      static_cast<std::shared_ptr<TH3F>>(containerTH3F[i]->Merge())->Clone()->Write();
+   }
+   for (long unsigned int i = 0; i < containerTH1D.size(); i++)
+   {
+      if (containerTFileDirIndex[3][i] != -999) gDirectory->cd(
+         containerTFileDir[containerTFileDirIndex[3][i]].c_str());
+      else gDirectory->cd();
+      static_cast<std::shared_ptr<TH1D>>(containerTH1D[i]->Merge())->Clone()->Write();
+   }
+   for (long unsigned int i = 0; i < containerTH2D.size(); i++)
+   {
+      if (containerTFileDirIndex[4][i] != -999) gDirectory->cd(
+         containerTFileDir[containerTFileDirIndex[4][i]].c_str());
+      else gDirectory->cd();
+      static_cast<std::shared_ptr<TH2D>>(containerTH2D[i]->Merge())->Clone()->Write();
+   }
+   for (long unsigned int i = 0; i < containerTH3D.size(); i++)
+   {
+      if (containerTFileDirIndex[5][i] != -999) gDirectory->cd(
+         containerTFileDir[containerTFileDirIndex[5][i]].c_str());
+      else gDirectory->cd();
+      static_cast<std::shared_ptr<TH3D>>(containerTH3D[i]->Merge())->Clone()->Write();
+   }
+   for (long unsigned int i = 0; i < containerTH1L.size(); i++)
+   {
+      if (containerTFileDirIndex[6][i] != -999) gDirectory->cd(
+         containerTFileDir[containerTFileDirIndex[6][i]].c_str());
+      else gDirectory->cd();
+      static_cast<std::shared_ptr<TH1L>>(containerTH1L[i]->Merge())->Clone()->Write();
+   }
+   for (long unsigned int i = 0; i < containerTH2L.size(); i++)
+   {
+      if (containerTFileDirIndex[7][i] != -999) gDirectory->cd(
+         containerTFileDir[containerTFileDirIndex[7][i]].c_str());
+      else gDirectory->cd();
+      static_cast<std::shared_ptr<TH2L>>(containerTH2L[i]->Merge())->Clone()->Write();
+   }
+   for (long unsigned int i = 0; i < containerTH3L.size(); i++)
+   {
+      if (containerTFileDirIndex[8][i] != -999) gDirectory->cd(
+         containerTFileDir[containerTFileDirIndex[8][i]].c_str());
+      else gDirectory->cd();
+      static_cast<std::shared_ptr<TH3L>>(containerTH3L[i]->Merge())->Clone()->Write();
+   }
+   Clear();
 }
 
 void ROOTTools::ThrObjHolder::Write(const std::string& outputFileName)
