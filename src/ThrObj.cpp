@@ -27,7 +27,7 @@
 std::shared_ptr<TH1F> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH1F> *hist, 
                                                             const std::string& directory) 
 {
-   containerTH1F.push_back(std::unique_ptr<ROOT::TThreadedObject<TH1F>>(hist));
+   containerTH1F.emplace_back(hist);
    AddTFileDirectory(directory, 0);
    return containerTH1F.back()->Get();
 };
@@ -35,7 +35,7 @@ std::shared_ptr<TH1F> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObjec
 std::shared_ptr<TH2F> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH2F> *hist, 
                                                             const std::string& directory)
 {
-   containerTH2F.push_back(std::unique_ptr<ROOT::TThreadedObject<TH2F>>(hist));
+   containerTH2F.emplace_back(hist);
    AddTFileDirectory(directory, 1);
    return containerTH2F.back()->Get();
 };
@@ -43,7 +43,7 @@ std::shared_ptr<TH2F> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObjec
 std::shared_ptr<TH3F> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH3F> *hist, 
                                                             const std::string& directory) 
 {
-   containerTH3F.push_back(std::unique_ptr<ROOT::TThreadedObject<TH3F>>(hist));
+   containerTH3F.emplace_back(hist);
    AddTFileDirectory(directory, 2);
    return containerTH3F.back()->Get();
 };
@@ -51,7 +51,7 @@ std::shared_ptr<TH3F> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObjec
 std::shared_ptr<TH1D> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH1D> *hist, 
                                                             const std::string& directory) 
 {
-   containerTH1D.push_back(std::unique_ptr<ROOT::TThreadedObject<TH1D>>(hist));
+   containerTH1D.emplace_back(hist);
    AddTFileDirectory(directory, 3);
    return containerTH1D.back()->Get();
 };
@@ -59,7 +59,7 @@ std::shared_ptr<TH1D> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObjec
 std::shared_ptr<TH2D> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH2D> *hist, 
                                                             const std::string& directory) 
 {
-   containerTH2D.push_back(std::unique_ptr<ROOT::TThreadedObject<TH2D>>(hist));
+   containerTH2D.emplace_back(hist);
    AddTFileDirectory(directory, 4);
    return containerTH2D.back()->Get();
 };
@@ -67,7 +67,7 @@ std::shared_ptr<TH2D> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObjec
 std::shared_ptr<TH3D> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH3D> *hist, 
                                                             const std::string& directory) 
 {
-   containerTH3D.push_back(std::unique_ptr<ROOT::TThreadedObject<TH3D>>(hist));
+   containerTH3D.emplace_back(hist);
    AddTFileDirectory(directory, 5);
    return containerTH3D.back()->Get();
 };
@@ -75,7 +75,7 @@ std::shared_ptr<TH3D> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObjec
 std::shared_ptr<TH1L> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH1L> *hist, 
                                                             const std::string& directory) 
 {
-   containerTH1L.push_back(std::unique_ptr<ROOT::TThreadedObject<TH1L>>(hist));
+   containerTH1L.emplace_back(hist);
    AddTFileDirectory(directory, 6);
    return containerTH1L.back()->Get();
 };
@@ -83,7 +83,7 @@ std::shared_ptr<TH1L> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObjec
 std::shared_ptr<TH2L> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH2L> *hist, 
                                                             const std::string& directory) 
 {
-   containerTH2L.push_back(std::unique_ptr<ROOT::TThreadedObject<TH2L>>(hist));
+   containerTH2L.emplace_back(hist);
    AddTFileDirectory(directory, 7);
    return containerTH2L.back()->Get();
 };
@@ -91,7 +91,7 @@ std::shared_ptr<TH2L> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObjec
 std::shared_ptr<TH3L> ROOTTools::ThrObjHolder::AddHistogram(ROOT::TThreadedObject<TH3L> *hist, 
                                                             const std::string& directory) 
 {
-   containerTH3L.push_back(std::unique_ptr<ROOT::TThreadedObject<TH3L>>(hist));
+   containerTH3L.emplace_back(hist);
    AddTFileDirectory(directory, 8);
    return containerTH3L.back()->Get();
 };
