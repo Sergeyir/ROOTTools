@@ -73,7 +73,7 @@ namespace GUIDistrCutter2D
    /// stores integrals of added uncut hists
    std::vector<unsigned long> histsOrigIntegral;
    /// stores information about the index of the currently displayed histogram
-   unsigned short currentHist = 0;
+   unsigned long currentHist = 0;
    /// stores information about cut areas that were read from the input file
    std::vector<std::vector<bool>> inputFileCutAreas;
    /// stores information about the current cut mode

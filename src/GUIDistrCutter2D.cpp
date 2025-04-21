@@ -178,7 +178,9 @@ void GUIDistrCutter2D::SetLine(TLine &line, const double x1, const double y1,
 
 void GUIDistrCutter2D::Draw(const bool isRangeFixed)
 {
-   histsWithCuts[currentHist] = static_cast<TH2D *>(hists[currentHist]->Clone());
+   histsWithCuts[currentHist] = static_cast<TH2D *> 
+      (hists[currentHist]->Clone((static_cast<std::string>(hists[currentHist]->GetName()) + 
+                                  " cut").c_str()));
    histsWithCuts[currentHist]->SetDirectory(0);
 
 	for (int i = 1; i <= hists.front()->GetYaxis()->GetNbins(); i++)
@@ -786,10 +788,10 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
       }
       case 's': // switch to the next histogram
       {
-         if (currentHist < hists.size()) currentHist++;
+         if (currentHist < hists.size() - 1) currentHist++;
          else currentHist = 0;
 
-         std::cout << "Switching to histogram \"" << 
+         std::cout << "Switching to  histogram " << currentHist + 1 << " named \"" << 
                       hists[currentHist]->GetName() << "\"" << std::endl;
          Draw(true);
          break;
