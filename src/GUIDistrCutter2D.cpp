@@ -59,7 +59,6 @@ void GUIDistrCutter2D::AddHistogram(TH2D *hist)
    }
 
    hists.push_back(static_cast<TH2D *>(hist->Clone()));
-   histsWithCuts.resize(hists.size());
 
    hists.back()->SetDirectory(0);
 
@@ -178,10 +177,10 @@ void GUIDistrCutter2D::SetLine(TLine &line, const double x1, const double y1,
 
 void GUIDistrCutter2D::Draw(const bool isRangeFixed)
 {
-   histsWithCuts[currentHist] = static_cast<TH2D *> 
+   histWithCuts = static_cast<TH2D *> 
       (hists[currentHist]->Clone((static_cast<std::string>(hists[currentHist]->GetName()) + 
                                   " cut").c_str()));
-   histsWithCuts[currentHist]->SetDirectory(0);
+   histWithCuts->SetDirectory(0);
 
 	for (int i = 1; i <= hists.front()->GetYaxis()->GetNbins(); i++)
 	{
@@ -189,7 +188,7 @@ void GUIDistrCutter2D::Draw(const bool isRangeFixed)
 		{
          if (IsBinCut(j, i))
          {
-            histsWithCuts[currentHist]->SetBinContent(j, i, 0.);
+            histWithCuts->SetBinContent(j, i, 0.);
          }
 		}
 	}
@@ -201,21 +200,18 @@ void GUIDistrCutter2D::Draw(const bool isRangeFixed)
 		const int yMin = hists.front()->GetYaxis()->FindBin(gPad->GetUymin())+1;
 		const int yMax = hists.front()->GetYaxis()->FindBin(gPad->GetUymax())-1;
 		
-      for (unsigned long i = 0; i < hists.size(); i++)
-      {
-         histsWithCuts[i]->GetXaxis()->SetRange(xMin, xMax);
-         histsWithCuts[i]->GetYaxis()->SetRange(yMin, yMax);
-      }
+      histWithCuts->GetXaxis()->SetRange(xMin, xMax);
+      histWithCuts->GetYaxis()->SetRange(yMin, yMax);
 	}
 	
-   histsWithCuts[currentHist]->Draw("COLZ");
+   histWithCuts->Draw("COLZ");
 
 	gPad->Modified();
 	gPad->Update();
    gPad->GetFrame()->SetBit(TBox::kCannotMove);
 
    std::cout << "Current histogram: Data lost " << 
-                (1. - histsWithCuts[currentHist]->
+                (1. - histWithCuts->
                  Integral(1, hists.front()->GetXaxis()->GetNbins(), 1, 
                           hists.front()->GetYaxis()->GetNbins())/
                  histsOrigIntegral[currentHist])*100. << "%" << std::endl;

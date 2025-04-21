@@ -68,8 +68,8 @@ namespace GUIDistrCutter2D
    inline double Pol1(const double x, const double par0, const double par1);
    /// stores added distributions
    std::vector<TH2D *> hists;
-   /// stores added distributions to which cuts will be applied
-   std::vector<TH2D *> histsWithCuts;
+   /// stores current distribution to which cuts will be applied
+   TH2D * histWithCuts;
    /// stores integrals of added uncut hists
    std::vector<unsigned long> histsOrigIntegral;
    /// stores information about the index of the currently displayed histogram
