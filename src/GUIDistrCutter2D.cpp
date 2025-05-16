@@ -160,11 +160,6 @@ void GUIDistrCutter2D::SetOutputFile(const std::string& fileName, const bool rew
    }
 
    outputFileName = fileName;
-   while (outputFileName.find(" ") < outputFileName.size())
-   {
-      const unsigned int spacePos = outputFileName.find(" ");
-      outputFileName.erase(spacePos, spacePos);
-   }
    isOutputFileSet = true;
 }
 
