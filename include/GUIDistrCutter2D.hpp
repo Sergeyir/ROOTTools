@@ -140,6 +140,8 @@ namespace GUIDistrCutter2D
    bool isHistogramAdded = false;
    /// checks if the histogram was drawn the first time
    bool isFirstDraw = true;
+   /// sets the minimum value along Z axis to 1 if this value is true
+   bool setMinimumToOne = false;
 };
 
 #endif /* ROOT_TOOLS_GUI_DISTR_CUTTER_2D_HPP */

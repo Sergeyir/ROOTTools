@@ -18,9 +18,10 @@ void GUIDistrCutter2D::AddHistogram(TH2D *hist)
       std::cout << "\033[1m\033[31mError:\033[0m Null passed in GUIDistrCutter2D::AddHistogram" << std::endl;
       exit(1);
    }
-   if (hist->Integral() < 1e-15)
+   if (hist->GetEntries() < 1)
    {
-      std::cout << "\033[1m\033[31mError:\033[0m Histogram \"" << hist->GetName() << "\" is empty" << std::endl;
+      std::cout << "\033[1m\033[31mError:\033[0m Histogram \"" << 
+                   hist->GetName() << "\" is empty" << std::endl;
       exit(1);
    }
    if (hists.size() != 0)
@@ -32,12 +33,16 @@ void GUIDistrCutter2D::AddHistogram(TH2D *hist)
 
       if (currentHistXNBins != previousHistXNBins)
       {
-         std::cout << "\033[1m\033[31mError:\033[0m Number of bins of X axis is inconsistent for the histogram \"" << hist->GetName() << "\" compared to previous added one(s)" << std::endl;
+         std::cout << "\033[1m\033[31mError:\033[0m Number of bins of X axis is inconsistent \
+                      for the histogram \"" << hist->GetName() << 
+                      "\" compared to previous added one(s)" << std::endl;
          exit(1);
       }
       if (currentHistYNBins != previousHistYNBins)
       {
-         std::cout << "\033[1m\033[31mError:\033[0m Number of bins of Y axis is inconsistent for the histogram \"" << hist->GetName() << "\" compared to previous added one(s)" << std::endl;
+         std::cout << "\033[1m\033[31mError:\033[0m Number of bins of Y axis is inconsistent \
+                      for the histogram \"" << hist->GetName() << 
+                      "\" compared to previous added one(s)" << std::endl;
          exit(1);
       }
       if (fabs(hists.front()->GetXaxis()->GetBinLowEdge(1) - 
@@ -45,7 +50,9 @@ void GUIDistrCutter2D::AddHistogram(TH2D *hist)
           fabs(hists.front()->GetXaxis()->GetBinUpEdge(previousHistXNBins) - 
                hist->GetXaxis()->GetBinUpEdge(currentHistXNBins)) > 1e-15)
       {
-         std::cout << "\033[1m\033[31mError:\033[0m X axis range is inconsistent for the histogram \"" << hist->GetName() << "\" compared to previous added one(s)" << std::endl;
+         std::cout << "\033[1m\033[31mError:\033[0m X axis range is inconsistent for \
+                      the histogram \"" << hist->GetName() << 
+                      "\" compared to previous added one(s)" << std::endl;
          exit(1);
       }
       if (fabs(hists.front()->GetYaxis()->GetBinLowEdge(1) - 
@@ -53,7 +60,9 @@ void GUIDistrCutter2D::AddHistogram(TH2D *hist)
           fabs(hists.front()->GetYaxis()->GetBinUpEdge(previousHistYNBins) - 
                hist->GetYaxis()->GetBinUpEdge(currentHistYNBins)) > 1e-15)
       {
-         std::cout << "\033[1m\033[31mError:\033[0m X axis range is inconsistent for the histogram \"" << hist->GetName() << "\" compared to previous added one(s)" << std::endl;
+         std::cout << "\033[1m\033[31mError:\033[0m X axis range is inconsistent for \
+                      the histogram \"" << hist->GetName() << 
+                      "\" compared to previous added one(s)" << std::endl;
          exit(1);
       }
    }
@@ -71,19 +80,24 @@ void GUIDistrCutter2D::ReadCutAreas(const std::string& fileName)
 {
    if (hists.size() == 0)
    {
-      std::cout << "\033[1m\033[31mError:\033[0m No histograms were added before the cut areas are read. Add at least one histogram first before reading the cuts from the file" << std::endl;
+      std::cout << "\033[1m\033[31mError:\033[0m No histograms were added before the \
+                   cut areas are read. Add at least one histogram first before reading \
+                   the cuts from the file" << std::endl;
       exit(1);
    }
    if (inputFileCutAreas.size() != 0)
    {
-      std::cout << "\033[1m\033[35mWarning:\033[0m Input file was already read; replacing current cuts from the previously read input file to the cuts written in file \"" << fileName << "\"" << std::endl;
+      std::cout << "\033[1m\033[35mWarning:\033[0m Input file was already read; \
+                   replacing current cuts from the previously read input file to \
+                   the cuts written in file \"" << fileName << "\"" << std::endl;
    }
 
    inputFileCutAreas.clear();
    std::ifstream inputFile(fileName);
    if (!inputFile.is_open())
    {
-      std::cout << "\033[1m\033[31mError\033[0m while trying to read cuts from file: File \"" << fileName << "\" does not exist" << std::endl;
+      std::cout << "\033[1m\033[31mError\033[0m while trying to read cuts \
+                   from file: File \"" << fileName << "\" does not exist" << std::endl;
       exit(1);
    }
 
@@ -96,30 +110,35 @@ void GUIDistrCutter2D::ReadCutAreas(const std::string& fileName)
    if (!(inputFile >> inputXNBins >> inputXAxisMin >> inputXAxisMax >> 
                       inputYNBins >> inputYAxisMin >> inputYAxisMax))
    {
-      std::cout << "\033[1m\033[31mError\033[0m while trying to read axis information from file \"" << fileName << "\": Unexpected end of file" << std::endl;
+      std::cout << "\033[1m\033[31mError\033[0m while trying to read axis information from \
+                   file \"" << fileName << "\": Unexpected end of file" << std::endl;
       exit(1);
    }
 
    if (inputXNBins != addedHistXNBins)
    {
-      std::cout << "\033[1m\033[31mError:\033[0m Number of bins of X axis in file \"" << fileName << "\" is inconsistent with added histograms" << std::endl;
+      std::cout << "\033[1m\033[31mError:\033[0m Number of bins of X axis in file \"" << 
+                   fileName << "\" is inconsistent with added histograms" << std::endl;
       exit(1);
    }
    if (inputYNBins != addedHistYNBins)
    {
-      std::cout << "\033[1m\033[31mError:\033[0m Number of bins of Y axis in file \"" << fileName << "\" is inconsistent with added histogram(s)" << std::endl;
+      std::cout << "\033[1m\033[31mError:\033[0m Number of bins of Y axis in file \"" << 
+                   fileName << "\" is inconsistent with added histogram(s)" << std::endl;
       exit(1);
    }
    if (fabs(hists.front()->GetXaxis()->GetBinLowEdge(1) - inputXAxisMin) > 1e-15 ||
        fabs(hists.front()->GetXaxis()->GetBinUpEdge(addedHistXNBins) - inputXAxisMax) > 1e-15)
    {
-      std::cout << "\033[1m\033[31mError:\033[0m X axis range in file \"" << fileName << "\" is inconsistent with added histogram(s)" << std::endl;
+      std::cout << "\033[1m\033[31mError:\033[0m X axis range in file \"" << 
+                   fileName << "\" is inconsistent with added histogram(s)" << std::endl;
       exit(1);
    }
    if (fabs(hists.front()->GetYaxis()->GetBinLowEdge(1) - inputYAxisMin) > 1e-15 ||
        fabs(hists.front()->GetYaxis()->GetBinUpEdge(addedHistYNBins) - inputYAxisMax) > 1e-15)
    {
-      std::cout << "\033[1m\033[31mError:\033[0m Y axis range in file \"" << fileName << "\" is inconsistent with added histogram(s)" << std::endl;
+      std::cout << "\033[1m\033[31mError:\033[0m Y axis range in file \"" << 
+                   fileName << "\" is inconsistent with added histogram(s)" << std::endl;
       exit(1);
    }
 
@@ -133,7 +152,8 @@ void GUIDistrCutter2D::ReadCutAreas(const std::string& fileName)
       {
          if (!(inputFile >> tmp))
          {
-         std::cout << "\033[1m\033[31mError\033[0m while trying to read cuts from file \"" << fileName << "\": Unexpected end of file" << std::endl;
+         std::cout << "\033[1m\033[31mError\033[0m while trying to read cuts from file \"" << 
+                      fileName << "\": Unexpected end of file" << std::endl;
             exit(1);
          }
          inputFileCutAreas[i].push_back(tmp);
@@ -142,7 +162,8 @@ void GUIDistrCutter2D::ReadCutAreas(const std::string& fileName)
 
    if (inputFile >> tmp)
    {
-      std::cout << "\033[1m\033[31mError\033[0m while trying to read cuts from file \"" << fileName << "\": leftover data detected" << std::endl;
+      std::cout << "\033[1m\033[31mError\033[0m while trying to read cuts from file \"" << 
+                   fileName << "\": leftover data detected" << std::endl;
       exit(1);
    }
 }
@@ -204,6 +225,7 @@ void GUIDistrCutter2D::Draw(const bool isRangeFixed)
       histWithCuts->GetYaxis()->SetRange(yMin, yMax);
 	}
 	
+   if (setMinimumToOne) histWithCuts->SetMinimum(1.);
    histWithCuts->Draw("COLZ");
 
 	gPad->Modified();
@@ -791,6 +813,19 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                       hists[currentHist]->GetName() << "\"" << std::endl;
          Draw(true);
          break;
+      }
+      case 'm':
+      {
+         if (!setMinimumToOne) 
+         {
+            std::cout << "Setting minimum along Z axis to 1" << std::endl;
+            setMinimumToOne = true;
+         }
+         else
+         {
+            std::cout << "Removing minimum along Z axis" << std::endl;
+            setMinimumToOne = false;
+         }
       }
       case '0':
       {
