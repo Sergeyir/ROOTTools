@@ -594,6 +594,53 @@ void GUIDistrCutter2D::Button1DownAction(const double x, const double y)
          singleBinYCut.push_back(y);
          std::cout << "Setting point to cut" << std::endl;
          Draw(true);
+         break;
+      }
+      case 6:
+      {
+         const int currentXBin = histWithCuts->GetXaxis()->FindBin(x);
+         const int currentYBin = histWithCuts->GetYaxis()->FindBin(y);
+
+         minThresholdCutBinsX.resize(minThresholdCutBinsX.size() + 1);
+         minThresholdCutBinsY.resize(minThresholdCutBinsY.size() + 1);
+
+         for (int i = 1; i <= histWithCuts->GetXaxis()->GetNbins(); i++)
+         {
+            for (int j = 1; j <= histWithCuts->GetYaxis()->GetNbins(); j++)
+            {
+               if (histWithCuts->GetBinContent(i, j)*(1. + 1e-5) <
+                   histWithCuts->GetBinContent(currentXBin, currentYBin))
+               {
+                  minThresholdCutBinsX.back().push_back(i);
+                  minThresholdCutBinsY.back().push_back(j);
+               }
+            }
+         }
+         Draw(true);
+         break;
+      }
+      case 7:
+      {
+         const int currentXBin = histWithCuts->GetXaxis()->FindBin(x);
+         const int currentYBin = histWithCuts->GetYaxis()->FindBin(y);
+
+         maxThresholdCutBinsX.resize(maxThresholdCutBinsX.size() + 1);
+         maxThresholdCutBinsY.resize(maxThresholdCutBinsY.size() + 1);
+
+         for (int i = 1; i <= histWithCuts->GetXaxis()->GetNbins(); i++)
+         {
+            for (int j = 1; j <= histWithCuts->GetYaxis()->GetNbins(); j++)
+            {
+               if (histWithCuts->GetBinContent(i, j)*(1. - 1e-5) >
+                   histWithCuts->GetBinContent(currentXBin, currentYBin))
+               {
+                  maxThresholdCutBinsX.back().push_back(i);
+                  maxThresholdCutBinsY.back().push_back(j);
+               }
+            }
+         }
+         Draw(true);
+         break;
       }
    }
 }
@@ -765,9 +812,43 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
                }
                else
                {
-                  std::cout << "Cannot delete last point since the current number of points is 0" << std::endl;
+                  std::cout << "Cannot delete last point since the current "\
+                               "number of points is 0" << std::endl;
                }
                Draw(true);
+               break;
+            }
+            case 6:
+            {
+               if (minThresholdCutBinsX.size() != 0)
+               {
+                  std::cout << "Deleting previous minimum threshold cut points" << std::endl;
+                  minThresholdCutBinsX.pop_back();
+                  minThresholdCutBinsY.pop_back();
+               }
+               else
+               {
+                  std::cout << "Cannot delete previous minimum threshold cut points:"\
+                               "no cuts were made yet" << std::endl;
+               }
+               Draw(true);
+               break;
+            }
+            case 7:
+            {
+               if (maxThresholdCutBinsX.size() != 0)
+               {
+                  std::cout << "Deleting previous maximum threshold cut points" << std::endl;
+                  maxThresholdCutBinsX.pop_back();
+                  maxThresholdCutBinsY.pop_back();
+               }
+               else
+               {
+                  std::cout << "Cannot delete previous maximum threshold cut points:"\
+                               "no cuts were made yet" << std::endl;
+               }
+               Draw(true);
+               break;
             }
          }
          break;
@@ -871,6 +952,18 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
          currentCutMode = 5;
          break;
       }
+      case '7':
+      {
+         std::cout << "Activating minimum threshold cut mode" << std::endl;
+         currentCutMode = 6;
+         break;
+      }
+      case '8':
+      {
+         std::cout << "Activating maximum threshold cut mode" << std::endl;
+         currentCutMode = 7;
+         break;
+      }
    }
 }
 
@@ -943,6 +1036,23 @@ bool GUIDistrCutter2D::IsBinCut(const int binX, const int binY)
          return true;
       }
    }
+
+   for (unsigned long i = 0; i < minThresholdCutBinsX.size(); i++)
+   {
+      for (unsigned long j = 0; j < minThresholdCutBinsX[i].size(); j++)
+      {
+         if (binX == minThresholdCutBinsX[i][j] && binY == minThresholdCutBinsY[i][j]) return true;
+      }
+   }
+
+   for (unsigned long i = 0; i < maxThresholdCutBinsX.size(); i++)
+   {
+      for (unsigned long j = 0; j < maxThresholdCutBinsX[i].size(); j++)
+      {
+         if (binX == maxThresholdCutBinsX[i][j] && binY == maxThresholdCutBinsY[i][j]) return true;
+      }
+   }
+
    return false;
 }
 

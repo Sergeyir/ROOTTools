@@ -130,6 +130,14 @@ namespace GUIDistrCutter2D
    std::vector<double> singleBinXCut;
    /// stores y values of the single pixel cut mode
    std::vector<double> singleBinYCut;
+   /// stores x bins of points cut by minimum threshold cut
+   std::vector<std::vector<int>> minThresholdCutBinsX;
+   /// stores y bins of points cut by minimum threshold cut
+   std::vector<std::vector<int>> minThresholdCutBinsY;
+   /// stores x bins of points cut by maximum threshold cut
+   std::vector<std::vector<int>> maxThresholdCutBinsX;
+   /// stores y bins of points cut by maximum threshold cut
+   std::vector<std::vector<int>> maxThresholdCutBinsY;
    /// stores information that shows whether the first point was chosen for the given cut mode
 	std::array<bool, 5> isMin = {true, true, true, true, true};
    /// name of the file in which cuts will be written
