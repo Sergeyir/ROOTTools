@@ -826,6 +826,8 @@ void GUIDistrCutter2D::KeyPressAction(const int button)
             std::cout << "Removing minimum along Z axis" << std::endl;
             setMinimumToOne = false;
          }
+         Draw();
+         break;
       }
       case '0':
       {
