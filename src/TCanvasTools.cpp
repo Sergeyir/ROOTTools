@@ -13,6 +13,33 @@
 
 #include "TCanvasTools.hpp"
 
+void ROOTTools::DrawFrame(const double xMin, const double yMin, 
+                          const double xMax, const double yMax,
+                          const std::string title, 
+                          const std::string& xTitle, const std::string& yTitle,
+                          const bool drawOppositeAxis,
+                          const double xTitleOffset, const double yTitleOffset,
+                          const double xTitleSize, const double yTitleSize)
+{
+   TH1 *frame = gPad->DrawFrame(xMin, yMin, xMax, yMax);
+
+   frame->SetTitle(title.c_str());
+
+   frame->GetXaxis()->SetTitle(xTitle.c_str());
+   frame->GetYaxis()->SetTitle(yTitle.c_str());
+
+   frame->GetXaxis()->SetTitleOffset(xTitleOffset);
+   frame->GetYaxis()->SetTitleOffset(yTitleOffset);
+
+   frame->GetXaxis()->SetLabelSize(xTitleSize);
+   frame->GetYaxis()->SetLabelSize(yTitleSize);
+   
+   frame->SetTitleSize(xTitleSize, "X");
+   frame->SetTitleSize(yTitleSize, "Y");
+
+   if (drawOppositeAxis) frame->Draw("SAME AXIS X+ Y+");
+}
+
 void ROOTTools::PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoExt, 
                             const bool printPng, const bool compressPdf, 
                             const bool parallelCompression)
