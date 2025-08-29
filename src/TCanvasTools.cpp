@@ -17,9 +17,9 @@ void ROOTTools::DrawFrame(const double xMin, const double yMin,
                           const double xMax, const double yMax,
                           const std::string title, 
                           const std::string& xTitle, const std::string& yTitle,
-                          const bool drawOppositeAxis,
                           const double xTitleOffset, const double yTitleOffset,
-                          const double xTitleSize, const double yTitleSize)
+                          const double xTitleSize, const double yTitleSize,
+                          const bool drawOppositeAxis)
 {
    TH1 *frame = gPad->DrawFrame(xMin, yMin, xMax, yMax);
 

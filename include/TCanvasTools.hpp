@@ -28,19 +28,19 @@ namespace ROOTTools
     * @param[in] title title of a frame
     * @param[in] xTitle title of X axis
     * @param[in] yTitle title of Y axis
-    * @param[in] drawOppositeAxis if true frame will be drawn additionally with options "SAME X+ Y+" for drawing X and Y axis on the top and on the right respectively
     * @param[in] xTitleOffset offset of X axis title
     * @param[in] yTitleOffset offset of Y axis title
     * @param[in] xTitleSize sizes of X axis title and label
     * @param[in] yTitleSize sizes of Y axis title and label
+    * @param[in] drawOppositeAxis if true frame will be drawn additionally with options "SAME X+ Y+" for drawing X and Y axis on the top and on the right respectively
     */
    void DrawFrame(const double xMin, const double yMin, 
                   const double xMax, const double yMax,
                   const std::string title, 
-                  const std::string& xTitle, const std::string& yTitle, 
-                  bool drawOppositeAxis = true, 
+                  const std::string& xTitle, const std::string& yTitle,  
                   const double xTitleOffset = 1., const double yTitleOffset = 1.5,
-                  const double xTitleSize = 0.05, const double yTitleSize = 0.05);
+                  const double xTitleSize = 0.05, const double yTitleSize = 0.05,
+                  bool drawOppositeAxis = true);
    /*! @brief Saves TCanvas in .pdf format and additionaly in .png format if specified.
     * @param[in] canv TCanvas object that will be written
     * @param[in] outputFileNameNoExt name of the output file without extention (such as ".pdf" or ".png"). Extentions of the files will be added automaticaly
