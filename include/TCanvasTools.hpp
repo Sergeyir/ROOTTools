@@ -60,7 +60,7 @@ namespace ROOTTools
                   const double xTitleOffset = 1., const double yTitleOffset = 1.5,
                   const double xTitleSize = 0.05, const double yTitleSize = 0.05,
                   const bool drawOppositeAxis = true);
-   /*! @brief Saves TCanvas in .pdf format and additionaly in .png format if specified.
+   /*! @brief Saves TCanvas in .pdf format and additionaly in .png format if specified. Also makes canvas background transparent.
     * @param[in] canv TCanvas object that will be written
     * @param[in] outputFileNameNoExt name of the output file without extention (such as ".pdf" or ".png"). Extentions of the files will be added automaticaly
     * @param[in] printPng if true .png file is also printed additionaly to .pdf file; else only .pdf file will be printed. Note that saving complex canvases in .png takes much more time than saving them in .pdf

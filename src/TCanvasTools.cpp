@@ -71,6 +71,11 @@ void ROOTTools::PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoEx
                             const bool printPng, const bool compressPdf, 
                             const bool parallelCompression)
 {
+   canv->SetFillStyle(4000);
+   canv->SetFrameFillColor(0);
+   canv->SetFrameFillStyle(0);
+   canv->SetFrameBorderMode(0);
+
    if (printPng) canv->SaveAs((outputFileNameNoExt + ".png").c_str());
 
    if (compressPdf) 
