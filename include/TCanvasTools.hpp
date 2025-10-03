@@ -68,8 +68,8 @@ namespace ROOTTools
     * @param[in] parallelCompression if true the compression will be ran on the separate thread detached from the current program. Parallel compression speeds up the function completion time since the program does not need to wait until compression is done. It is recommended to leave this parameter true unless the program you're running takes all resources of the machine.
     */
    void PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoExt, 
-                    const bool printPng = true, const bool compressPdf = true, 
-                    const bool parallelCompression = true);
+                    const bool printPng = true, const bool printPdf = true, 
+                    const bool compressPdf = true, const bool parallelCompression = true);
 }
 
 #endif /* ROOT_TOOLS_TCANVAS_TOOLS_HPP */

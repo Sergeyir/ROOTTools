@@ -68,8 +68,8 @@ void ROOTTools::DrawFrame(const double xMin, const double yMin,
 }
 
 void ROOTTools::PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoExt, 
-                            const bool printPng, const bool compressPdf, 
-                            const bool parallelCompression)
+                            const bool printPng, const bool printPdf, 
+                            const bool compressPdf, const bool parallelCompression)
 {
    canv->SetFillStyle(4000);
    canv->SetFrameFillColor(0);
@@ -78,27 +78,30 @@ void ROOTTools::PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoEx
 
    if (printPng) canv->SaveAs((outputFileNameNoExt + ".png").c_str());
 
-   if (compressPdf) 
+   if (printPdf)
    {
-      // temporary .pdf file; will be removed later
-      canv->SaveAs((outputFileNameNoExt + ".tmp.pdf").c_str());
+      if (compressPdf) 
+      {
+         // temporary .pdf file; will be removed later
+         canv->SaveAs((outputFileNameNoExt + ".tmp.pdf").c_str());
 
-      // ghostscript command to reduce pdf size and remove temporary .pdf file
-      std::string compressionCommand = 
-         "ghostscript -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 \
-          -dNOPAUSE -dQUIET -dBATCH -dPrinted=false \
-          -sOutputFile=" + outputFileNameNoExt + ".pdf " + 
-         outputFileNameNoExt + ".tmp.pdf && rm " + 
-         outputFileNameNoExt + ".tmp.pdf";
+         // ghostscript command to reduce pdf size and remove temporary .pdf file
+         std::string compressionCommand = 
+            "ghostscript -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 \
+             -dNOPAUSE -dQUIET -dBATCH -dPrinted=false \
+             -sOutputFile=" + outputFileNameNoExt + ".pdf " + 
+            outputFileNameNoExt + ".tmp.pdf && rm " + 
+            outputFileNameNoExt + ".tmp.pdf";
 
-      // option to detach the command call from the current process
-      if (parallelCompression) compressionCommand += " &";
+         // option to detach the command call from the current process
+         if (parallelCompression) compressionCommand += " &";
 
-      system(compressionCommand.c_str());
-   }
-   else
-   {
-      canv->SaveAs((outputFileNameNoExt + ".pdf").c_str());
+         system(compressionCommand.c_str());
+      }
+      else
+      {
+         canv->SaveAs((outputFileNameNoExt + ".pdf").c_str());
+      }
    }
 }
 
