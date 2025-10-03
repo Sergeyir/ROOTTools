@@ -71,6 +71,15 @@ void ROOTTools::PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoEx
                             const bool printPng, const bool printPdf, 
                             const bool compressPdf, const bool parallelCompression)
 {
+   if (!printPng && !printPdf)
+   {
+      std::cout << "Error in ROOTTools::PrintTCanvas(TCanvas *canv, "\
+                   "const std::string& outputFileNameNoExt, const bool printPng, "\
+                   "const bool printPdf, const bool compressPdf, const bool parallelCompression) :"\
+                   " either printPng or printPdf must be true" << std::endl;
+      exit(1);
+   }
+
    canv->SetFillStyle(4000);
    canv->SetFrameFillColor(0);
    canv->SetFrameFillStyle(0);
