@@ -9,6 +9,8 @@
 #ifndef ROOT_TOOLS_GUI_DISTR_CUTTER_2D_HPP
 #define ROOT_TOOLS_GUI_DISTR_CUTTER_2D_HPP
 
+#include <cmath>
+
 #include <iostream>
 #include <string>
 #include <vector>
