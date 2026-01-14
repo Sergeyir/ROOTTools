@@ -177,7 +177,7 @@ void GUIDistrCutter2D::SetOutputFile(const std::string& fileName, const bool rew
                    fileName << "\" already exists" << std::endl;
       std::cout << "Old file \"" << fileName << " will be renamed to \"" << 
                     fileName << ".backup\" when new file will be written" << std::endl;
-      system(("cp " + fileName + " " + fileName + ".backup").c_str());
+      system(("cp '" + fileName + "' '" + fileName + ".backup'").c_str());
    }
 
    outputFileName = fileName;
