@@ -216,10 +216,12 @@ void GUIDistrCutter2D::Draw(const bool isRangeFixed)
 
 	if (isRangeFixed)
 	{
-		const int xMin = hists.front()->GetXaxis()->FindBin(gPad->GetUxmin());
-		const int xMax = hists.front()->GetXaxis()->FindBin(gPad->GetUxmax());
-		const int yMin = hists.front()->GetYaxis()->FindBin(gPad->GetUymin());
-		const int yMax = hists.front()->GetYaxis()->FindBin(gPad->GetUymax());
+      const double dx = histWithCuts->GetXaxis()->GetBinWidth(1)/2.;
+      const double dy = histWithCuts->GetYaxis()->GetBinWidth(1)/2.;
+		const int xMin = hists.front()->GetXaxis()->FindBin(gPad->GetUxmin() + dx);
+		const int xMax = hists.front()->GetXaxis()->FindBin(gPad->GetUxmax() - dx);
+		const int yMin = hists.front()->GetYaxis()->FindBin(gPad->GetUymin() + dy);
+		const int yMax = hists.front()->GetYaxis()->FindBin(gPad->GetUymax() - dy);
 		
       histWithCuts->GetXaxis()->SetRange(xMin, xMax);
       histWithCuts->GetYaxis()->SetRange(yMin, yMax);
