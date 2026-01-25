@@ -217,9 +217,9 @@ void GUIDistrCutter2D::Draw(const bool isRangeFixed)
 	if (isRangeFixed)
 	{
 		const int xMin = hists.front()->GetXaxis()->FindBin(gPad->GetUxmin());
-		const int xMax = hists.front()->GetXaxis()->FindBin(gPad->GetUxmax())-1;
-		const int yMin = hists.front()->GetYaxis()->FindBin(gPad->GetUymin())+1;
-		const int yMax = hists.front()->GetYaxis()->FindBin(gPad->GetUymax())-1;
+		const int xMax = hists.front()->GetXaxis()->FindBin(gPad->GetUxmax());
+		const int yMin = hists.front()->GetYaxis()->FindBin(gPad->GetUymin());
+		const int yMax = hists.front()->GetYaxis()->FindBin(gPad->GetUymax());
 		
       histWithCuts->GetXaxis()->SetRange(xMin, xMax);
       histWithCuts->GetYaxis()->SetRange(yMin, yMax);
