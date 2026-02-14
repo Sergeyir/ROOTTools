@@ -168,15 +168,15 @@ void GUIDistrCutter2D::ReadCutAreas(const std::string& fileName)
    }
 }
 
-void GUIDistrCutter2D::SetOutputFile(const std::string& fileName, const bool rewrite)
+void GUIDistrCutter2D::SetOutputFile(const std::string& fileName)
 {
    std::ifstream inputFile(fileName);
-   if (!rewrite && inputFile.is_open())
+   if (inputFile.is_open())
    {
       std::cout << "\033[1m\033[35mWarning:\033[0m Specified output file \"" << 
                    fileName << "\" already exists" << std::endl;
       std::cout << "Old file \"" << fileName << " will be renamed to \"" << 
-                    fileName << ".backup\" when new file will be written" << std::endl;
+                   fileName << ".backup\" when new file will be written" << std::endl;
       system(("cp '" + fileName + "' '" + fileName + ".backup'").c_str());
    }
 
