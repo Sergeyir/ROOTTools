@@ -123,16 +123,6 @@ void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex,
                    fitBG->GetNpar() << std::endl;
       exit(1);
    }
-
-   for (int i = 0; i < fitBG->GetNpar(); i++)
-   {
-      fitsBG[histIndex][fitTypeIndex]->ReleaseParameter(i);
-   }
-
-   for (int i = fitBGParIndexBegin; i <= fitBGParIndexEnd; i++)
-   {
-      fits[histIndex][fitTypeIndex]->ReleaseParameter(i);
-   }
 }
 
 void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex, 
@@ -158,9 +148,9 @@ void GUIFit::Exec()
    {
       case kKeyPress:
       {
-         if (px > 47 && px < 58) 
+         if (px > 48 && px < 58) 
          {
-            currentFitTypeIndex = px - 48;
+            currentFitTypeIndex = px - 49;
             DeactivateCurrentActivePoint();
             SetActiveFit();
          }
@@ -204,9 +194,6 @@ void GUIFit::Exec()
                   {
                      outputFile << histValues[i] << " ";
 
-                     double xMin, xMax;
-                     fits[i][j]->GetRange(xMin, xMax);
-
                      outputFile << fitsBG[i][j]->GetParameter(0) << " ";
 
                      for (int k = 1; k < fitsBG[i][j]->GetNpar() - 1; k++)
@@ -245,15 +232,15 @@ void GUIFit::Exec()
       {
          if (!isFitPointActive) 
          {
-            for (int i = 0; i < bgPointsGr->GetN(); i++)
+            for (int i = 0; i < grBGPoints->GetN(); i++)
             {
-               const double markerPositionX = gPad->XtoPixel(bgPointsGr->GetPointX(i));
-               const double markerPositionY = gPad->YtoPixel(bgPointsGr->GetPointY(i));
+               const double markerPositionX = gPad->XtoPixel(grBGPoints->GetPointX(i));
+               const double markerPositionY = gPad->YtoPixel(grBGPoints->GetPointY(i));
 
                if (pow(markerPositionX - px, 2) + pow(markerPositionY - py, 2) < 
-                   pow(4.*bgPointsGr->GetMarkerSize(), 2)) 
+                   pow(4.*grBGPoints->GetMarkerSize(), 2)) 
                {
-                     ActivatePoint(i, bgPointsGr->GetPointX(i), bgPointsGr->GetPointY(i));
+                  ActivatePoint(i, grBGPoints->GetPointX(i), grBGPoints->GetPointY(i));
                }
             }
          }
@@ -264,32 +251,20 @@ void GUIFit::Exec()
          if (isFitPointActive)
          {
             currentActivePointGr->SetPointY(0, y);
-            bgPointsGr->SetPointY(currentActivePointIndex, y);
+            grBGPoints->SetPointY(currentActivePointIndex, y);
 
-            bgPointsGr->Fit(fitsBG[currentHistId][currentFitTypeIndex - 1], "RQNM");
+            grBGPoints->Fit(fitsBG[currentHistId][currentFitTypeIndex], "RQMN");
+            fitsBG[currentHistId][currentFitTypeIndex]->Update();
 
-            for (int i = 0; i < fitsBG[currentHistId][currentFitTypeIndex - 1]->GetNpar(); i++)
+            for (int i = 0; i < fitsBG[currentHistId][currentFitTypeIndex]->GetNpar(); i++)
             {
-               fits[currentHistId][currentFitTypeIndex - 1]->
-                  FixParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex - 1] + i, 
-                               fitsBG[currentHistId][currentFitTypeIndex - 1]->GetParameter(i));
+               fits[currentHistId][currentFitTypeIndex]->
+                  FixParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex] + i, 
+                               fitsBG[currentHistId][currentFitTypeIndex]->GetParameter(i));
             }
 
-            fits[currentHistId][currentFitTypeIndex - 1]->Update();
-
-            hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex - 1], "RQMN");
-
-            fits[currentHistId][currentFitTypeIndex - 1]->Update();
-
-            /*
-            std::cout << "Fit parameters: ";
-
-            for (int i = 0; i < fitBGParIndicesBegin[currentHistId][currentFitTypeIndex - 1]; i++)
-            {
-               std::cout << fits[currentHistId][currentFitTypeIndex - 1]->GetParameter(i) << " ";
-            }
-            std::cout << std::endl;
-            */
+            hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQBMN");
+            fits[currentHistId][currentFitTypeIndex]->Update();
          }
          else return;
          break;
@@ -307,32 +282,50 @@ void GUIFit::Exec()
 void GUIFit::SetBGPoints()
 {
    double xMin, xMax;
-   fits[currentHistId][currentFitTypeIndex - 1]->GetRange(xMin, xMax);
+   fits[currentHistId][currentFitTypeIndex]->GetRange(xMin, xMax);
 
-   //resetting bg points graph
-   delete bgPointsGr;
-   bgPointsGr = new TGraph();
-
-   bgPointsGr->SetEditable(kFALSE);
-
-   bgPointsGr->SetMarkerStyle(89);
-   bgPointsGr->SetMarkerSize(3.);
-   bgPointsGr->SetMarkerColor(activeColor);
-
-   const double xShift = (xMax - xMin)/
-      (static_cast<double>(fitsBG[currentHistId][currentFitTypeIndex - 1]->GetNpar()) - 1.);
-
-   bgPointsGr->AddPoint(xMin + 1e-15, 
-                        fitsBG[currentHistId][currentFitTypeIndex - 1]->Eval(xMin));
-
-   for (int j = 1; j < fitsBG[currentHistId][currentFitTypeIndex - 1]->GetNpar() - 1; j++)
+   if (xMin < hists[currentHistId]->GetXaxis()->GetBinLowEdge(1)) 
    {
-      const double xPos = xMin+xShift*static_cast<double>(j);
-      bgPointsGr->AddPoint(xPos, fitsBG[currentHistId][currentFitTypeIndex - 1]->Eval(xPos));
+      xMin = hists[currentHistId]->GetXaxis()->GetBinCenter(1);
+      std::cout << "\033[1m\033[35mWarning:\033[0m Lower bound of fit range exceeds the "\
+                   "range of the histogram axis; movable points will be set within "\
+                   "histogram axis range and may not be within fit range" << std::endl;
    }
 
-   bgPointsGr->AddPoint(xMax - 1e-15, 
-                        fitsBG[currentHistId][currentFitTypeIndex - 1]->Eval(xMax));
+   if (xMax > hists[currentHistId]->GetXaxis()->
+       GetBinUpEdge(hists[currentHistId]->GetXaxis()->GetNbins())) 
+   {
+      xMax = hists[currentHistId]->GetXaxis()->GetBinCenter(hists[currentHistId]->
+             GetXaxis()->GetNbins());
+      std::cout << "\033[1m\033[35mWarning:\033[0m Upper bound of fit range exceeds the "\
+                   "range of the histogram axis; movable points will be set within "\
+                   "histogram axis range and may not be within fit range" << std::endl;
+   }
+
+   //resetting bg points graph
+   delete grBGPoints;
+   grBGPoints = new TGraph();
+
+   grBGPoints->SetEditable(kFALSE);
+
+   grBGPoints->SetMarkerStyle(89);
+   grBGPoints->SetMarkerSize(3.);
+   grBGPoints->SetMarkerColor(activeColor);
+
+   const double xShift = (xMax - xMin)/
+      (static_cast<double>(fitsBG[currentHistId][currentFitTypeIndex]->GetNpar()) - 1.);
+
+   grBGPoints->AddPoint(xMin + xMin*1e-7, 
+                        fitsBG[currentHistId][currentFitTypeIndex]->Eval(xMin));
+
+   for (int j = 1; j < fitsBG[currentHistId][currentFitTypeIndex]->GetNpar() - 1; j++)
+   {
+      const double xPos = xMin+xShift*static_cast<double>(j);
+      grBGPoints->AddPoint(xPos, fitsBG[currentHistId][currentFitTypeIndex]->Eval(xPos));
+   }
+
+   grBGPoints->AddPoint(xMax - xMin*1e-7, 
+                        fitsBG[currentHistId][currentFitTypeIndex]->Eval(xMax));
 }
 
 void GUIFit::SetActiveFit()
@@ -341,7 +334,7 @@ void GUIFit::SetActiveFit()
 
    for (unsigned long i = 0; i < fits[currentHistId].size(); i++)
    {
-      if (i == currentFitTypeIndex - 1)
+      if (i == currentFitTypeIndex)
       {
          isActiveSetCheck = true;
 
@@ -363,29 +356,29 @@ void GUIFit::SetActiveFit()
 
    if (!isActiveSetCheck)
    {
-      delete bgPointsGr;
-      bgPointsGr = new TGraph();
+      delete grBGPoints;
+      grBGPoints = new TGraph();
    }
 }
 
 void GUIFit::PerformFreeFit()
 {
-   if (currentFitTypeIndex == 0 || currentFitTypeIndex > fits[currentHistId].size()) return;
+   if (currentFitTypeIndex < 0 || currentFitTypeIndex >= fits[currentHistId].size()) return;
 
    for (int i = 0; i < fitsBG[currentHistId].back()->GetNpar(); i++)
    {
-      fits[currentHistId][currentFitTypeIndex - 1]->
-         ReleaseParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex - 1] + i);
+      fits[currentHistId][currentFitTypeIndex]->
+         ReleaseParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex] + i);
    }
 
-   hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex - 1], "RQMNB");
+   hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQMNB");
 
    for (int i = 0; i < fitsBG[currentHistId].back()->GetNpar(); i++)
    {
-      const double value= fits[currentHistId][currentFitTypeIndex - 1]->
-         GetParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex - 1] + i);
+      const double value= fits[currentHistId][currentFitTypeIndex]->
+         GetParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex] + i);
 
-      fitsBG[currentHistId][currentFitTypeIndex - 1]->SetParameter(i, value);
+      fitsBG[currentHistId][currentFitTypeIndex]->SetParameter(i, value);
    }
 
    SetBGPoints();
@@ -393,48 +386,65 @@ void GUIFit::PerformFreeFit()
 
 void GUIFit::ResetFit()
 {
-   if (currentFitTypeIndex == 0 || currentFitTypeIndex > fits[currentHistId].size()) return;
+   if (currentFitTypeIndex < 0 || currentFitTypeIndex >= fits[currentHistId].size()) return;
 
    double xMin, xMax;
-   fits[currentHistId][currentFitTypeIndex - 1]->GetRange(xMin, xMax);
+   fits[currentHistId][currentFitTypeIndex]->GetRange(xMin, xMax);
+
+   if (xMin < hists[currentHistId]->GetXaxis()->GetBinLowEdge(1)) 
+   {
+      xMin = hists[currentHistId]->GetXaxis()->GetBinCenter(1);
+      std::cout << "\033[1m\033[35mWarning:\033[0m Lower bound of fit range exceeds the "\
+                   "range of the histogram axis; movable points will be set within "\
+                   "histogram axis range and may not be within fit range" << std::endl;
+   }
+
+   if (xMax > hists[currentHistId]->GetXaxis()->
+       GetBinUpEdge(hists[currentHistId]->GetXaxis()->GetNbins())) 
+   {
+      xMax = hists[currentHistId]->GetXaxis()->GetBinCenter(hists[currentHistId]->
+             GetXaxis()->GetNbins());
+      std::cout << "\033[1m\033[35mWarning:\033[0m Upper bound of fit range exceeds the "\
+                   "range of the histogram axis; movable points will be set within "\
+                   "histogram axis range and may not be within fit range" << std::endl;
+   }
 
    //resetting bg points graph
-   delete bgPointsGr;
-   bgPointsGr = new TGraph();
+   delete grBGPoints;
+   grBGPoints = new TGraph();
 
-   bgPointsGr->SetEditable(kFALSE);
+   grBGPoints->SetEditable(kFALSE);
 
-   bgPointsGr->SetMarkerStyle(89);
-   bgPointsGr->SetMarkerSize(3.);
-   bgPointsGr->SetMarkerColor(activeColor);
+   grBGPoints->SetMarkerStyle(89);
+   grBGPoints->SetMarkerSize(3.);
+   grBGPoints->SetMarkerColor(activeColor);
 
    const double xShift = (xMax - xMin)/
-      (static_cast<double>(fitsBG[currentHistId][currentFitTypeIndex - 1]->GetNpar()) - 1.);
+      (static_cast<double>(fitsBG[currentHistId][currentFitTypeIndex]->GetNpar()) - 1.);
 
-   bgPointsGr->AddPoint(xMin + 1e-15, 
-               hists[currentHistId]->GetBinContent(hists[currentHistId]->GetXaxis()->
-               FindBin(xMin)));
+   grBGPoints->AddPoint(xMin + xMin*1e-7, hists[currentHistId]->
+                        GetBinContent(hists[currentHistId]->GetXaxis()->FindBin(xMin)));
 
-   for (int j = 1; j < fitsBG[currentHistId][currentFitTypeIndex - 1]->GetNpar() - 1; j++)
+   for (int j = 1; j < fitsBG[currentHistId][currentFitTypeIndex]->GetNpar() - 1; j++)
    {
       const double xPos = xMin+xShift*static_cast<double>(j);
-      bgPointsGr->AddPoint(xPos, hists[currentHistId]->GetBinContent(hists[currentHistId]->
+      grBGPoints->AddPoint(xPos, hists[currentHistId]->GetBinContent(hists[currentHistId]->
                            GetXaxis()->FindBin(xPos)));
    }
 
-   bgPointsGr->AddPoint(xMax - 1e-15, hists[currentHistId]->GetBinContent(hists[currentHistId]->
-                        GetXaxis()->FindBin(xMax)));
+   grBGPoints->AddPoint(xMax - xMax*1e-7, hists[currentHistId]->
+                        GetBinContent(hists[currentHistId]->GetXaxis()->FindBin(xMax)));
 
-   bgPointsGr->Fit(fitsBG[currentHistId][currentFitTypeIndex - 1], "RQMN");
+   grBGPoints->Fit(fitsBG[currentHistId][currentFitTypeIndex], "RQMN");
 
-   for (int i = 0; i < fitsBG[currentHistId][currentFitTypeIndex - 1]->GetNpar(); i++)
+   for (int i = 0; i < fitsBG[currentHistId][currentFitTypeIndex]->GetNpar(); i++)
    {
-      fits[currentHistId][currentFitTypeIndex - 1]->
-         FixParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex - 1] + i, 
-                      fitsBG[currentHistId][currentFitTypeIndex - 1]->GetParameter(i));
+      fits[currentHistId][currentFitTypeIndex]->
+         FixParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex] + i, 
+                      fitsBG[currentHistId][currentFitTypeIndex]->GetParameter(i));
    }
-   fits[currentHistId][currentFitTypeIndex - 1]->Update();
-   hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex - 1], "RQMN");
+   fits[currentHistId][currentFitTypeIndex]->Update();
+   hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQMN");
 }
 
 void GUIFit::ActivatePoint(const int pointNumber, const double x, const double y) 
@@ -485,8 +495,6 @@ void GUIFit::PrintHelp()
 
 void GUIFit::Start()
 {
-   if (isStartSuccessfull) return;
-
    if (currentHistId < 0) 
    {
       std::cout << "\033[1m\033[31mError:\033[0m No histograms were added" << std::endl;
@@ -520,6 +528,22 @@ void GUIFit::Start()
       exit(1);
    }
 
+   for (unsigned int i = 0; i < hists.size(); i++)
+   {
+      for (unsigned int j = 0; j < fitTypeNames.size(); j++)
+      {
+         for (int k = 0; k < fitsBG[i][j]->GetNpar(); k++)
+         {
+            fitsBG[i][j]->ReleaseParameter(k);
+         }
+         for (int k = fitBGParIndicesBegin[i][j]; 
+              k <= fitBGParIndicesEnd[i][j]; k++)
+         {
+            fits[i][j]->ReleaseParameter(k);
+         }
+      }
+   }
+
    fitNames.SetNDC();
    chi2NDF.SetNDC();
 
@@ -542,7 +566,7 @@ void GUIFit::Draw(bool doDrawHist)
    if (doDrawHist)
    {
       DeactivateCurrentActivePoint();
-      currentFitTypeIndex = 0;
+      currentFitTypeIndex = -1;
 
       hists[currentHistId]->Draw();
 
@@ -556,7 +580,7 @@ void GUIFit::Draw(bool doDrawHist)
    }
 
    if (isFitPointActive) currentActivePointGr->Draw("P");
-   if (bgPointsGr->GetN() > 0) bgPointsGr->Draw("P");
+   if (grBGPoints->GetN() > 0) grBGPoints->Draw("P");
 
    gPad->GetListOfPrimitives()->Remove(&fitNames);
    gPad->GetListOfPrimitives()->Remove(&chi2NDF);
@@ -565,10 +589,10 @@ void GUIFit::Draw(bool doDrawHist)
    {
       std::stringstream chi2ndf;
       chi2ndf << std::fixed << std::setprecision(2) << 
-                 fits[currentHistId][currentFitTypeIndex - 1]->GetChisquare()/
-                 fits[currentHistId][currentFitTypeIndex - 1]->GetNDF();
+                 fits[currentHistId][currentFitTypeIndex]->GetChisquare()/
+                 fits[currentHistId][currentFitTypeIndex]->GetNDF();
 
-      fitNames.SetText(0.2, 0.15, fits[currentHistId][currentFitTypeIndex - 1]->GetName());
+      fitNames.SetText(0.2, 0.15, fitTypeNames[currentFitTypeIndex].c_str());
       chi2NDF.SetText(0.75, 0.8, ("#chi^2/NDF " + chi2ndf.str()).c_str());
 
       fitNames.Draw();

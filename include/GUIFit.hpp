@@ -115,7 +115,7 @@ namespace GUIFit
    TLatex chi2NDF = TLatex(0.8, 0.9, "");
    /// Graph that contains movable points for background tweaking. 
    /// This variable is handled automaticaly
-   TGraph *bgPointsGr = new TGraph;
+   TGraph *grBGPoints = new TGraph;
    /// Points to the index of a currently displayed histogram. This variable is handled automaticaly
    long unsigned int currentHistId = -1;
    /// Points to the index of a currently active fit. This variable is handled automaticaly
