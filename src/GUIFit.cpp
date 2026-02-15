@@ -13,37 +13,39 @@
 
 #include "GUIFit.hpp"
 
-int GUIFit::AddFitType(const std::string& outputFileName, const std::string& fitTypeName)
+unsigned int GUIFit::AddFitType(const std::string& outputFileName, const std::string& fitTypeName)
 {
    std::ifstream inputFile(outputFileName);
    if (inputFile.is_open())
    {
       std::cout << "\033[1m\033[35mWarning:\033[0m Specified output file \"" << 
                    outputFileName << "\" already exists" << std::endl;
-      std::cout << "Old file \"" << fileName << " will be renamed to \"" << 
+      std::cout << "Old file \"" << outputFileName << " will be renamed to \"" << 
                    outputFileName << ".backup\" when new file will be written" << std::endl;
-      system(("cp '" + outputFileName + "' '" + fileName + ".backup'").c_str());
+      system(("cp '" + outputFileName + "' '" + outputFileName + ".backup'").c_str());
    }
    outputFileNames.emplace_back(outputFileName);
    fitTypeNames.emplace_back(fitTypeName);
+
+   return fitTypeNames.size() - 1;
 }
 
-void GUIFit::AddHist(TH1F *hist, const std::string& histVal)
+void GUIFit::AddHistogram(TH1D *hist, const std::string& histVal)
 {
    fits.resize(fits.size() + 1);
    fitsBG.resize(fitsBG.size() + 1);
    fitBGParIndicesBegin.resize(fitBGParIndicesBegin.size() + 1);
    fitBGParIndicesEnd.resize(fitBGParIndicesEnd.size() + 1);
 
-   hists.emplace_back((TH1F *) hist->Clone());
+   hists.emplace_back((TH1D *) hist->Clone());
    
    if (hists.size() == 0) currentHistId = 0;
 
-   for (const std::string& val : hitsValues)
+   for (const std::string& val : histValues)
    {
       if (val == histVal)
       {
-         std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddHist: non-unique histogram "\
+         std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddHistogram: non-unique histogram "\
                       "value was specified: " << histVal << std::endl;
          exit(1);
       }
@@ -51,9 +53,33 @@ void GUIFit::AddHist(TH1F *hist, const std::string& histVal)
    histValues.push_back(histVal);
 }
 
-void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const int histIndex,
+void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex, 
+                    const unsigned int histIndex,
                     const int fitBGParIndexBegin, const int fitBGParIndexEnd)
 {
+   if (!fit) 
+   {
+      std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: null was passed for "\
+                   "fit for histogram index " << histIndex << 
+                   " for fit type index " << fitTypeIndex << std::endl;
+      exit(1);
+   }
+
+   if (!fitBG) 
+   {
+      std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: null was passed for "\
+                   "background fit for histogram index " << histIndex << 
+                   " for fit type index " << fitTypeIndex << std::endl;
+      exit(1);
+   }
+
+   if (fitTypeIndex < 0 || fitTypeIndex >= fitTypeNames.size())
+   {
+      std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: index of a "\
+                   "fit type is out of range: " << fitTypeIndex << std::endl;
+      exit(1);
+   }
+
    if (histIndex < 0 || histIndex >= hists.size())
    {
       std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: index of a "\
@@ -61,36 +87,58 @@ void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const int histIndex,
       exit(1);
    }
 
-   fits[histIndex].emplace_back((TF1 *) fit->Clone());
-   fitsBG[histIndex].emplace_back((TF1 *) fitBG->Clone());
-   fitBGParIndicesBegin[histIndex].push_back(fitBGParIndexBegin);
+   if (fits[histIndex].size() != fitTypeNames.size())
+   {
+      for (unsigned int i = 0; i < hists.size(); i++)
+      {
+         fits[i].resize(fitTypeNames.size());
+         fitsBG[i].resize(fitTypeNames.size());
+         fitBGParIndicesBegin[i].resize(fitTypeNames.size());
+         fitBGParIndicesEnd[i].resize(fitTypeNames.size());
+      }
+   }
 
-   if (fitBGParIndexBegin < 0) fitBGParIndicesBegin[histIndex].push_back(fit->GetNpar() - 1);
-   else fitBGParIndicesBegin[histIndex].push_back(fitBGParIndexEnd);
+   if (fits[histIndex][fitTypeIndex])
+   {
+      std::cout << "\033[1m\033[35mWarning:\033[0m Trying to add the fit that was already added "\
+                   "for fit type index " << fitTypeIndex << " for histogram index " << 
+                   histIndex << "; rewriting the old fit" << std::endl;
+   }
 
-   if ((fitBG->GetNpar() - fitBGParIndicesBegin[histIndex] + fitBGParIndicesEnd[histIndex]) != 0)
+   fits[histIndex][fitTypeIndex] = static_cast<TF1 *>(fit->Clone());
+   fitsBG[histIndex][fitTypeIndex] = static_cast<TF1 *>(fitBG->Clone());
+   fitBGParIndicesBegin[histIndex][fitTypeIndex] = fitBGParIndexBegin;
+
+   if (fitBGParIndexEnd < 0) fitBGParIndicesEnd[histIndex][fitTypeIndex] = fit->GetNpar() - 1;
+   else fitBGParIndicesEnd[histIndex][fitTypeIndex] = fitBGParIndexEnd;
+
+   if ((fitBGParIndicesEnd[histIndex][fitTypeIndex] - 
+        fitBGParIndicesBegin[histIndex][fitTypeIndex]) != fitBG->GetNpar())
    {
       std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: number of inidices for "\
                    "background fit deduced from provided begin and end indices mismatch "\
                    "with the number of parameters of an actual background fit: " << 
-                   fitBGParIndicesEnd[histIndex] - fitBGParIndicesBegin[histIndex] << " vs " <<
+                   fitBGParIndicesEnd[histIndex][fitTypeIndex] - 
+                   fitBGParIndicesBegin[histIndex][fitTypeIndex] << " vs " <<
                    fitBG->GetNpar() << std::endl;
       exit(1);
    }
 
    for (int i = 0; i < fitBG->GetNpar(); i++)
    {
-      fitsBG[histIndex].back()->ReleaseParameter(i);
+      fitsBG[histIndex][fitTypeIndex]->ReleaseParameter(i);
    }
+
    for (int i = fitBGParIndexBegin; i <= fitBGParIndexEnd; i++)
    {
-      fits[histIndex][i]->ReleaseParameter(i);
+      fits[histIndex][fitTypeIndex]->ReleaseParameter(i);
    }
 }
 
-void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const int fitBGParIndexBegin, const int fitBGParIndexEnd)
+void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex, 
+                    const int fitBGParIndexBegin, const int fitBGParIndexEnd)
 {
-   AddFit(fit, fitBG, hists.size() - 1, fitGBParIndexBegin, fitBGParIndexEnd);
+   AddFit(fit, fitBG, fitTypeIndex, hists.size() - 1, fitBGParIndexBegin, fitBGParIndexEnd);
 }
 
 void GUIFit::Exec()
@@ -100,34 +148,35 @@ void GUIFit::Exec()
    const int py = gPad->GetEventY();
    const double y = gPad->PadtoX(gPad->AbsPixeltoY(py));
 
+   if (!isStartSuccessfull) 
+   {
+      Start();
+      Draw();
+   }
+
    switch (event)
    {
       case kKeyPress:
+      {
          if (px > 47 && px < 58) 
          {
-            currentFitTypeIndex = px-48;
-            DeactivatePoint();
+            currentFitTypeIndex = px - 48;
+            DeactivateCurrentActivePoint();
             SetActiveFit();
          }
-
          switch (px)
          {
             case 'j':
             {
                if (hists.size() == 1)
                {
-                  printf("\033[1m\033[35mWarning:\033[0m Cannot change histogram since only one was added\n");
+                  std::cout << "\033[1m\033[35mWarning:\033[0m Cannot switch "\
+                               "between histograms since only one was added" << std::endl;
                }
-               else if (currentHistId < hists.size()-1)
-               {
-                  currentHistId++;
-               }
-               else
-               {
-                  currentHistId = 0;
-               }
+               else if (currentHistId < hists.size() - 1) currentHistId++;
+               else currentHistId = 0;
 
-               Draw(true, false);
+               Draw(true);
 
                break;
             }
@@ -135,29 +184,23 @@ void GUIFit::Exec()
             {
                if (hists.size() == 1)
                {
-                  printf("\033[1m\033[35mWarning:\033[0m Cannot change histogram since only one was added\n");
+                  std::cout << "\033[1m\033[35mWarning:\033[0m Cannot switch "\
+                               "between histograms since only one was added" << std::endl;
                }
-               else if (currentHistId > 0)
-               {
-                  currentHistId--;
-               }
-               else
-               {
-                  currentHistId = hists.size()-1;
-               }
+               else if (currentHistId > 0) currentHistId--;
+               else currentHistId = hists.size() - 1;
 
-               Draw(true, false);
+               Draw(true);
 
                break;
             }
-
             case 'p':
             {
-               for (long unsigned int j = 0; j < outputFileNames.size(); j++)
+               for (unsigned int j = 0; j < outputFileNames.size(); j++)
                {
                   std::ofstream outputFile(outputFileNames[j]);
 
-                  for (long unsigned int i = 0; i < hists.size(); i++)
+                  for (unsigned int i = 0; i < hists.size(); i++)
                   {
                      outputFile << histValues[i] << " ";
 
@@ -174,8 +217,10 @@ void GUIFit::Exec()
                      outputFile << fitsBG[i][j]->GetParameter(fitsBG[i][j]->GetNpar() - 1) << 
                                    std::endl;
                   }
+                  outputFile.close();
                }
-               printf("\033[32mInfo:\033[0m BG approximation parameters were written\n");
+               std::cout << "\033[32mInfo:\033[0m Background approximation "\
+                            "parameters were written" << std::endl;
                break;
             }
             case 'f':
@@ -195,73 +240,74 @@ void GUIFit::Exec()
             }
          }
          break;
-
-
+      }
       case kButton1Down:
-         if (!IsActivePoint()) 
+      {
+         if (!isFitPointActive) 
          {
             for (int i = 0; i < bgPointsGr->GetN(); i++)
             {
-            const double markerPositionX = gPad->XtoPixel(bgPointsGr->GetPointX(i));
-            const double markerPositionY = gPad->YtoPixel(bgPointsGr->GetPointY(i));
+               const double markerPositionX = gPad->XtoPixel(bgPointsGr->GetPointX(i));
+               const double markerPositionY = gPad->YtoPixel(bgPointsGr->GetPointY(i));
 
-            if (pow(markerPositionX - px, 2) + pow(markerPositionY - py, 2) < 
-                  pow(4.*bgPointsGr->GetMarkerSize(), 2)) 
-            {
-                  ActivatePoint(i, 
-                     bgPointsGr->GetPointX(i), 
-                     bgPointsGr->GetPointY(i));
+               if (pow(markerPositionX - px, 2) + pow(markerPositionY - py, 2) < 
+                   pow(4.*bgPointsGr->GetMarkerSize(), 2)) 
+               {
+                     ActivatePoint(i, bgPointsGr->GetPointX(i), bgPointsGr->GetPointY(i));
                }
             }
          }
          break;
-
+      }
       case kButton1Motion:
-         if (IsActivePoint())
+      {
+         if (isFitPointActive)
          {
             currentActivePointGr->SetPointY(0, y);
             bgPointsGr->SetPointY(currentActivePointIndex, y);
 
-            bgPointsGr->Fit(fitsBG[currentHistId][currentFitTypeIndex-1], "RQNM");
+            bgPointsGr->Fit(fitsBG[currentHistId][currentFitTypeIndex - 1], "RQNM");
 
-            for (int i = 0; i < fitsBG[currentHistId][currentFitTypeIndex-1]->GetNpar(); i++)
+            for (int i = 0; i < fitsBG[currentHistId][currentFitTypeIndex - 1]->GetNpar(); i++)
             {
-               fits[currentHistId][currentFitTypeIndex-1]->FixParameter(
-                  fitBGParIndicesBegin[currentHistId][currentFitTypeIndex-1]+i, 
-                  fitsBG[currentHistId][currentFitTypeIndex-1]->GetParameter(i));
+               fits[currentHistId][currentFitTypeIndex - 1]->
+                  FixParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex - 1] + i, 
+                               fitsBG[currentHistId][currentFitTypeIndex - 1]->GetParameter(i));
             }
-            fits[currentHistId][currentFitTypeIndex-1]->Update();
 
-            hists[currentHistId]->Fit(
-               fits[currentHistId][currentFitTypeIndex-1], "RQMN");
+            fits[currentHistId][currentFitTypeIndex - 1]->Update();
 
-            fits[currentHistId][currentFitTypeIndex-1]->Update();
+            hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex - 1], "RQMN");
 
+            fits[currentHistId][currentFitTypeIndex - 1]->Update();
+
+            /*
             std::cout << "Fit parameters: ";
 
-            for (int i = 0; i < fitBGParIndicesBegin[currentHistId][currentFitTypeIndex-1]; i++)
+            for (int i = 0; i < fitBGParIndicesBegin[currentHistId][currentFitTypeIndex - 1]; i++)
             {
-               std::cout << 
-                  fits[currentHistId][currentFitTypeIndex-1]->GetParameter(i) 
-                  << " ";
+               std::cout << fits[currentHistId][currentFitTypeIndex - 1]->GetParameter(i) << " ";
             }
             std::cout << std::endl;
+            */
          }
          else return;
          break;
-
+      }
       case kButton1Up:
-         DeactivatePoint();
+      {
+         DeactivateCurrentActivePoint();
          break;
+      }
    }
 
-   Draw(false, false);
+   Draw(false);
 };
 
 void GUIFit::SetBGPoints()
 {
    double xMin, xMax;
-   fits[currentHistId][currentFitTypeIndex-1]->GetRange(xMin, xMax);
+   fits[currentHistId][currentFitTypeIndex - 1]->GetRange(xMin, xMax);
 
    //resetting bg points graph
    delete bgPointsGr;
@@ -274,17 +320,19 @@ void GUIFit::SetBGPoints()
    bgPointsGr->SetMarkerColor(activeColor);
 
    const double xShift = (xMax - xMin)/
-      (static_cast<double>(fitsBG[currentHistId][currentFitTypeIndex-1]->GetNpar())-1.);
+      (static_cast<double>(fitsBG[currentHistId][currentFitTypeIndex - 1]->GetNpar()) - 1.);
 
    bgPointsGr->AddPoint(xMin + 1e-15, 
-      fitsBG[currentHistId][currentFitTypeIndex-1]->Eval(xMin));
-   for (int j = 1; j < fitsBG[currentHistId][currentFitTypeIndex-1]->GetNpar()-1; j++)
+                        fitsBG[currentHistId][currentFitTypeIndex - 1]->Eval(xMin));
+
+   for (int j = 1; j < fitsBG[currentHistId][currentFitTypeIndex - 1]->GetNpar() - 1; j++)
    {
       const double xPos = xMin+xShift*static_cast<double>(j);
-      bgPointsGr->AddPoint(xPos, fitsBG[currentHistId][currentFitTypeIndex-1]->Eval(xPos));
-    }
+      bgPointsGr->AddPoint(xPos, fitsBG[currentHistId][currentFitTypeIndex - 1]->Eval(xPos));
+   }
+
    bgPointsGr->AddPoint(xMax - 1e-15, 
-      fitsBG[currentHistId][currentFitTypeIndex-1]->Eval(xMax));
+                        fitsBG[currentHistId][currentFitTypeIndex - 1]->Eval(xMax));
 }
 
 void GUIFit::SetActiveFit()
@@ -293,7 +341,7 @@ void GUIFit::SetActiveFit()
 
    for (unsigned long i = 0; i < fits[currentHistId].size(); i++)
    {
-      if (i == currentFitTypeIndex-1)
+      if (i == currentFitTypeIndex - 1)
       {
          isActiveSetCheck = true;
 
@@ -326,17 +374,18 @@ void GUIFit::PerformFreeFit()
 
    for (int i = 0; i < fitsBG[currentHistId].back()->GetNpar(); i++)
    {
-      fits[currentHistId][currentFitTypeIndex-1]->ReleaseParameter(
-         fitBGParIndicesBegin[currentHistId][currentFitTypeIndex-1]+i);
+      fits[currentHistId][currentFitTypeIndex - 1]->
+         ReleaseParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex - 1] + i);
    }
 
-   hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex-1], "RQMNB");
+   hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex - 1], "RQMNB");
 
    for (int i = 0; i < fitsBG[currentHistId].back()->GetNpar(); i++)
    {
-      fitsBG[currentHistId][currentFitTypeIndex-1]->SetParameter(i, 
-         fits[currentHistId][currentFitTypeIndex-1]->GetParameter(
-         fitBGParIndicesBegin[currentHistId][currentFitTypeIndex-1]+i));
+      const double value= fits[currentHistId][currentFitTypeIndex - 1]->
+         GetParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex - 1] + i);
+
+      fitsBG[currentHistId][currentFitTypeIndex - 1]->SetParameter(i, value);
    }
 
    SetBGPoints();
@@ -347,7 +396,7 @@ void GUIFit::ResetFit()
    if (currentFitTypeIndex == 0 || currentFitTypeIndex > fits[currentHistId].size()) return;
 
    double xMin, xMax;
-   fits[currentHistId][currentFitTypeIndex-1]->GetRange(xMin, xMax);
+   fits[currentHistId][currentFitTypeIndex - 1]->GetRange(xMin, xMax);
 
    //resetting bg points graph
    delete bgPointsGr;
@@ -360,48 +409,45 @@ void GUIFit::ResetFit()
    bgPointsGr->SetMarkerColor(activeColor);
 
    const double xShift = (xMax - xMin)/
-      (static_cast<double>(fitsBG[currentHistId][currentFitTypeIndex-1]->GetNpar())-1.);
+      (static_cast<double>(fitsBG[currentHistId][currentFitTypeIndex - 1]->GetNpar()) - 1.);
 
    bgPointsGr->AddPoint(xMin + 1e-15, 
-      hists[currentHistId]->GetBinContent(hists[currentHistId]->GetXaxis()->FindBin(xMin)));
-   for (int j = 1; j < fitsBG[currentHistId][currentFitTypeIndex-1]->GetNpar()-1; j++)
+               hists[currentHistId]->GetBinContent(hists[currentHistId]->GetXaxis()->
+               FindBin(xMin)));
+
+   for (int j = 1; j < fitsBG[currentHistId][currentFitTypeIndex - 1]->GetNpar() - 1; j++)
    {
       const double xPos = xMin+xShift*static_cast<double>(j);
-      bgPointsGr->AddPoint(xPos, 
-         hists[currentHistId]->GetBinContent(hists[currentHistId]->GetXaxis()->FindBin(xPos)));
+      bgPointsGr->AddPoint(xPos, hists[currentHistId]->GetBinContent(hists[currentHistId]->
+                           GetXaxis()->FindBin(xPos)));
    }
-   bgPointsGr->AddPoint(xMax - 1e-15, 
-      hists[currentHistId]->GetBinContent(hists[currentHistId]->GetXaxis()->FindBin(xMax)));
 
-   bgPointsGr->Fit(fitsBG[currentHistId][currentFitTypeIndex-1], "RQMN");
+   bgPointsGr->AddPoint(xMax - 1e-15, hists[currentHistId]->GetBinContent(hists[currentHistId]->
+                        GetXaxis()->FindBin(xMax)));
 
-   for (int i = 0; i < fitsBG[currentHistId][currentFitTypeIndex-1]->GetNpar(); i++)
+   bgPointsGr->Fit(fitsBG[currentHistId][currentFitTypeIndex - 1], "RQMN");
+
+   for (int i = 0; i < fitsBG[currentHistId][currentFitTypeIndex - 1]->GetNpar(); i++)
    {
-      fits[currentHistId][currentFitTypeIndex-1]->FixParameter(
-         fitBGParIndicesBegin[currentHistId][currentFitTypeIndex-1]+i, 
-         fitsBG[currentHistId][currentFitTypeIndex-1]->GetParameter(i));
+      fits[currentHistId][currentFitTypeIndex - 1]->
+         FixParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex - 1] + i, 
+                      fitsBG[currentHistId][currentFitTypeIndex - 1]->GetParameter(i));
    }
-   fits[currentHistId][currentFitTypeIndex-1]->Update();
-   hists[currentHistId]->Fit(
-      fits[currentHistId][currentFitTypeIndex-1], "RQMN");
-}
-
-bool GUIFit::IsActivePoint() 
-{
-   return isTogglePointActive;
+   fits[currentHistId][currentFitTypeIndex - 1]->Update();
+   hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex - 1], "RQMN");
 }
 
 void GUIFit::ActivatePoint(const int pointNumber, const double x, const double y) 
 {
-   isTogglePointActive = true; 
+   isFitPointActive = true; 
    currentActivePointIndex = pointNumber;
    currentActivePointGr->SetPointX(0, x);
    currentActivePointGr->SetPointY(0, y);
 }
 
-void GUIFit::DeactivatePoint() 
+void GUIFit::DeactivateCurrentActivePoint() 
 {
-   isTogglePointActive = false; 
+   isFitPointActive = false; 
    currentActivePointIndex = -1;
    currentActivePointGr->SetPointX(0, -1.);
    currentActivePointGr->SetPointY(0, -1.);
@@ -437,32 +483,65 @@ void GUIFit::PrintHelp()
    std::cout << std::endl;
 }
 
-void GUIFit::Draw(bool doDrawHist, bool isFirstDraw)
+void GUIFit::Start()
 {
-   if (isFirstDraw)
+   if (isStartSuccessfull) return;
+
+   if (currentHistId < 0) 
    {
-      if (currentHistId < 0) 
-      {
-         std::cout << "\033[1m\033[31mError:\033[0m No histograms were added" << std::endl;
-         exit(1);
-      }
-      fitNames.SetNDC();
-      chi2NDF.SetNDC();
-
-      if (currentActivePointGr->GetN() == 0) 
-      {
-         currentActivePointGr->AddPoint(-1., -1.);
-         currentActivePointGr->SetMarkerSize(2.5);
-         currentActivePointGr->SetMarkerStyle(89);
-         currentActivePointGr->SetMarkerColor(activeColor);
-         currentActivePointGr->SetEditable(kFALSE);
-      }
-
-      PrintHelp();
+      std::cout << "\033[1m\033[31mError:\033[0m No histograms were added" << std::endl;
+      exit(1);
    }
+
+   bool areFitsOk = true;
+   // Chesking fits
+   for (unsigned int i = 0; i < hists.size(); i++)
+   {
+      for (unsigned int j = 0; j < fits[i].size(); j++)
+      {
+         if (!fits[i][j])
+         {
+            std::cout << "\033[1m\033[35mWarning:\033[0m Fit was not added for histogram "\
+                         "index " << i << " for fit type index " << j << std::endl;
+            areFitsOk = false;
+         }
+         if (!fitsBG[i][j])
+         {
+            std::cout << "\033[1m\033[35mWarning:\033[0m Background fit was not added "\
+                         "for histogram index " << i << " for fit type index " << j << std::endl;
+            areFitsOk = false;
+         }
+      }
+   }
+
+   if (!areFitsOk) 
+   {
+      std::cout << "\033[32mInfo:\033[0m Stopping the program due to abscent fits" << std::endl;
+      exit(1);
+   }
+
+   fitNames.SetNDC();
+   chi2NDF.SetNDC();
+
+   if (currentActivePointGr->GetN() == 0) 
+   {
+      currentActivePointGr->AddPoint(-1., -1.);
+      currentActivePointGr->SetMarkerSize(2.5);
+      currentActivePointGr->SetMarkerStyle(89);
+      currentActivePointGr->SetMarkerColor(activeColor);
+      currentActivePointGr->SetEditable(kFALSE);
+   }
+
+   PrintHelp();
+   currentHistId = 0;
+   isStartSuccessfull = true;
+}
+
+void GUIFit::Draw(bool doDrawHist)
+{
    if (doDrawHist)
    {
-      DeactivatePoint();
+      DeactivateCurrentActivePoint();
       currentFitTypeIndex = 0;
 
       hists[currentHistId]->Draw();
@@ -476,7 +555,7 @@ void GUIFit::Draw(bool doDrawHist, bool isFirstDraw)
       fitsBG[currentHistId][i]->Draw("SAME");
    }
 
-   if (IsActivePoint()) currentActivePointGr->Draw("P");
+   if (isFitPointActive) currentActivePointGr->Draw("P");
    if (bgPointsGr->GetN() > 0) bgPointsGr->Draw("P");
 
    gPad->GetListOfPrimitives()->Remove(&fitNames);
@@ -486,10 +565,10 @@ void GUIFit::Draw(bool doDrawHist, bool isFirstDraw)
    {
       std::stringstream chi2ndf;
       chi2ndf << std::fixed << std::setprecision(2) << 
-         fits[currentHistId][currentFitTypeIndex-1]->GetChisquare()/
-         fits[currentHistId][currentFitTypeIndex-1]->GetNDF();
+                 fits[currentHistId][currentFitTypeIndex - 1]->GetChisquare()/
+                 fits[currentHistId][currentFitTypeIndex - 1]->GetNDF();
 
-      fitNames.SetText(0.2, 0.15, fits[currentHistId][currentFitTypeIndex-1]->GetName());
+      fitNames.SetText(0.2, 0.15, fits[currentHistId][currentFitTypeIndex - 1]->GetName());
       chi2NDF.SetText(0.75, 0.8, ("#chi^2/NDF " + chi2ndf.str()).c_str());
 
       fitNames.Draw();
