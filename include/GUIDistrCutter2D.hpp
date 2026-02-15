@@ -67,89 +67,93 @@ namespace GUIDistrCutter2D
    bool IsBinCut(const int binX, const int binY);
    /// Needed for angular cut mode. This function is called automaticaly when needed.
    inline double Pol1(const double x, const double par0, const double par1);
-   /// stores added distributions
+   /// Stores added distributions. This variable is handled automaticaly
    std::vector<TH2D *> hists;
-   /// stores current distribution to which cuts will be applied
+   /// Stores current distribution to which cuts will be applied. This variable is handled automaticaly
    TH2D * histWithCuts;
-   /// stores integrals of added uncut hists
+   /// Stores integrals of added uncut hists. This variable is handled automaticaly
    std::vector<unsigned long> histsOrigIntegral;
-   /// stores information about the index of the currently displayed histogram
+   /// Stores information about the index of the currently displayed histogram. This variable is handled automaticaly
    unsigned long currentHist = 0;
-   /// stores information about cut areas that were read from the input file
+   /// Stores information about cut areas that were read from the input file. This variable is handled automaticaly
    std::vector<std::vector<bool>> inputFileCutAreas;
-   /// stores information about the current cut mode
+   /// Stores information about the current cut mode. This variable is handled automaticaly
    short currentCutMode = -1;
-   /// stores minimum x values of the rectangular cut mode
+   /// Stores minimum x values of the rectangular cut mode. This variable is handled automaticaly
 	std::vector<double> rectXMin;
-   /// stores maximum x values of the rectangular cut mode
+   /// Stores maximum x values of the rectangular cut mode. This variable is handled automaticaly
    std::vector<double> rectXMax; 
-   /// stores minimum y values of the rectangular cut mode
+   /// Stores minimum y values of the rectangular cut mode. This variable is handled automaticaly
    std::vector<double> rectYMin;
-   /// stores maximum y values of the rectangular cut mode
+   /// Stores maximum y values of the rectangular cut mode. This variable is handled automaticaly
    std::vector<double> rectYMax;
-   /// stores minimum x values of x linear cut mode
+   /// Stores minimum x values of x linear cut mode. This variable is handled automaticaly
 	std::vector<double> lineXMin;
-   /// stores maximum x values of x linear cut mode
+   /// Stores maximum x values of x linear cut mode. This variable is handled automaticaly
    std::vector<double> lineXMax;
-   /// stores minimum y values of y linear cut mode
+   /// Stores minimum y values of y linear cut mode. This variable is handled automaticaly
 	std::vector<double> lineYMin;
-   /// stores maximum y values of y linear cut mode
+   /// Stores maximum y values of y linear cut mode. This variable is handled automaticaly
    std::vector<double> lineYMax;
-   /// stores minimum x values of inverse rectangular cut mode
+   /// Stores minimum x values of inverse rectangular cut mode. This variable is handled automaticaly
 	std::vector<double> invRectXMin;
-   /// stores maximum x values of inverse rectangular cut mode
+   /// Stores maximum x values of inverse rectangular cut mode. This variable is handled automaticaly
    std::vector<double> invRectXMax;
-   /// stores minimum y values of inverse rectangular cut mode
+   /// Stores minimum y values of inverse rectangular cut mode. This variable is handled automaticaly
    std::vector<double> invRectYMin;
-   /// stores maximum y values of inverse rectangular cut mode
+   /// Stores maximum y values of inverse rectangular cut mode. This variable is handled automaticaly
    std::vector<double> invRectYMax;
-   /// stores x1 values of the 1st line of angled line cuts
+   /// Stores x1 values of the 1st line of angled line cuts. This variable is handled automaticaly
 	std::vector<double> angledLine1X1;
-   /// stores x2 values of the 1st line of angled line cuts
+   /// Stores x2 values of the 1st line of angled line cuts. This variable is handled automaticaly
 	std::vector<double> angledLine1X2;
-   /// stores y1 values of the 1st line of angled line cuts
+   /// Stores y1 values of the 1st line of angled line cuts. This variable is handled automaticaly
    std::vector<double> angledLine1Y1;
-   /// stores y2 values of the 1st line of angled line cuts
+   /// Stores y2 values of the 1st line of angled line cuts. This variable is handled automaticaly
    std::vector<double> angledLine1Y2;
-   /// stores x1 values of the 2nd line of angled line cuts
+   /// Stores x1 values of the 2nd line of angled line cuts. This variable is handled automaticaly
 	std::vector<double> angledLine2X1;
-   /// stores x2 values of the 2nd line of angled line cuts
+   /// Stores x2 values of the 2nd line of angled line cuts. This variable is handled automaticaly
    std::vector<double> angledLine2X2;
-   /// stores y1 values of the 2nd line of angled line cuts
+   /// Stores y1 values of the 2nd line of angled line cuts. This variable is handled automaticaly
    std::vector<double> angledLine2Y1;
-   /// stores y2 values of the 2nd line of angled line cuts
+   /// Stores y2 values of the 2nd line of angled line cuts. This variable is handled automaticaly
    std::vector<double> angledLine2Y2;
-   /// stores tangent of alpha of the 1st line of angled line cuts
+   /// Stores tangent of alpha of the 1st line of angled line cuts. 
+   /// This variable is handled automaticaly
 	std::vector<double> tanAlpha1;
-   /// stores tangent of alpha of the 2nd line of angled line cuts
+   /// Stores tangent of alpha of the 2nd line of angled line cuts. 
+   /// This variable is handled automaticaly
    std::vector<double> tanAlpha2;
-   /// stores y shifts of the 1st line of angled line cuts
+   /// Stores y shifts of the 1st line of angled line cuts. This variable is handled automaticaly
    std::vector<double> shiftY1;
-   /// stores y shifts of the 2nd line of angled line cuts
+   /// Stores y shifts of the 2nd line of angled line cuts. This variable is handled automaticaly
    std::vector<double> shiftY2;
-   /// stores x values of the single pixel cut mode
+   /// Stores x values of the single pixel cut mode. This variable is handled automaticaly
    std::vector<double> singleBinXCut;
-   /// stores y values of the single pixel cut mode
+   /// Stores y values of the single pixel cut mode. This variable is handled automaticaly
    std::vector<double> singleBinYCut;
-   /// stores x bins of points cut by minimum threshold cut
+   /// Stores x bins of points cut by minimum threshold cut. This variable is handled automaticaly
    std::vector<std::vector<int>> minThresholdCutBinsX;
-   /// stores y bins of points cut by minimum threshold cut
+   /// Stores y bins of points cut by minimum threshold cut. This variable is handled automaticaly
    std::vector<std::vector<int>> minThresholdCutBinsY;
-   /// stores x bins of points cut by maximum threshold cut
+   /// Stores x bins of points cut by maximum threshold cut. This variable is handled automaticaly
    std::vector<std::vector<int>> maxThresholdCutBinsX;
-   /// stores y bins of points cut by maximum threshold cut
+   /// Stores y bins of points cut by maximum threshold cut. This variable is handled automaticaly
    std::vector<std::vector<int>> maxThresholdCutBinsY;
-   /// stores information that shows whether the first point was chosen for the given cut mode
+   /// Stores information that shows whether the first point was chosen for the given cut mode. 
+   /// This variable is handled automaticaly
 	std::array<bool, 5> isMin = {true, true, true, true, true};
-   /// name of the file in which cuts will be written
+   /// Name of the file in which cuts will be written. This variable is handled automaticaly
    std::string outputFileName;
-   /// shows whether the output file was set
+   /// Shows whether the output file was set. This variable is handled automaticaly
    bool isOutputFileSet = false;
-   /// shows whether at least one histogram was added
+   /// Shows whether at least one histogram was added. This variable is handled automaticaly
    bool isHistogramAdded = false;
-   /// checks if the histogram was drawn the first time
+   /// Checks if the histogram was drawn the first time. This variable is handled automaticaly
    bool isFirstDraw = true;
-   /// sets the minimum value along Z axis to 1 if this value is true
+   /// Sets the minimum value along Z axis to 1 if this value is true. 
+   /// This variable is handled automaticaly
    bool setMinimumToOne = false;
 };
 
