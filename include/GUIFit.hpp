@@ -35,7 +35,7 @@ namespace GUIFit
     * @param[in] hist histogram to be added
     * @param[in] val value corresponding to this histogram. This value will be written for the currenlty added histogram in output file containing approximation parameters. This way the value can help map approximation parameters to corresponding histograms. Values must be unique for each histogram
     */
-   void AddHistogram(TH1D *hist, const std::string& histVal);
+   void AddHistogram(TH1D *hist, const std::string& histVal, const std::string& histName = "");
    /*! @brief Adds a new fit type. Fits across once fit type have the same function (GUIFit class will not check this, user needs to do this themselves)
     *
     * @param[in] outputFileName name of the file in which background approximation parameters will be written
@@ -92,6 +92,8 @@ namespace GUIFit
    std::vector<TH1D *> hists;
    /// Contains corresponding values of histograms. This variable is handled automaticaly
    std::vector<std::string> histValues;
+   /// Contains corresponding names of histograms. Can be used to display the name on the canvas
+   std::vector<std::string> histNames;
    /// Contains names of files in which parameters will be written. 
    /// This variable is handled automaticaly
    std::vector<std::string> outputFileNames;
@@ -110,16 +112,18 @@ namespace GUIFit
    /// different types for different histograms. This variable is handled automaticaly
    std::vector<std::vector<int>> fitBGParIndicesEnd;
    /// Used to display the name of a current fit type. This variable is handled automaticaly
-   TLatex fitNames = TLatex(0.2, 0.2, "");
+   TLatex fitNameTex = TLatex(0.2, 0.2, "");
    /// Used to display chi^2/NDF of a fit. This variable is handled automaticaly
-   TLatex chi2NDF = TLatex(0.8, 0.9, "");
+   TLatex chi2NDFTex = TLatex(0.8, 0.9, "");
+   /// Used to display histogram name. This variable is handled automaticaly
+   TLatex histNameTex = TLatex(0.1, 0.9, "");
    /// Graph that contains movable points for background tweaking. 
    /// This variable is handled automaticaly
    TGraph *grBGPoints = new TGraph;
    /// Points to the index of a currently displayed histogram. This variable is handled automaticaly
-   long unsigned int currentHistId = -1;
+   int currentHistId = -1;
    /// Points to the index of a currently active fit. This variable is handled automaticaly
-   unsigned long currentFitTypeIndex = 0;
+   int currentFitTypeIndex = -1;
    /// Shows whether there is an active (i.e. movable) point. This variable is handled automaticaly
    bool isFitPointActive = false;
    /// Points to the index of a currently active (i.e. movable) point. 

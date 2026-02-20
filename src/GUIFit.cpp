@@ -30,16 +30,15 @@ unsigned int GUIFit::AddFitType(const std::string& outputFileName, const std::st
    return fitTypeNames.size() - 1;
 }
 
-void GUIFit::AddHistogram(TH1D *hist, const std::string& histVal)
+void GUIFit::AddHistogram(TH1D *hist, const std::string& histVal, const std::string& histName)
 {
    fits.resize(fits.size() + 1);
    fitsBG.resize(fitsBG.size() + 1);
    fitBGParIndicesBegin.resize(fitBGParIndicesBegin.size() + 1);
    fitBGParIndicesEnd.resize(fitBGParIndicesEnd.size() + 1);
 
-   hists.emplace_back((TH1D *) hist->Clone());
-   
    if (hists.size() == 0) currentHistId = 0;
+   hists.emplace_back(hist);
 
    for (const std::string& val : histValues)
    {
@@ -51,6 +50,7 @@ void GUIFit::AddHistogram(TH1D *hist, const std::string& histVal)
       }
    }
    histValues.push_back(histVal);
+   histNames.push_back(histName);
 }
 
 void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex, 
@@ -105,21 +105,21 @@ void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex,
                    histIndex << "; rewriting the old fit" << std::endl;
    }
 
-   fits[histIndex][fitTypeIndex] = static_cast<TF1 *>(fit->Clone());
-   fitsBG[histIndex][fitTypeIndex] = static_cast<TF1 *>(fitBG->Clone());
+   fits[histIndex][fitTypeIndex] = fit;
+   fitsBG[histIndex][fitTypeIndex] = fitBG;
    fitBGParIndicesBegin[histIndex][fitTypeIndex] = fitBGParIndexBegin;
 
    if (fitBGParIndexEnd < 0) fitBGParIndicesEnd[histIndex][fitTypeIndex] = fit->GetNpar() - 1;
    else fitBGParIndicesEnd[histIndex][fitTypeIndex] = fitBGParIndexEnd;
 
-   if ((fitBGParIndicesEnd[histIndex][fitTypeIndex] - 
-        fitBGParIndicesBegin[histIndex][fitTypeIndex]) != fitBG->GetNpar())
+   if (fitBGParIndicesEnd[histIndex][fitTypeIndex] - 
+       fitBGParIndicesBegin[histIndex][fitTypeIndex] + 1 != fitBG->GetNpar())
    {
       std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: number of inidices for "\
                    "background fit deduced from provided begin and end indices mismatch "\
                    "with the number of parameters of an actual background fit: " << 
                    fitBGParIndicesEnd[histIndex][fitTypeIndex] - 
-                   fitBGParIndicesBegin[histIndex][fitTypeIndex] << " vs " <<
+                   fitBGParIndicesBegin[histIndex][fitTypeIndex] + 1 << " vs " <<
                    fitBG->GetNpar() << std::endl;
       exit(1);
    }
@@ -151,6 +151,11 @@ void GUIFit::Exec()
          if (px > 48 && px < 58) 
          {
             currentFitTypeIndex = px - 49;
+            if (currentFitTypeIndex >= static_cast<int>(fitTypeNames.size())) 
+            {
+               currentFitTypeIndex = -1;
+            }
+
             DeactivateCurrentActivePoint();
             SetActiveFit();
          }
@@ -163,7 +168,7 @@ void GUIFit::Exec()
                   std::cout << "\033[1m\033[35mWarning:\033[0m Cannot switch "\
                                "between histograms since only one was added" << std::endl;
                }
-               else if (currentHistId < hists.size() - 1) currentHistId++;
+               else if (currentHistId < static_cast<int>(hists.size() - 1)) currentHistId++;
                else currentHistId = 0;
 
                Draw(true);
@@ -252,8 +257,7 @@ void GUIFit::Exec()
          {
             currentActivePointGr->SetPointY(0, y);
             grBGPoints->SetPointY(currentActivePointIndex, y);
-
-            grBGPoints->Fit(fitsBG[currentHistId][currentFitTypeIndex], "RQMN");
+            grBGPoints->Fit(fitsBG[currentHistId][currentFitTypeIndex], "RQN");
             fitsBG[currentHistId][currentFitTypeIndex]->Update();
 
             for (int i = 0; i < fitsBG[currentHistId][currentFitTypeIndex]->GetNpar(); i++)
@@ -263,7 +267,7 @@ void GUIFit::Exec()
                                fitsBG[currentHistId][currentFitTypeIndex]->GetParameter(i));
             }
 
-            hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQBMN");
+            hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQBN");
             fits[currentHistId][currentFitTypeIndex]->Update();
          }
          else return;
@@ -332,9 +336,9 @@ void GUIFit::SetActiveFit()
 {
    bool isActiveSetCheck = false;
 
-   for (unsigned long i = 0; i < fits[currentHistId].size(); i++)
+   for (int i = 0; i < static_cast<int>(fitTypeNames.size()); i++)
    {
-      if (i == currentFitTypeIndex)
+      if (currentFitTypeIndex == i)
       {
          isActiveSetCheck = true;
 
@@ -363,7 +367,7 @@ void GUIFit::SetActiveFit()
 
 void GUIFit::PerformFreeFit()
 {
-   if (currentFitTypeIndex < 0 || currentFitTypeIndex >= fits[currentHistId].size()) return;
+   if (currentFitTypeIndex < 0) return;
 
    for (int i = 0; i < fitsBG[currentHistId].back()->GetNpar(); i++)
    {
@@ -386,7 +390,7 @@ void GUIFit::PerformFreeFit()
 
 void GUIFit::ResetFit()
 {
-   if (currentFitTypeIndex < 0 || currentFitTypeIndex >= fits[currentHistId].size()) return;
+   if (currentFitTypeIndex < 0) return;
 
    double xMin, xMax;
    fits[currentHistId][currentFitTypeIndex]->GetRange(xMin, xMax);
@@ -544,8 +548,9 @@ void GUIFit::Start()
       }
    }
 
-   fitNames.SetNDC();
-   chi2NDF.SetNDC();
+   fitNameTex.SetNDC();
+   chi2NDFTex.SetNDC();
+   histNameTex.SetNDC();
 
    if (currentActivePointGr->GetN() == 0) 
    {
@@ -570,6 +575,10 @@ void GUIFit::Draw(bool doDrawHist)
 
       hists[currentHistId]->Draw();
 
+      gPad->GetListOfPrimitives()->Remove(&histNameTex);
+      histNameTex.SetText(0.15, 0.85, histNames[currentHistId].c_str());
+      histNameTex.Draw();
+
       SetActiveFit();
    }
 
@@ -582,21 +591,21 @@ void GUIFit::Draw(bool doDrawHist)
    if (isFitPointActive) currentActivePointGr->Draw("P");
    if (grBGPoints->GetN() > 0) grBGPoints->Draw("P");
 
-   gPad->GetListOfPrimitives()->Remove(&fitNames);
-   gPad->GetListOfPrimitives()->Remove(&chi2NDF);
+   gPad->GetListOfPrimitives()->Remove(&fitNameTex);
+   gPad->GetListOfPrimitives()->Remove(&chi2NDFTex);
 
-   if (currentFitTypeIndex > 0 && currentFitTypeIndex <= fits[currentHistId].size())
+   if (currentFitTypeIndex >= 0)
    {
-      std::stringstream chi2ndf;
-      chi2ndf << std::fixed << std::setprecision(2) << 
-                 fits[currentHistId][currentFitTypeIndex]->GetChisquare()/
-                 fits[currentHistId][currentFitTypeIndex]->GetNDF();
+      std::stringstream chi2NDFPrec2;
+      chi2NDFPrec2 << std::fixed << std::setprecision(2) << 
+                      fits[currentHistId][currentFitTypeIndex]->GetChisquare()/
+                      fits[currentHistId][currentFitTypeIndex]->GetNDF();
 
-      fitNames.SetText(0.2, 0.15, fitTypeNames[currentFitTypeIndex].c_str());
-      chi2NDF.SetText(0.75, 0.8, ("#chi^2/NDF " + chi2ndf.str()).c_str());
+      fitNameTex.SetText(0.15, 0.15, fitTypeNames[currentFitTypeIndex].c_str());
+      chi2NDFTex.SetText(0.7, 0.85, ("#chi^{2}/NDF=" + chi2NDFPrec2.str()).c_str());
 
-      fitNames.Draw();
-      chi2NDF.Draw();
+      fitNameTex.Draw();
+      chi2NDFTex.Draw();
    }
 
    gPad->Modified();
