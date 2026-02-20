@@ -199,7 +199,8 @@ void GUIFit::Exec()
                   {
                      outputFile << histValues[i] << " ";
 
-                     outputFile << fitsBG[i][j]->GetParameter(0) << " ";
+                     outputFile << fitsBG[i][j]->GetNpar() << " " << 
+                                   fitsBG[i][j]->GetParameter(0) << " ";
 
                      for (int k = 1; k < fitsBG[i][j]->GetNpar() - 1; k++)
                      {
