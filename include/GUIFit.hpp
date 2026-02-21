@@ -24,6 +24,7 @@
 #include "TLatex.h"
 #include "TGraph.h"
 #include "TF1.h"
+#include "TFile.h"
 
 /*! @namespace GUIFit
  * @brief GUIFit can be used for providing GUI for improving approximations of form "foreground + background" by tweaking badly approximated background
@@ -86,6 +87,9 @@ namespace GUIFit
    /// Draws the current chosen histogram with its approximations. 
    /// This function is called automaticaly when needed
    void Draw(bool doDrawHist = true);
+   /// Writes background approximation parameters in a specified file
+   /// This function is called automaticaly when needed
+   void Write();
    /// Sets up everything when GUI::Exec is called. This function is called automaticaly when needed
    void Start();
    /// Contains all added histograms. This variable is handled automaticaly
