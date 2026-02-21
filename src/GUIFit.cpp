@@ -191,29 +191,7 @@ void GUIFit::Exec()
             }
             case 'p':
             {
-               for (unsigned int j = 0; j < outputFileNames.size(); j++)
-               {
-                  std::ofstream outputFile(outputFileNames[j]);
-
-                  for (unsigned int i = 0; i < hists.size(); i++)
-                  {
-                     outputFile << histValues[i] << " ";
-
-                     outputFile << fitsBG[i][j]->GetNpar() << " " << 
-                                   fitsBG[i][j]->GetParameter(0) << " ";
-
-                     for (int k = 1; k < fitsBG[i][j]->GetNpar() - 1; k++)
-                     {
-                        outputFile << fitsBG[i][j]->GetParameter(k) << " ";
-                     }
-
-                     outputFile << fitsBG[i][j]->GetParameter(fitsBG[i][j]->GetNpar() - 1) << 
-                                   std::endl;
-                  }
-                  outputFile.close();
-               }
-               std::cout << "\033[32mInfo:\033[0m Background approximation "\
-                            "parameters were written" << std::endl;
+               Write();
                break;
             }
             case 'f':
@@ -613,6 +591,22 @@ void GUIFit::Draw(bool doDrawHist)
    gPad->Update();
 
    gPad->GetFrame()->SetBit(TBox::kCannotMove);
+}
+
+void GUIFit::Write()
+{
+   for (unsigned int j = 0; j < outputFileNames.size(); j++)
+   {
+      TFile outputFile((outputFileNames[j] + ".root").c_str(), "RECREATE");
+      outputFile.SetCompressionLevel(9);
+      for (unsigned int i = 0; i < hists.size(); i++)
+      {
+         fitsBG[i][j]->Write(histNames[i].c_str());
+      }
+      outputFile.Close();
+   }
+   std::cout << "\033[32mInfo:\033[0m Background approximation "\
+                "parameters were written" << std::endl;
 }
 
 #endif /* ROOT_TOOLS_GUI_FIT_CPP */
