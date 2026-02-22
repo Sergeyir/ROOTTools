@@ -597,7 +597,7 @@ void GUIFit::Write()
 {
    for (unsigned int j = 0; j < outputFileNames.size(); j++)
    {
-      TFile outputFile((outputFileNames[j] + ".root").c_str(), "RECREATE");
+      TFile outputFile(outputFileNames[j].c_str(), "RECREATE");
       outputFile.SetCompressionLevel(9);
       for (unsigned int i = 0; i < hists.size(); i++)
       {
