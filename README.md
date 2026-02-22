@@ -36,12 +36,6 @@ Then run to compile the libraries (you can use option -jN to compile on multiple
 make
 ```
 
-Or you can use Makefile from etc directory
-
-```sh
-cp etc/Makefile* . && make
-```
-
 # Documentation
 
 You can view the detailed documentation at https://sergeyir.github.io/documentation/ROOTTools/. (see Namespaces / Namespaces List / ROOTTools). Since this repository is not designed to be used on its own and is intended to be used as a set of libraries, every class, method, and variable is all in the ROOTTools namespace scope.
