@@ -22,7 +22,8 @@ unsigned int GUIFit::AddFitType(const std::string& outputFileName, const std::st
                    outputFileName << "\" already exists" << std::endl;
       std::cout << "Old file \"" << outputFileName << " will be renamed to \"" << 
                    outputFileName << ".backup\" when new file will be written" << std::endl;
-      std::filesystem::copy(outputFileName, outputFileName + ".backup");
+      std::filesystem::copy(outputFileName, outputFileName + ".backup", 
+                            std::filesystem::copy_options::overwrite_existing);
    }
    outputFileNames.emplace_back(outputFileName);
    fitTypeNames.emplace_back(fitTypeName);
