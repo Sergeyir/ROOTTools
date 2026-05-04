@@ -22,7 +22,6 @@ unsigned int ROOTTools::GetNumberOfParameters(const std::string& formula, const 
    if (formula.find("{") < formula.size()) braceOpenPos = formula.find("{") + 1;
    unsigned long braceClosePos = braceOpenPos;
 
-   int i = 0;
    while (braceOpenPos < formula.size() - 1)
    {
       // searching for open brace position right after parameter name
@@ -40,8 +39,6 @@ unsigned int ROOTTools::GetNumberOfParameters(const std::string& formula, const 
       const unsigned int parameterNumber = 
          atoi(formula.substr(braceOpenPos, braceClosePos - braceOpenPos).c_str());
       if (parameterNumber > numberOfParameters) numberOfParameters = parameterNumber;
-
-      i++;
    }
    // since parameters numeration in root starts from 0 increment is needed
    return numberOfParameters + 1;
