@@ -38,7 +38,7 @@ namespace ROOTTools
     * @param[in] drawContents if true contents of hist will be drawn
     */
    template<typename T>
-   void DrawFrame(T*& hist, const std::string& title,
+   void DrawFrame(T* hist, const std::string& title,
                   const std::string& xTitle, const std::string& yTitle,
                   const double xTitleOffset = 1., const double yTitleOffset = 1.5,
                   const double xTitleSize = 0.05, const double yTitleSize = 0.05,
@@ -81,7 +81,7 @@ namespace ROOTTools
                  const Style_t style, const int width);
    /*! @brief ] Sets the full transparency to the passed canvas
     */
-   void SetTransparentCanvas(TCanvas*& canv);
+   void SetTransparentCanvas(TCanvas* canv);
    /*! @brief Saves TCanvas in .pdf format and additionaly in .png format if specified. Either printPng or printPdf must be true, else error will be printed.
     * @param[in] canv TCanvas object that will be written
     * @param[in] outputFileNameNoExt name of the output file without extention (such as ".pdf" or ".png"). Extentions of the files will be added automaticaly
@@ -91,7 +91,7 @@ namespace ROOTTools
     * @param[in] parallelCompression if true the compression will be ran on the separate thread detached from the current program. Parallel compression speeds up the function completion time since the program does not need to wait until compression is done. It is recommended to leave this parameter true unless the program you're running takes all resources of the machine.
     * @param[in] makeCanvTransparent shows whether canvas will be set transparent
     */
-   void PrintCanvas(TCanvas*& canv, const std::string& outputFileNameNoExt, 
+   void PrintCanvas(TCanvas* canv, const std::string& outputFileNameNoExt, 
                     const bool printPng = true, const bool printPdf = true, 
                     const bool compressPdf = true, const bool parallelCompression = true,
                     const bool makeCanvTransparent = true);
