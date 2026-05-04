@@ -17,6 +17,9 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "TCanvas.h"
+#include "TLine.h"
+#include "TStyle.h"
+#include "TColor.h"
 
 /// @namespace ROOTTools
 namespace ROOTTools
@@ -35,7 +38,7 @@ namespace ROOTTools
     * @param[in] drawContents if true contents of hist will be drawn
     */
    template<typename T>
-   void DrawFrame(T *hist, const std::string& title,
+   void DrawFrame(T*& hist, const std::string& title,
                   const std::string& xTitle, const std::string& yTitle,
                   const double xTitleOffset = 1., const double yTitleOffset = 1.5,
                   const double xTitleSize = 0.05, const double yTitleSize = 0.05,
@@ -61,17 +64,37 @@ namespace ROOTTools
                   const double xTitleOffset = 1., const double yTitleOffset = 1.5,
                   const double xTitleSize = 0.05, const double yTitleSize = 0.05,
                   const bool drawOppositeAxis = true);
-   /*! @brief Saves TCanvas in .pdf format and additionaly in .png format if specified. Also makes canvas background transparent. Either printPng or printPdf must be true, else error will be printed.
+   /* @brief Draws a line
+    *
+    * @param[in] xMin minimum x value
+    * @param[in] yMin minimum y value
+    * @param[in] xMax maximum x value
+    * @param[in] yMax maximum y value
+    * @param[in] color color of the line
+    * @param[in] alpha alpha of the color of the line
+    * @param[in] style style of the line (https://root.cern.ch/doc/master/classTAttLine.html)
+    * @param[in] widht widht of the line in pixels
+    */
+   void DrawLine(const double xMin, const double yMin, 
+                 const double xMax, const double yMax,
+                 const Color_t color, const double alpha,
+                 const Style_t style, const int width);
+   /*! @brief ] Sets the full transparency to the passed canvas
+    */
+   void SetTransparentCanvas(TCanvas*& canv);
+   /*! @brief Saves TCanvas in .pdf format and additionaly in .png format if specified. Either printPng or printPdf must be true, else error will be printed.
     * @param[in] canv TCanvas object that will be written
     * @param[in] outputFileNameNoExt name of the output file without extention (such as ".pdf" or ".png"). Extentions of the files will be added automaticaly
     * @param[in] printPng if true .png file will be printed (note that saving complex canvases in .png takes much more time than saving them in .pdf)
     * @param[in] printPdf if true .pdf file will be printed
     * @param[in] compressPdf if true .pdf file will be compressed with ghostscript. It is recommended to leave this parameter true since it doesn't take a lot of resources to compress the file and the size of the compressed file will usually be reduced by ~0.5-0.7 of the uncompressed file size (depends on the contents of canvas and with more complex canvases more reduction in size can be achieved)
     * @param[in] parallelCompression if true the compression will be ran on the separate thread detached from the current program. Parallel compression speeds up the function completion time since the program does not need to wait until compression is done. It is recommended to leave this parameter true unless the program you're running takes all resources of the machine.
+    * @param[in] makeCanvTransparent shows whether canvas will be set transparent
     */
-   void PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoExt, 
+   void PrintCanvas(TCanvas*& canv, const std::string& outputFileNameNoExt, 
                     const bool printPng = true, const bool printPdf = true, 
-                    const bool compressPdf = true, const bool parallelCompression = true);
+                    const bool compressPdf = true, const bool parallelCompression = true,
+                    const bool makeCanvTransparent = true);
 }
 
 #endif /* ROOT_TOOLS_TCANVAS_TOOLS_HPP */

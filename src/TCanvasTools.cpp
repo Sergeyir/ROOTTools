@@ -14,7 +14,7 @@
 #include "TCanvasTools.hpp"
 
 template<typename T>
-void ROOTTools::DrawFrame(T *hist, const std::string& title, 
+void ROOTTools::DrawFrame(T*& hist, const std::string& title, 
                           const std::string& xTitle, const std::string& yTitle,
                           const double xTitleOffset, const double yTitleOffset,
                           const double xTitleSize, const double yTitleSize,
@@ -67,9 +67,31 @@ void ROOTTools::DrawFrame(const double xMin, const double yMin,
    if (drawOppositeAxis) frame->Draw("SAME AXIS X+ Y+");
 }
 
-void ROOTTools::PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoExt, 
+void ROOTTools::DrawLine(const double xMin, const double yMin, 
+                         const double xMax, const double yMax,
+                         const Color_t color, const double alpha,
+                         const Style_t style, const int width)
+{
+   TLine line(xMin, yMin, xMax, yMax);
+   line.SetLineColorAlpha(color, alpha);
+   line.SetLineStyle(style);
+   line.SetLineWidth(width);
+
+   line.Clone()->Draw();
+}
+
+void ROOTTools::SetTransparentCanvas(TCanvas*& canv) 
+{
+   canv->SetFillStyle(4000);
+   canv->SetFrameFillColor(0);
+   canv->SetFrameFillStyle(0);
+   canv->SetFrameBorderMode(0);
+}
+
+void ROOTTools::PrintCanvas(TCanvas*& canv, const std::string& outputFileNameNoExt, 
                             const bool printPng, const bool printPdf, 
-                            const bool compressPdf, const bool parallelCompression)
+                            const bool compressPdf, const bool parallelCompression,
+                            bool makeCanvTransparent)
 {
    if (!printPng && !printPdf)
    {
@@ -80,10 +102,7 @@ void ROOTTools::PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoEx
       exit(1);
    }
 
-   canv->SetFillStyle(4000);
-   canv->SetFrameFillColor(0);
-   canv->SetFrameFillStyle(0);
-   canv->SetFrameBorderMode(0);
+   if (makeCanvTransparent) SetTransparentCanvas(canv);
 
    if (printPng) canv->SaveAs((outputFileNameNoExt + ".png").c_str());
 
@@ -114,38 +133,18 @@ void ROOTTools::PrintCanvas(TCanvas *canv, const std::string& outputFileNameNoEx
    }
 }
 
-// explicit instantiations of ROOTTools::DrawFrame(T *, ...)
-template void ROOTTools::DrawFrame(TH1 *, const std::string&, 
+// soexplicit instantiations of ROOTTools::DrawFrame(T *, ...)
+template void ROOTTools::DrawFrame(TH1*&, const std::string&, 
                                    const std::string&, const std::string&, 
                                    const double, const double, 
                                    const double, const double, 
                                    const bool, const bool);
-template void ROOTTools::DrawFrame(TH1C *, const std::string&, 
+template void ROOTTools::DrawFrame(TH1D*&, const std::string&, 
                                    const std::string&, const std::string&, 
                                    const double, const double, 
                                    const double, const double, 
                                    const bool, const bool);
-template void ROOTTools::DrawFrame(TH1D *, const std::string&, 
-                                   const std::string&, const std::string&, 
-                                   const double, const double, 
-                                   const double, const double, 
-                                   const bool, const bool);
-template void ROOTTools::DrawFrame(TH1F *, const std::string&, 
-                                   const std::string&, const std::string&, 
-                                   const double, const double, 
-                                   const double, const double, 
-                                   const bool, const bool);
-template void ROOTTools::DrawFrame(TH1I *, const std::string&, 
-                                   const std::string&, const std::string&, 
-                                   const double, const double, 
-                                   const double, const double, 
-                                   const bool, const bool);
-template void ROOTTools::DrawFrame(TH1L *, const std::string&, 
-                                   const std::string&, const std::string&, 
-                                   const double, const double, 
-                                   const double, const double, 
-                                   const bool, const bool);
-template void ROOTTools::DrawFrame(TH1S *, const std::string&, 
+template void ROOTTools::DrawFrame(TH1F*&, const std::string&, 
                                    const std::string&, const std::string&, 
                                    const double, const double, 
                                    const double, const double, 
