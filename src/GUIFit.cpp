@@ -560,12 +560,20 @@ void GUIFit::Draw(bool doDrawHist)
       histNameTex.Draw();
 
       SetActiveFit();
+
+      // drawing all fits which are all inactive when histogram is firstly drawn on canvas
+      for (unsigned int i = 0; i < fits[currentHistId].size(); i++)
+      {
+         fits[currentHistId][i]->Draw("SAME");
+         fitsBG[currentHistId][i]->Draw("SAME");
+      }
    }
 
-   for (unsigned long i = 0; i < fits[currentHistId].size(); i++)
+   if (currentFitTypeIndex >= 0 && currentFitTypeIndex < 
+       static_cast<int>(fits[currentHistId].size()))
    {
-      fits[currentHistId][i]->Draw("SAME");
-      fitsBG[currentHistId][i]->Draw("SAME");
+      fits[currentHistId][currentFitTypeIndex]->Draw("SAME");
+      fitsBG[currentHistId][currentFitTypeIndex]->Draw("SAME");
    }
 
    if (isFitPointActive) currentActivePointGr->Draw("P");
@@ -574,7 +582,8 @@ void GUIFit::Draw(bool doDrawHist)
    gPad->GetListOfPrimitives()->Remove(&fitNameTex);
    gPad->GetListOfPrimitives()->Remove(&chi2NDFTex);
 
-   if (currentFitTypeIndex >= 0)
+   if (currentFitTypeIndex >= 0 && currentFitTypeIndex < 
+       static_cast<int>(fits[currentHistId].size()))
    {
       std::stringstream chi2NDFPrec2;
       chi2NDFPrec2 << std::fixed << std::setprecision(2) << 
