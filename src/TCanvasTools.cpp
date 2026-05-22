@@ -150,5 +150,20 @@ template void ROOTTools::DrawFrame(TH1F*, const std::string&,
                                    const double, const double, 
                                    const double, const double, 
                                    const bool, const bool, const std::string&);
+template void ROOTTools::DrawFrame(TH2*, const std::string&, 
+                                   const std::string&, const std::string&, 
+                                   const double, const double, 
+                                   const double, const double, 
+                                   const bool, const bool, const std::string&);
+template void ROOTTools::DrawFrame(TH2D*, const std::string&, 
+                                   const std::string&, const std::string&, 
+                                   const double, const double, 
+                                   const double, const double, 
+                                   const bool, const bool, const std::string&);
+template void ROOTTools::DrawFrame(TH2F*, const std::string&, 
+                                   const std::string&, const std::string&, 
+                                   const double, const double, 
+                                   const double, const double, 
+                                   const bool, const bool, const std::string&);
 
 #endif /* ROOT_TOOLS_TCANVAS_TOOLS_CPP */
