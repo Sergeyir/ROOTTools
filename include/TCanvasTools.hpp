@@ -44,7 +44,7 @@ namespace ROOTTools
                   const double xTitleOffset = 1., const double yTitleOffset = 1.5,
                   const double xTitleSize = 0.05, const double yTitleSize = 0.05,
                   const bool drawOppositeAxis = true, const bool drawContents = true,
-                  const char *drawOptions = "");
+                  const std::string& drawOptions = "");
    /* @brief Draws frame for TCanvas
     *
     * @param[in] xMin minimum x value
