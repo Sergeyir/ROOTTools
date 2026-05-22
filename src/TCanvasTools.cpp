@@ -18,9 +18,10 @@ void ROOTTools::DrawFrame(T* hist, const std::string& title,
                           const std::string& xTitle, const std::string& yTitle,
                           const double xTitleOffset, const double yTitleOffset,
                           const double xTitleSize, const double yTitleSize,
-                          const bool drawOppositeAxis, const bool drawContents)
+                          const bool drawOppositeAxis, const bool drawContents,
+                          const char *drawOptions)
 {
-   if (drawContents) hist->Draw();
+   if (drawContents) hist->Draw(drawOptions);
    else hist->Draw("AXIS");
 
    hist->SetTitle(title.c_str());
@@ -138,16 +139,16 @@ template void ROOTTools::DrawFrame(TH1*, const std::string&,
                                    const std::string&, const std::string&, 
                                    const double, const double, 
                                    const double, const double, 
-                                   const bool, const bool);
+                                   const bool, const bool, const char *);
 template void ROOTTools::DrawFrame(TH1D*, const std::string&, 
                                    const std::string&, const std::string&, 
                                    const double, const double, 
                                    const double, const double, 
-                                   const bool, const bool);
+                                   const bool, const bool, const char *);
 template void ROOTTools::DrawFrame(TH1F*, const std::string&, 
                                    const std::string&, const std::string&, 
                                    const double, const double, 
                                    const double, const double, 
-                                   const bool, const bool);
+                                   const bool, const bool, const char *);
 
 #endif /* ROOT_TOOLS_TCANVAS_TOOLS_CPP */

@@ -36,13 +36,15 @@ namespace ROOTTools
     * @param[in] yTitleSize sizes of Y axis title and label
     * @param[in] drawOppositeAxis if true frame will be drawn additionally with options "SAME X+ Y+" for drawing X and Y axis on the top and on the right respectively
     * @param[in] drawContents if true contents of hist will be drawn
+    * @param[in] drawOptions ROOT::<T> draw options, where T can be TH1, TH2, TH3, etc.
     */
    template<typename T>
    void DrawFrame(T* hist, const std::string& title,
                   const std::string& xTitle, const std::string& yTitle,
                   const double xTitleOffset = 1., const double yTitleOffset = 1.5,
                   const double xTitleSize = 0.05, const double yTitleSize = 0.05,
-                  const bool drawOppositeAxis = true, const bool drawContents = true);
+                  const bool drawOppositeAxis = true, const bool drawContents = true,
+                  const char *drawOptions = "");
    /* @brief Draws frame for TCanvas
     *
     * @param[in] xMin minimum x value
