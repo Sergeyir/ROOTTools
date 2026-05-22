@@ -32,6 +32,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIRS})
 
 add_library(TCanvasTools ${CMAKE_CURRENT_SOURCE_DIR}/src/TCanvasTools.cpp)
 add_library(TF1Tools ${CMAKE_CURRENT_SOURCE_DIR}/src/TF1Tools.cpp)
-add_library(ThrObj ${CMAKE_CURRENT_SOURCE_DIR}/src/ThrObj.cpp)
+#add_library(ThrObj ${CMAKE_CURRENT_SOURCE_DIR}/src/ThrObj.cpp)
 add_library(GUIDistrCutter2D ${CMAKE_CURRENT_SOURCE_DIR}/src/GUIDistrCutter2D.cpp)
 add_library(GUIFit ${CMAKE_CURRENT_SOURCE_DIR}/src/GUIFit.cpp)
