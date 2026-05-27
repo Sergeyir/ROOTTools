@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.2...4.1 FATAL_ERROR)
 
 project(ROOTTools)
 
-set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "-Wall -Werror -Wpedantic -pipe -O2 -g")
 
@@ -17,6 +16,7 @@ find_package(ROOT QUIET)
 if(${ROOT_FOUND})
    message(STATUS "ROOT package found")
    link_libraries(${ROOT_LIBRARIES})
+   set(CMAKE_CXX_STANDARD ${ROOT_CXX_STANTARD})
 elseif(EXISTS $ENV{ROOT_PATH}/bin/root)
    message(STATUS "ROOTTools: ROOT path found")
    set(ROOT_INCLUDE_DIRS $ENV{ROOT_PATH}/include)
