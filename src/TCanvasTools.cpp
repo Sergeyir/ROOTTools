@@ -134,7 +134,7 @@ void ROOTTools::PrintCanvas(TCanvas* canv, const std::string& outputFileNameNoEx
    }
 }
 
-// soexplicit instantiations of ROOTTools::DrawFrame(T *, ...)
+// explicit instantiations of ROOTTools::DrawFrame(T *, ...)
 template void ROOTTools::DrawFrame(TH1*, const std::string&, 
                                    const std::string&, const std::string&, 
                                    const double, const double, 
