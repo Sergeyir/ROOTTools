@@ -12,7 +12,6 @@
 #define ROOT_TOOLS_HIST_TOOLS_CPP
 
 #include "HistTools.hpp"
-#include <iostream>
 
 template<typename T>
 void ROOTTools::SwapAxis(T* hist)
@@ -41,16 +40,6 @@ void ROOTTools::SwapAxis(T* hist)
    yBins[yNBins] = hist->GetYaxis()->GetBinUpEdge(yNBins);
 
    hist->SetBins(yNBins, &yBins[0], xNBins, &xBins[0]);
-
-   for (const double &x : xBins)
-   {
-      std::cout << x << std::endl;
-   }
-   std::cout << std::endl;
-   for (const double &y : yBins) 
-   {
-      std::cout << y << std::endl;
-   }
 
    for (unsigned int i = 1; i <= xNBins; i++)
    {
