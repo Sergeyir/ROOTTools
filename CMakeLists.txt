@@ -33,6 +33,7 @@ endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIRS})
 
+add_library(HistTools ${CMAKE_CURRENT_SOURCE_DIR}/src/HistTools.cpp)
 add_library(TCanvasTools ${CMAKE_CURRENT_SOURCE_DIR}/src/TCanvasTools.cpp)
 add_library(TF1Tools ${CMAKE_CURRENT_SOURCE_DIR}/src/TF1Tools.cpp)
 #add_library(ThrObj ${CMAKE_CURRENT_SOURCE_DIR}/src/ThrObj.cpp)
