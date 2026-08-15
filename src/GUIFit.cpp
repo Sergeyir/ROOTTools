@@ -240,6 +240,26 @@ void GUIFit::Exec()
             grBGPoints->Fit(fitsBG[currentHistId][currentFitTypeIndex], "RQN");
             fitsBG[currentHistId][currentFitTypeIndex]->Update();
 
+            if (!isLightFit)
+            {
+               for (int i = 0; i < fitsBG[currentHistId][currentFitTypeIndex]->GetNpar(); i++)
+               {
+                  fits[currentHistId][currentFitTypeIndex]->
+                     FixParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex] + i, 
+                                  fitsBG[currentHistId][currentFitTypeIndex]->GetParameter(i));
+               }
+
+               hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQBN");
+               fits[currentHistId][currentFitTypeIndex]->Update();
+            }
+         }
+         else return;
+         break;
+      }
+      case kButton1Up:
+      {
+         if (isLightFit)
+         {
             for (int i = 0; i < fitsBG[currentHistId][currentFitTypeIndex]->GetNpar(); i++)
             {
                fits[currentHistId][currentFitTypeIndex]->
@@ -250,11 +270,6 @@ void GUIFit::Exec()
             hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQBN");
             fits[currentHistId][currentFitTypeIndex]->Update();
          }
-         else return;
-         break;
-      }
-      case kButton1Up:
-      {
          DeactivateCurrentActivePoint();
          break;
       }

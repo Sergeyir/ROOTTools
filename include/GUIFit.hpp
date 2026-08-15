@@ -141,6 +141,8 @@ namespace GUIFit
    const Color_t activeColor = kRed + 1;
    /// Shows whether GUIFit::Start was succesfully called
    bool isStartSuccessfull = false;
+   /// Shows whether fits will be performed with every movement of an active point or only at the end
+   bool isLightFit = true;
 };
 
 #endif /* ROOT_TOOLS_GUI_FIT_HPP */
