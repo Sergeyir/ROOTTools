@@ -96,7 +96,7 @@ void ROOTTools::PrintCanvas(TCanvas* canv, const std::string& outputFileNameNoEx
 {
    if (!printPng && !printPdf)
    {
-      std::cout << "Error in ROOTTools::PrintTCanvas(TCanvas *canv, "\
+      std::cerr << "Error in ROOTTools::PrintTCanvas(TCanvas *canv, "\
                    "const std::string& outputFileNameNoExt, const bool printPng, "\
                    "const bool printPdf, const bool compressPdf, const bool parallelCompression) :"\
                    " either printPng or printPdf must be true" << std::endl;

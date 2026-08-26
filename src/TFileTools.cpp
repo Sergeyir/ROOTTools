@@ -15,7 +15,7 @@
 
 ROOTTools::CheckFileForNan::CheckFileForNan(const std::string &fileName)
 {
-   if (!std::ifstream(fileName).is_open()) std::cout << "Error: File " << fileName <<
+   if (!std::ifstream(fileName).is_open()) std::cerr << "Error: File " << fileName <<
                                                      " does not exist" << std::endl;
    file = TFile::Open(fileName.c_str());
 }

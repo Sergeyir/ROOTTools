@@ -18,9 +18,9 @@ unsigned int GUIFit::AddFitType(const std::string& outputFileName, const std::st
    std::ifstream inputFile(outputFileName);
    if (inputFile.is_open())
    {
-      std::cout << "\033[1m\033[35mWarning:\033[0m Specified output file \"" << 
+      std::cerr << "\033[1m\033[35mWarning:\033[0m Specified output file \"" << 
                    outputFileName << "\" already exists" << std::endl;
-      std::cout << "Old file \"" << outputFileName << " will be renamed to \"" << 
+      std::cerr << "Old file \"" << outputFileName << " will be renamed to \"" << 
                    outputFileName << ".backup\" when new file will be written" << std::endl;
       std::filesystem::copy(outputFileName, outputFileName + ".backup", 
                             std::filesystem::copy_options::overwrite_existing);
@@ -45,7 +45,7 @@ void GUIFit::AddHistogram(TH1D *hist, const std::string& histVal, const std::str
    {
       if (val == histVal)
       {
-         std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddHistogram: non-unique histogram "\
+         std::cerr << "\033[1m\033[31mError:\033[0m GUIFit::AddHistogram: non-unique histogram "\
                       "value was specified: " << histVal << std::endl;
          exit(1);
       }
@@ -60,7 +60,7 @@ void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex,
 {
    if (!fit) 
    {
-      std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: null was passed for "\
+      std::cerr << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: null was passed for "\
                    "fit for histogram index " << histIndex << 
                    " for fit type index " << fitTypeIndex << std::endl;
       exit(1);
@@ -68,7 +68,7 @@ void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex,
 
    if (!fitBG) 
    {
-      std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: null was passed for "\
+      std::cerr << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: null was passed for "\
                    "background fit for histogram index " << histIndex << 
                    " for fit type index " << fitTypeIndex << std::endl;
       exit(1);
@@ -76,14 +76,14 @@ void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex,
 
    if (fitTypeIndex < 0 || fitTypeIndex >= fitTypeNames.size())
    {
-      std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: index of a "\
+      std::cerr << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: index of a "\
                    "fit type is out of range: " << fitTypeIndex << std::endl;
       exit(1);
    }
 
    if (histIndex < 0 || histIndex >= hists.size())
    {
-      std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: index of a "\
+      std::cerr << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: index of a "\
                    "histogram is out of range: " << histIndex << std::endl;
       exit(1);
    }
@@ -101,7 +101,7 @@ void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex,
 
    if (fits[histIndex][fitTypeIndex])
    {
-      std::cout << "\033[1m\033[35mWarning:\033[0m Trying to add the fit that was already added "\
+      std::cerr << "\033[1m\033[35mWarning:\033[0m Trying to add the fit that was already added "\
                    "for fit type index " << fitTypeIndex << " for histogram index " << 
                    histIndex << "; rewriting the old fit" << std::endl;
    }
@@ -116,7 +116,7 @@ void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex,
    if (fitBGParIndicesEnd[histIndex][fitTypeIndex] - 
        fitBGParIndicesBegin[histIndex][fitTypeIndex] + 1 != fitBG->GetNpar())
    {
-      std::cout << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: number of inidices for "\
+      std::cerr << "\033[1m\033[31mError:\033[0m GUIFit::AddFit: number of inidices for "\
                    "background fit deduced from provided begin and end indices mismatch "\
                    "with the number of parameters of an actual background fit: " << 
                    fitBGParIndicesEnd[histIndex][fitTypeIndex] - 
@@ -166,7 +166,7 @@ void GUIFit::Exec()
             {
                if (hists.size() == 1)
                {
-                  std::cout << "\033[1m\033[35mWarning:\033[0m Cannot switch "\
+                  std::cerr << "\033[1m\033[35mWarning:\033[0m Cannot switch "\
                                "between histograms since only one was added" << std::endl;
                }
                else if (currentHistId < static_cast<int>(hists.size() - 1)) currentHistId++;
@@ -180,7 +180,7 @@ void GUIFit::Exec()
             {
                if (hists.size() == 1)
                {
-                  std::cout << "\033[1m\033[35mWarning:\033[0m Cannot switch "\
+                  std::cerr << "\033[1m\033[35mWarning:\033[0m Cannot switch "\
                                "between histograms since only one was added" << std::endl;
                }
                else if (currentHistId > 0) currentHistId--;
@@ -286,7 +286,7 @@ void GUIFit::SetBGPoints()
    if (xMin < hists[currentHistId]->GetXaxis()->GetBinLowEdge(1)) 
    {
       xMin = hists[currentHistId]->GetXaxis()->GetBinCenter(1);
-      std::cout << "\033[1m\033[35mWarning:\033[0m Lower bound of fit range exceeds the "\
+      std::cerr << "\033[1m\033[35mWarning:\033[0m Lower bound of fit range exceeds the "\
                    "range of the histogram axis; movable points will be set within "\
                    "histogram axis range and may not be within fit range" << std::endl;
    }
@@ -296,7 +296,7 @@ void GUIFit::SetBGPoints()
    {
       xMax = hists[currentHistId]->GetXaxis()->GetBinCenter(hists[currentHistId]->
              GetXaxis()->GetNbins());
-      std::cout << "\033[1m\033[35mWarning:\033[0m Upper bound of fit range exceeds the "\
+      std::cerr << "\033[1m\033[35mWarning:\033[0m Upper bound of fit range exceeds the "\
                    "range of the histogram axis; movable points will be set within "\
                    "histogram axis range and may not be within fit range" << std::endl;
    }
@@ -393,7 +393,7 @@ void GUIFit::ResetFit()
    if (xMin < hists[currentHistId]->GetXaxis()->GetBinLowEdge(1)) 
    {
       xMin = hists[currentHistId]->GetXaxis()->GetBinCenter(1);
-      std::cout << "\033[1m\033[35mWarning:\033[0m Lower bound of fit range exceeds the "\
+      std::cerr << "\033[1m\033[35mWarning:\033[0m Lower bound of fit range exceeds the "\
                    "range of the histogram axis; movable points will be set within "\
                    "histogram axis range and may not be within fit range" << std::endl;
    }
@@ -403,7 +403,7 @@ void GUIFit::ResetFit()
    {
       xMax = hists[currentHistId]->GetXaxis()->GetBinCenter(hists[currentHistId]->
              GetXaxis()->GetNbins());
-      std::cout << "\033[1m\033[35mWarning:\033[0m Upper bound of fit range exceeds the "\
+      std::cerr << "\033[1m\033[35mWarning:\033[0m Upper bound of fit range exceeds the "\
                    "range of the histogram axis; movable points will be set within "\
                    "histogram axis range and may not be within fit range" << std::endl;
    }
@@ -496,7 +496,7 @@ void GUIFit::Start()
 {
    if (currentHistId < 0) 
    {
-      std::cout << "\033[1m\033[31mError:\033[0m No histograms were added" << std::endl;
+      std::cerr << "\033[1m\033[31mError:\033[0m No histograms were added" << std::endl;
       exit(1);
    }
 
@@ -508,13 +508,13 @@ void GUIFit::Start()
       {
          if (!fits[i][j])
          {
-            std::cout << "\033[1m\033[35mWarning:\033[0m Fit was not added for histogram "\
+            std::cerr << "\033[1m\033[35mWarning:\033[0m Fit was not added for histogram "\
                          "index " << i << " for fit type index " << j << std::endl;
             areFitsOk = false;
          }
          if (!fitsBG[i][j])
          {
-            std::cout << "\033[1m\033[35mWarning:\033[0m Background fit was not added "\
+            std::cerr << "\033[1m\033[35mWarning:\033[0m Background fit was not added "\
                          "for histogram index " << i << " for fit type index " << j << std::endl;
             areFitsOk = false;
          }
