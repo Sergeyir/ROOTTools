@@ -37,6 +37,7 @@ void GUIFit::AddHistogram(TH1D *hist, const std::string& histVal, const std::str
    fitsBG.resize(fitsBG.size() + 1);
    fitBGParIndicesBegin.resize(fitBGParIndicesBegin.size() + 1);
    fitBGParIndicesEnd.resize(fitBGParIndicesEnd.size() + 1);
+   nToggleablePoints.resize(nToggleablePoints.size() + 1);
 
    if (hists.size() == 0) currentHistId = 0;
    hists.emplace_back(hist);
@@ -56,7 +57,8 @@ void GUIFit::AddHistogram(TH1D *hist, const std::string& histVal, const std::str
 
 void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex, 
                     const unsigned int histIndex,
-                    const int fitBGParIndexBegin, const int fitBGParIndexEnd)
+                    const int fitBGParIndexBegin, const int fitBGParIndexEnd, 
+                    const int nTogglePoints)
 {
    if (!fit) 
    {
@@ -96,6 +98,7 @@ void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex,
          fitsBG[i].resize(fitTypeNames.size());
          fitBGParIndicesBegin[i].resize(fitTypeNames.size());
          fitBGParIndicesEnd[i].resize(fitTypeNames.size());
+         nToggleablePoints[i].resize(fitTypeNames.size());
       }
    }
 
@@ -124,12 +127,23 @@ void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex,
                    fitBG->GetNpar() << std::endl;
       exit(1);
    }
+
+   if (nTogglePoints > 0)
+   {
+      nToggleablePoints[histIndex][fitTypeIndex] = nTogglePoints - 1;
+   }
+   else // default
+   {
+      nToggleablePoints[histIndex][fitTypeIndex] = fitBG->GetNpar() - 1;
+   }
 }
 
 void GUIFit::AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex, 
-                    const int fitBGParIndexBegin, const int fitBGParIndexEnd)
+                    const int fitBGParIndexBegin, const int fitBGParIndexEnd, 
+                    const int nTogglePoints)
 {
-   AddFit(fit, fitBG, fitTypeIndex, hists.size() - 1, fitBGParIndexBegin, fitBGParIndexEnd);
+   AddFit(fit, fitBG, fitTypeIndex, hists.size() - 1, 
+          fitBGParIndexBegin, fitBGParIndexEnd, nTogglePoints);
 }
 
 void GUIFit::Exec()
@@ -215,7 +229,7 @@ void GUIFit::Exec()
       }
       case kButton1Down:
       {
-         if (!isFitPointActive) 
+         if (currentFitTypeIndex >= 0 && !isFitPointActive) 
          {
             for (int i = 0; i < grBGPoints->GetN(); i++)
             {
@@ -233,7 +247,7 @@ void GUIFit::Exec()
       }
       case kButton1Motion:
       {
-         if (isFitPointActive)
+         if (currentFitTypeIndex >= 0 && isFitPointActive)
          {
             currentActivePointGr->SetPointY(0, y);
             grBGPoints->SetPointY(currentActivePointIndex, y);
@@ -258,19 +272,22 @@ void GUIFit::Exec()
       }
       case kButton1Up:
       {
-         if (isLightFit)
+         if (currentFitTypeIndex >= 0)
          {
-            for (int i = 0; i < fitsBG[currentHistId][currentFitTypeIndex]->GetNpar(); i++)
+            if (isLightFit)
             {
-               fits[currentHistId][currentFitTypeIndex]->
-                  FixParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex] + i, 
-                               fitsBG[currentHistId][currentFitTypeIndex]->GetParameter(i));
-            }
+               for (int i = 0; i < fitsBG[currentHistId][currentFitTypeIndex]->GetNpar(); i++)
+               {
+                  fits[currentHistId][currentFitTypeIndex]->
+                     FixParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex] + i, 
+                                  fitsBG[currentHistId][currentFitTypeIndex]->GetParameter(i));
+               }
 
-            hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQBN");
-            fits[currentHistId][currentFitTypeIndex]->Update();
+               hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQBN");
+               fits[currentHistId][currentFitTypeIndex]->Update();
+            }
+            DeactivateCurrentActivePoint();
          }
-         DeactivateCurrentActivePoint();
          break;
       }
    }
@@ -312,12 +329,12 @@ void GUIFit::SetBGPoints()
    grBGPoints->SetMarkerColor(activeColor);
 
    const double xShift = (xMax - xMin)/
-      (static_cast<double>(fitsBG[currentHistId][currentFitTypeIndex]->GetNpar()) - 1.);
+      (static_cast<double>(nToggleablePoints[currentHistId][currentFitTypeIndex]));
 
    grBGPoints->AddPoint(xMin + xMin*1e-7, 
                         fitsBG[currentHistId][currentFitTypeIndex]->Eval(xMin));
 
-   for (int j = 1; j < fitsBG[currentHistId][currentFitTypeIndex]->GetNpar() - 1; j++)
+   for (int j = 1; j < nToggleablePoints[currentHistId][currentFitTypeIndex]; j++)
    {
       const double xPos = xMin+xShift*static_cast<double>(j);
       grBGPoints->AddPoint(xPos, fitsBG[currentHistId][currentFitTypeIndex]->Eval(xPos));

@@ -54,9 +54,11 @@ namespace GUIFit
     * @param[in] histIndex index of a histogram (number of the specific added histogram - 1)
     * @param[in] fitBGParIndexBegin index of a parameters at which indices for background function begin
     * @param[in] fitBGParIndexEnd index of a parameters at which indices for background function end. If negative number is specified (by default) this index will point to the end of fit parameter indices (useful for fits like "signal[0] + background[fitBGParBeginIndex]")
+    * @param[in] nTogglePoints number of toggleable points which will be used for BG fit adjustmetns. By default (by passing negative value) number of parameters in fitBG will be used
     */
    void AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex, const unsigned int histIndex,
-               const int fitBGParIndexBegin, const int fitBGParIndexEnd);
+               const int fitBGParIndexBegin, const int fitBGParIndexEnd = -1, 
+               const int nTogglePoints = -1);
    /*! @brief Adds a fit to a list of fits for the last added histogram. At least one histogram must be added via GUIFit::AddHist function call before you can add any fits.
     *
     * @param[in] fit fit of a signal+background
@@ -64,9 +66,11 @@ namespace GUIFit
     * @param[in] fitTypeIndex index of a fit type (returned by GUIFit::AddFitType)
     * @param[in] fitBGParIndexBegin index of a parameters at which indices for background function begin
     * @param[in] fitBGParIndexEnd index of a parameters at which indices for background function end. If negative number is specified (by default) this index will point to the end of fit parameter indices (useful for fits like "signal[0] + background[fitBGParBeginIndex]")
+    * @param[in] nTogglePoints number of toggleable points which will be used for BG fit adjustmetns. By default (by passing negative value) number of parameters in fitBG will be used
     */
    void AddFit(TF1 *fit, TF1 *fitBG, const unsigned int fitTypeIndex, 
-               const int fitBGParIndexBegin, const int fitBGParIndexEnd = -1);
+               const int fitBGParIndexBegin, const int fitBGParIndexEnd = -1, 
+               const int nTogglePoints = -1);
    /// @brief Executable to pass to TPad::AddExec(name, command) to start GUI session
    void Exec();
    /// Sets points for background. This function is called automaticaly when needed
@@ -125,6 +129,8 @@ namespace GUIFit
    /// Graph that contains movable points for background tweaking. 
    /// This variable is handled automaticaly
    TGraph *grBGPoints = new TGraph;
+   /// contains the number of toggleable points for each BG fit
+   std::vector<std::vector<int>> nToggleablePoints;
    /// Points to the index of a currently displayed histogram. This variable is handled automaticaly
    int currentHistId = -1;
    /// Points to the index of a currently active fit. This variable is handled automaticaly
