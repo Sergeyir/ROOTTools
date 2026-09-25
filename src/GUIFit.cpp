@@ -152,6 +152,7 @@ void GUIFit::Exec()
    const int px = gPad->GetEventX();
    const int py = gPad->GetEventY();
    const double y = gPad->PadtoX(gPad->AbsPixeltoY(py));
+   double x = gPad->PadtoX(gPad->AbsPixeltoX(px));
 
    if (!isStartSuccessfull) 
    {
@@ -249,7 +250,15 @@ void GUIFit::Exec()
       {
          if (currentFitTypeIndex >= 0 && isFitPointActive)
          {
+            double xMin, xMax;
+            fits[currentHistId][currentFitTypeIndex]->GetRange(xMin, xMax);
+
+            if (x > xMax) x = xMax;
+            else if (x < xMin) x = xMin;
+
+            currentActivePointGr->SetPointX(0, x);
             currentActivePointGr->SetPointY(0, y);
+            grBGPoints->SetPointX(currentActivePointIndex, x);
             grBGPoints->SetPointY(currentActivePointIndex, y);
             grBGPoints->Fit(fitsBG[currentHistId][currentFitTypeIndex], "RQN");
             fitsBG[currentHistId][currentFitTypeIndex]->Update();
