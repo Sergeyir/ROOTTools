@@ -119,7 +119,7 @@ void ROOTTools::PrintCanvas(TCanvas* canv, const std::string& outputFileNameNoEx
             "ghostscript -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 \
              -dNOPAUSE -dQUIET -dBATCH -dPrinted=false \
              -sOutputFile=" + outputFileNameNoExt + ".pdf " + 
-            outputFileNameNoExt + ".tmp.pdf && rm " + 
+            outputFileNameNoExt + ".tmp.pdf && rm -f " + 
             outputFileNameNoExt + ".tmp.pdf";
 
          // option to detach the command call from the current process
