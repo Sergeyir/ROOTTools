@@ -13,24 +13,33 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
 find_package(ROOT QUIET)
 
-if(${ROOT_FOUND})
-   message(STATUS "ROOT package found")
+# Checking whether ROOT exists and setting includes and libraries for compiler
+if(${ROOT_FOUND}) # checking via cmake
+   message(STATUS "ROOT package found: ${ROOT_USE_FILE}")
    link_libraries(${ROOT_LIBRARIES})
    set(CMAKE_CXX_STANDARD ${ROOT_CXX_STANTARD})
-elseif(EXISTS $ENV{ROOT_PATH}/bin/root)
-   message(STATUS "ROOTTools: ROOT path found")
-   set(ROOT_INCLUDE_DIRS $ENV{ROOT_PATH}/include)
-   set(ROOT_root_CMD $ENV{ROOT_PATH}/bin/root)
+elseif(DEFINED ENV{ROOT_PATH} AND EXISTS "$ENV{ROOT_PATH}/bin/root") #checking via ROOT_PATH
+   message(STATUS "ROOT path found: $ENV{ROOT_PATH}")
+   set(ROOT_PATH $ENV{ROOT_PATH})
+else()
+   find_program(ROOT_CONFIG NAMES root-config)
+   if(ROOT_CONFIG)
+      execute_process(COMMAND ${ROOT_CONFIG} --prefix OUTPUT_VARIABLE ROOT_PATH)
+      string(STRIP ${ROOT_PATH} ROOT_PATH)
+      message(STATUS "ROOT found via root-config in ${ROOT_PATH}")
+   else()
+      message(FATAL_ERROR "ROOT not found: install it via package manager, or source /path/to/root/bin/thisroot.sh in your profile if you installed it manually and set ROOT_PATH")
+   endif()
+endif()
+if (DEFINED ROOT_PATH) # for manually installed ROOT
+   set(ROOT_INCLUDE_DIRS "${ROOT_PATH}/include")
+   set(ROOT_root_CMD "${ROOT_PATH}/bin/root")
    execute_process(COMMAND ${ROOT_root_CMD}-config --glibs OUTPUT_VARIABLE ROOT_LIB_FLAGS)
    execute_process(COMMAND ${ROOT_root_CMD}-config --cxxstandard OUTPUT_VARIABLE ROOT_CXX_STANDARD)
    string(STRIP ${ROOT_LIB_FLAGS} ROOT_LIB_FLAGS)
-   set(CMAKE_SHARED_LINKER_FLAGS ${ROOT_LIB_FLAGS})
    string(STRIP ${ROOT_CXX_STANDARD} ROOT_CXX_STANDARD)
    set(CMAKE_CXX_STANDARD ${ROOT_CXX_STANDARD})
-else()
-   message(FATAL_ERROR "ROOT not found: install it via package manager or set environment variable ROOT_PATH if you installed it manually")
 endif()
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIRS})
 
 add_library(HistTools ${CMAKE_CURRENT_SOURCE_DIR}/src/HistTools.cpp)
