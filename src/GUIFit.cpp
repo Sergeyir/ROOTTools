@@ -260,12 +260,20 @@ void GUIFit::Exec()
                else if (xVal > xMax) xMax = xVal;
             }
 
-            fits[currentHistId][currentFitTypeIndex]->SetRange(xMin - xMin/1e7, xMax + xMax/1e7);
-            fitsBG[currentHistId][currentFitTypeIndex]->SetRange(xMin - xMin/1e7, xMax + xMax/1e7);
+            if (hists[currentHistId]->GetXaxis()->GetBinLowEdge(1) + 
+                hists[currentHistId]->GetXaxis()->GetBinWidth(1)/8. > xMin &&
+                hists[currentHistId]->GetXaxis()->
+                GetBinUpEdge(hists[currentHistId]->GetXaxis()->GetNbins()) - 
+                hists[currentHistId]->GetXaxis()->GetBinWidth(1)/8. < xMax)
+            {
+               fits[currentHistId][currentFitTypeIndex]->SetRange(xMin - xMin/1e7, xMax + xMax/1e7);
+               fitsBG[currentHistId][currentFitTypeIndex]->SetRange(xMin - xMin/1e7, xMax + xMax/1e7);
 
-            currentActivePointGr->SetPointX(0, x);
+               currentActivePointGr->SetPointX(0, x);
+               grBGPoints->SetPointX(currentActivePointIndex, x);
+            }
+
             currentActivePointGr->SetPointY(0, y);
-            grBGPoints->SetPointX(currentActivePointIndex, x);
             grBGPoints->SetPointY(currentActivePointIndex, y);
             grBGPoints->Fit(fitsBG[currentHistId][currentFitTypeIndex], "RQN");
             fitsBG[currentHistId][currentFitTypeIndex]->Update();
