@@ -260,8 +260,8 @@ void GUIFit::Exec()
                else if (xVal > xMax) xMax = xVal;
             }
 
-            fits[currentHistId][currentFitTypeIndex]->SetRange(xMin - 1e-15, xMax + 1e-15);
-            fitsBG[currentHistId][currentFitTypeIndex]->SetRange(xMin - 1e-15, xMax + 1e-15);
+            fits[currentHistId][currentFitTypeIndex]->SetRange(xMin - xMin/1e7, xMax + xMax/1e7);
+            fitsBG[currentHistId][currentFitTypeIndex]->SetRange(xMin - xMin/1e7, xMax + xMax/1e7);
 
             currentActivePointGr->SetPointX(0, x);
             currentActivePointGr->SetPointY(0, y);
