@@ -250,11 +250,18 @@ void GUIFit::Exec()
       {
          if (currentFitTypeIndex >= 0 && isFitPointActive)
          {
-            double xMin, xMax;
-            fits[currentHistId][currentFitTypeIndex]->GetRange(xMin, xMax);
+            double xMin = 1e31;
+            double xMax = -1e31;
 
-            if (x > xMax) x = xMax;
-            else if (x < xMin) x = xMin;
+            for (int i = 0; i < grBGPoints->GetN(); i++)
+            {
+               const double xVal = grBGPoints->GetPointX(i);
+               if (xVal < xMin) xMin = xVal;
+               else if (xVal > xMax) xMax = xVal;
+            }
+
+            fits[currentHistId][currentFitTypeIndex]->SetRange(xMin - 1e-15, xMax + 1e-15);
+            fitsBG[currentHistId][currentFitTypeIndex]->SetRange(xMin - 1e-15, xMax + 1e-15);
 
             currentActivePointGr->SetPointX(0, x);
             currentActivePointGr->SetPointY(0, y);
