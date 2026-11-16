@@ -261,10 +261,10 @@ void GUIFit::Exec()
             }
 
             if (hists[currentHistId]->GetXaxis()->GetBinLowEdge(1) + 
-                hists[currentHistId]->GetXaxis()->GetBinWidth(1)/8. > xMin &&
+                hists[currentHistId]->GetXaxis()->GetBinWidth(1)/8. < xMin &&
                 hists[currentHistId]->GetXaxis()->
                 GetBinUpEdge(hists[currentHistId]->GetXaxis()->GetNbins()) - 
-                hists[currentHistId]->GetXaxis()->GetBinWidth(1)/8. < xMax)
+                hists[currentHistId]->GetXaxis()->GetBinWidth(1)/8. > xMax)
             {
                fits[currentHistId][currentFitTypeIndex]->SetRange(xMin - xMin/1e7, xMax + xMax/1e7);
                fitsBG[currentHistId][currentFitTypeIndex]->SetRange(xMin - xMin/1e7, xMax + xMax/1e7);
