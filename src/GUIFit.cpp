@@ -250,25 +250,46 @@ void GUIFit::Exec()
       {
          if (currentFitTypeIndex >= 0 && isFitPointActive)
          {
-            double xMin = 1e31;
-            double xMax = -1e31;
+            // current fit range boundaries
+            double fitRangeXMin = 1e31;
+            double fitRangeXMax = -1e31;
 
             for (int i = 0; i < grBGPoints->GetN(); i++)
             {
                const double xVal = grBGPoints->GetPointX(i);
-               if (xVal < xMin) xMin = xVal;
-               else if (xVal > xMax) xMax = xVal;
+               if (xVal < fitRangeXMin) fitRangeXMin = xVal;
+               else if (xVal > fitRangeXMax) fitRangeXMax = xVal;
             }
 
-            if (hists[currentHistId]->GetXaxis()->GetBinLowEdge(1) + 
-                hists[currentHistId]->GetXaxis()->GetBinWidth(1)/8. < xMin &&
-                hists[currentHistId]->GetXaxis()->
-                GetBinUpEdge(hists[currentHistId]->GetXaxis()->GetNbins()) - 
-                hists[currentHistId]->GetXaxis()->GetBinWidth(1)/8. > xMax)
-            {
-               fits[currentHistId][currentFitTypeIndex]->SetRange(xMin - xMin/1e7, xMax + xMax/1e7);
-               fitsBG[currentHistId][currentFitTypeIndex]->SetRange(xMin - xMin/1e7, xMax + xMax/1e7);
+            // minimum and maximum boundaries possible
+            const double xMin = hists[currentHistId]->GetXaxis()->GetBinLowEdge(1) + 
+                                hists[currentHistId]->GetXaxis()->GetBinWidth(1)/8.;
+            const double xMax = hists[currentHistId]->GetXaxis()->
+                                GetBinUpEdge(hists[currentHistId]->GetXaxis()->GetNbins()) - 
+                                hists[currentHistId]->GetXaxis()->GetBinWidth(1)/8.;
 
+            if (fitRangeXMin < xMin) fitRangeXMin = xMin;
+            else if (fitRangeXMax > xMax) fitRangeXMax = xMax;
+
+            fits[currentHistId][currentFitTypeIndex]->
+               SetRange(fitRangeXMin - std::abs(fitRangeXMin)/1e3, 
+                        fitRangeXMax + std::abs(fitRangeXMax)/1e3);
+            fitsBG[currentHistId][currentFitTypeIndex]->
+               SetRange(fitRangeXMin - std::abs(fitRangeXMin)/1e3, 
+                        fitRangeXMax + std::abs(fitRangeXMax)/1e3);
+
+            if (x < xMin)
+            {
+               currentActivePointGr->SetPointX(0, xMin);
+               grBGPoints->SetPointX(currentActivePointIndex, xMin);
+            }
+            else if (x > xMax)
+            {
+               currentActivePointGr->SetPointX(0, xMax);
+               grBGPoints->SetPointX(currentActivePointIndex, xMax);
+            }
+            else
+            {
                currentActivePointGr->SetPointX(0, x);
                grBGPoints->SetPointX(currentActivePointIndex, x);
             }
