@@ -296,7 +296,7 @@ void GUIFit::Exec()
 
             currentActivePointGr->SetPointY(0, y);
             grBGPoints->SetPointY(currentActivePointIndex, y);
-            grBGPoints->Fit(fitsBG[currentHistId][currentFitTypeIndex], "RQN");
+            grBGPoints->Fit(fitsBG[currentHistId][currentFitTypeIndex], "RQNC");
             fitsBG[currentHistId][currentFitTypeIndex]->Update();
 
             if (!isLightFit)
@@ -308,7 +308,7 @@ void GUIFit::Exec()
                                   fitsBG[currentHistId][currentFitTypeIndex]->GetParameter(i));
                }
 
-               hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQBN");
+               hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQBNC");
                fits[currentHistId][currentFitTypeIndex]->Update();
             }
          }
