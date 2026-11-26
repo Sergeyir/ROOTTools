@@ -607,6 +607,7 @@ void GUIFit::Start()
 
    fitNameTex.SetNDC();
    chi2NDFTex.SetNDC();
+   pValTex.SetNDC();
    histNameTex.SetNDC();
 
    if (currentActivePointGr->GetN() == 0) 
@@ -658,20 +659,25 @@ void GUIFit::Draw(bool doDrawHist)
 
    gPad->GetListOfPrimitives()->Remove(&fitNameTex);
    gPad->GetListOfPrimitives()->Remove(&chi2NDFTex);
+   gPad->GetListOfPrimitives()->Remove(&pValTex);
+   gPad->GetListOfPrimitives()->Remove(&pValTex);
 
    if (currentFitTypeIndex >= 0 && currentFitTypeIndex < 
        static_cast<int>(fits[currentHistId].size()))
    {
-      std::stringstream chi2NDFPrec2;
+      std::stringstream chi2NDFPrec2, pValPrec2;
       chi2NDFPrec2 << std::fixed << std::setprecision(2) << 
                       fits[currentHistId][currentFitTypeIndex]->GetChisquare()/
                       fits[currentHistId][currentFitTypeIndex]->GetNDF();
+      pValPrec2 << std::fixed << std::setprecision(2) << 
+                   -std::log(fits[currentHistId][currentFitTypeIndex]->GetProb());
 
       fitNameTex.SetText(0.15, 0.15, fitTypeNames[currentFitTypeIndex].c_str());
-      chi2NDFTex.SetText(0.7, 0.85, ("#chi^{2}/NDF=" + chi2NDFPrec2.str()).c_str());
-
       fitNameTex.Draw();
+      chi2NDFTex.SetText(0.7, 0.9, ("#chi^{2}/NDF=" + chi2NDFPrec2.str()).c_str());
       chi2NDFTex.Draw();
+      pValTex.SetText(0.7, 0.85, ("-ln(P)=" + pValPrec2.str()).c_str());
+      pValTex.Draw();
    }
 
    gPad->Modified();

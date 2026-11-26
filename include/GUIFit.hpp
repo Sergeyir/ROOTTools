@@ -124,6 +124,8 @@ namespace GUIFit
    TLatex fitNameTex = TLatex(0.2, 0.2, "");
    /// Used to display chi^2/NDF of a fit. This variable is handled automaticaly
    TLatex chi2NDFTex = TLatex(0.8, 0.9, "");
+   /// Used to display P value of a fit. This variable is handled automaticaly
+   TLatex pValTex = TLatex(0.8, 0.9, "");
    /// Used to display histogram name. This variable is handled automaticaly
    TLatex histNameTex = TLatex(0.1, 0.9, "");
    /// Graph that contains movable points for background tweaking. 
