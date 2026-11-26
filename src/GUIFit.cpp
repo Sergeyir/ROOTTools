@@ -432,7 +432,7 @@ void GUIFit::PerformFreeFit()
          ReleaseParameter(fitBGParIndicesBegin[currentHistId][currentFitTypeIndex] + i);
    }
 
-   hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQMNBL");
+   hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQMNBWL");
 
    for (int i = 0; i < fitsBG[currentHistId].back()->GetNpar(); i++)
    {
@@ -505,7 +505,7 @@ void GUIFit::ResetFit()
                       fitsBG[currentHistId][currentFitTypeIndex]->GetParameter(i));
    }
    fits[currentHistId][currentFitTypeIndex]->Update();
-   hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQMBNL");
+   hists[currentHistId]->Fit(fits[currentHistId][currentFitTypeIndex], "RQMBNWL");
 }
 
 void GUIFit::ActivatePoint(const int pointNumber, const double x, const double y) 
